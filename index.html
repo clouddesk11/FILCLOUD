@@ -2,768 +2,765 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CloudDesk · EduSpace — Comunicación VII</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudDesk</title>
+<link rel="icon" type="image/png" sizes="16x16" 
+  href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_16,h_16/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
+<link rel="icon" type="image/png" sizes="32x32" 
+  href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_32,h_32/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
+<link rel="icon" type="image/png" sizes="48x48" 
+  href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_48,h_48/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
-
-<!-- ============================================================
-     LOADER DE CONEXIÓN
-     ============================================================ -->
-<div id="connectionLoader" class="connection-loader">
-    <div class="loader-content">
-        <div class="loader-spinner"></div>
-        <p>Conectando con EduSpace...</p>
+    <!-- Estado de Conexión -->
+    <div id="connectionLoader" class="connection-loader" style="display: none;">
+        <div class="connection-loader-content">
+            <div class="connection-spinner">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+            <h2>Conectando con el servidor…</h2>
+            <p>Por favor espera mientras verificamos tu sesión</p>
+        </div>
     </div>
-</div>
 
-<!-- ============================================================
-     MODAL DE AUTENTICACIÓN
-     ============================================================ -->
-<div id="authModal" class="auth-modal-overlay">
-    <div class="auth-modal-box">
+    <!-- Modal de Autenticación -->
+    <div id="authModal" class="auth-modal" style="display: none;">
+        <div class="auth-modal-content">
 
-        <div class="auth-modal-logo">
-            <i class="fa-solid fa-graduation-cap"></i>
-            <span>EduSpace</span>
-        </div>
-        <h2 class="auth-modal-title">Acceso a la Plataforma</h2>
-        <p class="auth-modal-subtitle">Comunicación · Ciclo VII</p>
-
-        <!-- ── PASO 1 MÓVIL: Nombre + Código ── -->
-        <div id="auth-step-code" style="display:none;">
-            <div class="form-group-auth">
-                <label for="authUserName"><i class="fa-solid fa-user"></i> Tu nombre completo</label>
-                <input type="text" id="authUserName" placeholder="Ej: Luis Pérez García" autocomplete="off">
-            </div>
-            <div class="form-group-auth">
-                <label for="authCode"><i class="fa-solid fa-key"></i> Código de acceso</label>
-                <input type="text" id="authCode" placeholder="Ingresa tu código" autocomplete="off">
-            </div>
-            <div id="authError" class="auth-error" style="display:none;"></div>
-            <button id="authSubmit" class="btn-auth-primary">
-                <i class="fa-solid fa-arrow-right"></i> Continuar
-            </button>
-        </div>
-
-        <!-- ── PASO 1.5 MÓVIL: Registro de Perfil ── -->
-        <div id="auth-step-registro" style="display:none;">
-            <p class="auth-step-label"><i class="fa-solid fa-circle-user"></i> Completa tu perfil para continuar</p>
-
-            <div class="form-group-auth">
-                <label><i class="fa-solid fa-graduation-cap"></i> Especialidad</label>
-                <select id="selectEspecialidad">
-                    <option value="">Selecciona tu especialidad</option>
-                    <option value="Comunicación">Comunicación</option>
-                    <option value="Periodismo">Periodismo</option>
-                    <option value="Publicidad">Publicidad</option>
-                    <option value="Relaciones Públicas">Relaciones Públicas</option>
-                </select>
-            </div>
-
-            <div class="form-group-auth">
-                <label><i class="fa-solid fa-layer-group"></i> Ciclo</label>
-                <select id="selectCiclo">
-                    <option value="">Selecciona tu ciclo</option>
-                    <option value="I">Ciclo I</option>
-                    <option value="II">Ciclo II</option>
-                    <option value="III">Ciclo III</option>
-                    <option value="IV">Ciclo IV</option>
-                    <option value="V">Ciclo V</option>
-                    <option value="VI">Ciclo VI</option>
-                    <option value="VII">Ciclo VII</option>
-                    <option value="VIII">Ciclo VIII</option>
-                    <option value="IX">Ciclo IX</option>
-                    <option value="X">Ciclo X</option>
-                </select>
-            </div>
-
-            <div class="form-group-auth">
-                <label><i class="fa-solid fa-camera"></i> Foto de perfil</label>
-                <div class="upload-area-auth" onclick="document.getElementById('fotoInputPaso0').click()">
-                    <div id="uploadPlaceholderPaso0">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p>Toca para subir tu foto</p>
-                        <span>JPG, PNG · Máx 5MB</span>
+            <!-- ══ PASO 1: Nombre + Código ══ -->
+            <div id="auth-step-code">
+                <div class="auth-header">
+                    <i class="fa-solid fa-graduation-cap auth-icon"></i>
+                    <h2>Hola, bienvenido a EduSpace</h2>
+                </div>
+                <div class="auth-body">
+                    <div class="auth-section">
+                        <p class="auth-text">Regístrate con tu nombre.</p>
+                        <input type="text" id="authUserName" class="auth-input" placeholder="Ingresa tu nombre completo" autocomplete="off">
                     </div>
-                    <div id="imagePreviewPaso0" style="display:none;">
-                        <img id="previewImgPaso0" src="" alt="Vista previa">
-                        <p class="preview-ok"><i class="fa-solid fa-check-circle"></i> Foto lista</p>
+                    <div class="auth-section">
+                        <p class="auth-text">Ingresa tu código de compra. Si aún no dispones de uno, solicítalo al administrador del sistema.</p>
+                        <input type="text" id="authCode" class="auth-input" placeholder="Ingresa tu código" autocomplete="off">
                     </div>
-                    <input type="file" id="fotoInputPaso0" accept="image/*" style="display:none;" onchange="previewImage(event)">
-                </div>
-            </div>
-
-            <div id="authRegistroError" class="auth-error" style="display:none;"></div>
-            <button class="btn-auth-primary" onclick="continuarDesdeAuth()">
-                <i class="fa-solid fa-arrow-right"></i> Continuar
-            </button>
-        </div>
-
-        <!-- ── PASO 2 MÓVIL: Google Sign-In ── -->
-        <div id="auth-step-google" style="display:none;">
-            <div id="auth-codigo-validado" class="auth-validado-info"></div>
-            <p class="auth-step-label">
-                <i class="fa-solid fa-shield-halved"></i>
-                Vincula tu cuenta de Google para acceder
-            </p>
-            <div id="googleError" class="auth-error" style="display:none;"></div>
-            <button id="googleSignInBtn" class="btn-google" onclick="signInWithGoogle()"></button>
-        </div>
-
-        <!-- ── PASO 3 MÓVIL: Revelar API ── -->
-        <div id="auth-step-api-reveal" style="display:none;">
-            <div class="api-reveal-container">
-                <div class="api-reveal-icon"><i class="fa-solid fa-laptop"></i></div>
-                <p id="apiRevealSaludo" class="api-reveal-saludo"></p>
-                <p class="api-reveal-label">Tu número API para acceder desde laptop:</p>
-                <div class="api-reveal-number-box">
-                    <span id="apiRevealNumber" class="api-reveal-number"></span>
-                </div>
-                <p class="api-reveal-hint">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Guarda este número. Lo necesitarás para iniciar sesión desde tu computadora.
-                </p>
-                <button class="btn-auth-primary" onclick="finalizarRegistroMobile()">
-                    <i class="fa-solid fa-check"></i> Entendido, ingresar
-                </button>
-            </div>
-        </div>
-
-        <!-- ── PASO 1 LAPTOP: Ingresar API ── -->
-        <div id="auth-step-laptop" style="display:none;">
-            <p class="auth-step-label">
-                <i class="fa-solid fa-laptop"></i>
-                Ingresa tu número API (lo obtuviste desde tu móvil)
-            </p>
-            <div class="form-group-auth">
-                <label for="laptopApiInput"><i class="fa-solid fa-key"></i> Número API</label>
-                <input type="text" id="laptopApiInput" placeholder="Ej: 847392615"
-                       inputmode="numeric" pattern="[0-9]*" autocomplete="off"
-                       style="text-align:center;letter-spacing:3px;font-size:1.2rem;font-family:monospace;">
-            </div>
-            <div id="laptopApiError" class="auth-error" style="display:none;"></div>
-            <button id="laptopApiSubmit" class="btn-auth-primary" onclick="validarAPI()">
-                <i class="fa-solid fa-arrow-right"></i> Continuar
-            </button>
-        </div>
-
-        <!-- ── PASO 2 LAPTOP: Google Sign-In ── -->
-        <div id="auth-step-google-laptop" style="display:none;">
-            <div id="auth-api-validado" class="auth-validado-info"></div>
-            <p class="auth-step-label">
-                <i class="fa-solid fa-shield-halved"></i>
-                Usa la misma cuenta de Google con la que te registraste desde el móvil
-            </p>
-            <div id="googleErrorLaptop" class="auth-error" style="display:none;"></div>
-            <button id="googleSignInBtnLaptop" class="btn-google" onclick="signInWithGoogleLaptop()"></button>
-        </div>
-
-    </div>
-</div>
-
-<!-- ============================================================
-     MENSAJE ESPECIAL (código 6578hy)
-     ============================================================ -->
-<div id="specialUserMessage" class="special-user-overlay" style="display:none;">
-    <div class="special-user-box">
-        <span class="special-close-btn" onclick="hideSpecialUserMessage()">
-            <i class="fa-solid fa-times"></i>
-        </span>
-        <div class="special-user-icon"><i class="fa-solid fa-star"></i></div>
-        <h3>¡Bienvenido, Administrador!</h3>
-        <p>Tienes acceso especial al sistema EduSpace. Recuerda usar tu poder con responsabilidad.</p>
-        <button class="btn-auth-primary" onclick="hideSpecialUserMessage()">
-            <i class="fa-solid fa-check"></i> Entendido
-        </button>
-    </div>
-</div>
-
-<!-- ============================================================
-     LAYOUT PRINCIPAL
-     ============================================================ -->
-<div class="app-layout">
-
-    <!-- ── SIDEBAR ── -->
-    <aside id="sidebar" class="sidebar">
-
-        <!-- Logo / Marca -->
-        <div class="sidebar-brand">
-            <div class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-            <div class="sidebar-brand-text">
-                <span class="sidebar-brand-name">EduSpace</span>
-                <span class="sidebar-brand-sub">Plataforma Académica</span>
-            </div>
-        </div>
-
-        <!-- Perfil en sidebar -->
-        <div id="sidebar-profile-wrapper" class="sidebar-profile-wrapper" style="display:none;">
-            <div class="sidebar-profile-avatar" onclick="abrirPerfilEstudiante()">
-                <img id="sidebar-profile-img" src="" alt="Perfil" style="display:none;">
-                <span id="sidebar-profile-initial" class="sidebar-profile-initial" style="display:none;"></span>
-                <div class="sidebar-profile-edit-overlay">
-                    <i class="fa-solid fa-pen"></i>
-                </div>
-            </div>
-            <div class="sidebar-profile-info">
-                <span id="sidebar-profile-name" class="sidebar-profile-name"></span>
-                <button id="btn-cambiar-foto-sidebar" class="btn-cambiar-foto" onclick="cambiarFotoSidebar()">
-                    <i class="fa-solid fa-camera"></i> Cambiar foto
-                </button>
-                <input type="file" id="sidebar-foto-file-input" accept="image/*"
-                       style="display:none;" onchange="procesarNuevaFotoPerfil(event)">
-            </div>
-            <!-- Número API (solo visible en móvil) -->
-            <div id="sidebar-api-wrapper" class="sidebar-api-wrapper" style="display:none;">
-                <i class="fa-solid fa-key"></i>
-                <span>API:</span>
-                <span id="sidebar-api-number" class="sidebar-api-number"></span>
-            </div>
-        </div>
-
-        <hr class="sidebar-divider">
-
-        <!-- Navegación -->
-        <nav class="sidebar-nav">
-            <button id="tab-repositorio" class="sidebar-btn" onclick="switchTab('repositorio')">
-                <i class="fa-solid fa-folder-open"></i>
-                <span class="sidebar-btn-text">Repositorio</span>
-            </button>
-            <button id="tab-trabajos" class="sidebar-btn" onclick="switchTab('trabajos')">
-                <div style="position:relative;display:inline-block;">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span id="pending-badge" class="notification-dot" style="display:none;"></span>
-                </div>
-                <span class="sidebar-btn-text">Trabajos</span>
-            </button>
-            <button id="tab-recursos" class="sidebar-btn" onclick="switchTab('recursos')">
-                <i class="fa-solid fa-book-open"></i>
-                <span class="sidebar-btn-text">Recursos</span>
-            </button>
-            <button id="tab-docentes" class="sidebar-btn" onclick="switchTab('docentes')">
-                <i class="fa-solid fa-chalkboard-teacher"></i>
-                <span class="sidebar-btn-text">Docentes</span>
-            </button>
-            <button id="tab-estudiantes" class="sidebar-btn" onclick="switchTab('estudiantes')">
-                <i class="fa-solid fa-user-group"></i>
-                <span class="sidebar-btn-text">Comunidad</span>
-            </button>
-            <!-- NUEVO: Chat -->
-            <button id="tab-chat" class="sidebar-btn" onclick="switchTab('chat')">
-                <div style="position:relative;display:inline-block;">
-                    <i class="fa-solid fa-comment"></i>
-                    <span id="chat-badge" class="notification-dot" style="display:none;"></span>
-                </div>
-                <span class="sidebar-btn-text">Chat</span>
-            </button>
-        </nav>
-
-        <hr class="sidebar-divider">
-
-        <!-- Cerrar sesión -->
-        <button class="sidebar-btn sidebar-btn-danger" onclick="cerrarSesionYReingresar()">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="sidebar-btn-text">Cerrar sesión</span>
-        </button>
-
-    </aside>
-
-    <!-- Overlay para cerrar sidebar en móvil -->
-    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
-    <!-- ── CONTENIDO PRINCIPAL ── -->
-    <main class="main-content">
-
-        <!-- ======================================================
-             SECCIÓN: REPOSITORIO
-             ====================================================== -->
-        <section id="repositorio" class="section-content" style="display:none;">
-
-            <div class="header-section header-section-sticky">
-                <div class="header-section-top">
-                    <h2><i class="fa-solid fa-folder-open"></i> Repositorio</h2>
-                    <button class="search-toggle-btn" onclick="toggleSearch('repositorio')">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </div>
-                <div id="searchBarRepositorio" class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInputRepositorio"
-                           placeholder="Buscar archivo, docente, área..."
-                           oninput="searchFiles()">
-                </div>
-                <div class="filter-bar">
-                    <button class="filter-btn active" onclick="filterFiles('all')">Todos</button>
-                    <button class="filter-btn" onclick="filterFiles('Matemáticas')">Matemáticas</button>
-                    <button class="filter-btn" onclick="filterFiles('Ciencias')">Ciencias</button>
-                    <button class="filter-btn" onclick="filterFiles('Literatura')">Literatura</button>
-                    <button class="filter-btn" onclick="filterFiles('Historia')">Historia</button>
-                </div>
-            </div>
-
-            <div id="files-grid" class="files-grid"></div>
-
-        </section>
-
-        <!-- ======================================================
-             SECCIÓN: TRABAJOS
-             ====================================================== -->
-        <section id="trabajos" class="section-content" style="display:none;">
-
-            <div class="header-section header-section-sticky">
-                <div class="header-section-top">
-                    <h2><i class="fa-solid fa-clipboard-list"></i> Trabajos</h2>
-                    <button id="btn-trabajos-finalizados" class="btn-toggle-finalizados" onclick="toggleTrabajosFinalizados()">
-                        <i class="fa-solid fa-check-circle"></i>
-                        <span id="btn-trabajos-text">Ver trabajos finalizados</span>
+                    <div id="authError" class="auth-error" style="display: none;"></div>
+                    <button id="authSubmit" class="auth-submit">
+                        <i class="fa-solid fa-arrow-right"></i> Continuar
                     </button>
                 </div>
             </div>
 
-            <!-- Título dinámico pendientes -->
-            <h3 id="trabajos-pendientes-title" class="section-subtitle">
-                <i class="fa-solid fa-clock"></i> Trabajos Pendientes
-            </h3>
-            <!-- Título dinámico finalizados -->
-            <h3 id="trabajos-finalizados-title" class="section-subtitle" style="display:none;">
-                <i class="fa-solid fa-check-double"></i> Trabajos Finalizados
-            </h3>
-
-            <div id="trabajos-pendientes-section">
-                <div id="assignments-container" class="assignments-container"></div>
-            </div>
-
-            <div id="trabajos-finalizados-section" style="display:none;">
-                <div id="finalizados-container" class="assignments-container"></div>
-            </div>
-
-        </section>
-
-        <!-- ======================================================
-             SECCIÓN: RECURSOS
-             ====================================================== -->
-        <section id="recursos" class="section-content" style="display:none;">
-
-            <div class="header-section header-section-sticky">
-                <div class="header-section-top">
-                    <h2><i class="fa-solid fa-book-open"></i> Recursos</h2>
-                    <button class="search-toggle-btn" onclick="toggleSearch('recursos')">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </div>
-                <div id="searchBarRecursos" class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInputRecursos"
-                           placeholder="Buscar recurso..."
-                           oninput="searchRecursos()">
-                </div>
-                <!-- Filtros principales -->
-                <div class="filter-bar recursos-filter-bar">
-                    <button class="filter-btn recursos-filter-btn active" onclick="filterRecursos('Materiales')">
-                        <i class="fa-solid fa-file-lines"></i> Materiales
-                    </button>
-                    <button class="filter-btn recursos-filter-btn" onclick="filterRecursos('Cuentos')">
-                        <i class="fa-solid fa-book"></i> Cuentos
-                    </button>
-                    <button class="filter-btn recursos-filter-btn" onclick="filterRecursos('Historias')">
-                        <i class="fa-solid fa-scroll"></i> Historias
-                    </button>
-                    <button class="filter-btn recursos-filter-btn" onclick="filterRecursos('Leyendas')">
-                        <i class="fa-solid fa-dragon"></i> Leyendas
-                    </button>
-                    <button class="filter-btn recursos-filter-btn" onclick="filterRecursos('Poemas')">
-                        <i class="fa-solid fa-feather"></i> Poemas
-                    </button>
-                    <button class="filter-btn recursos-filter-btn" onclick="filterRecursos('Libros')">
-                        <i class="fa-solid fa-book-bookmark"></i> Libros
-                    </button>
-                </div>
-                <!-- Sub-menú tipo (Documentos / Videos / Imágenes) -->
-                <div id="recursosSubMenu" class="submenu-bar" style="display:flex;">
-                    <button class="submenu-btn active" onclick="filterRecursosType('Documentos')">
-                        <i class="fa-solid fa-file-pdf"></i> Documentos
-                    </button>
-                    <button class="submenu-btn" onclick="filterRecursosType('Videos')">
-                        <i class="fa-solid fa-film"></i> Videos
-                    </button>
-                    <button class="submenu-btn" onclick="filterRecursosType('Imágenes')">
-                        <i class="fa-solid fa-image"></i> Imágenes
-                    </button>
-                </div>
-            </div>
-
-            <div id="recursos-container" class="recursos-grid"></div>
-
-        </section>
-
-        <!-- ======================================================
-             SECCIÓN: DOCENTES
-             ====================================================== -->
-        <section id="docentes" class="section-content" style="display:none;">
-
-            <div class="header-section header-section-sticky">
-                <h2><i class="fa-solid fa-chalkboard-teacher"></i> Docentes</h2>
-                <p>Conoce a tus profesores y cómo contactarlos.</p>
-            </div>
-
-            <div id="docentes-grid" class="docentes-grid"></div>
-
-        </section>
-
-        <!-- ======================================================
-             SECCIÓN: ESTUDIANTES / COMUNIDAD
-             ====================================================== -->
-        <section id="estudiantes" class="section-content" style="display:none;">
-
-            <!-- Header cuando NO es miembro -->
-            <div id="estudiantes-header-unirse" class="estudiantes-header-unirse" style="display:none;">
-                <div class="estudiantes-hero">
-                    <div class="estudiantes-hero-icon">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <h2>Comunidad CloudDesk</h2>
-                    <p>Conéctate con tus compañeros de Comunicación. Comparte tu experiencia y forma parte de la red académica.</p>
-                    <button id="btn-registrarme" class="btn-unirse-comunidad" onclick="openRegistroModal()">
-                        <i class="fa-solid fa-user-plus"></i> Unirme a la comunidad
-                    </button>
-                </div>
-            </div>
-
-            <!-- Header cuando SÍ es miembro -->
-            <div id="estudiantes-header-miembro" class="estudiantes-header-miembro" style="display:none;">
-                <div class="mi-card-header">
-                    <p class="mi-card-titulo">
-                        <i class="fa-solid fa-id-card"></i> Mi perfil en la comunidad
+            <!-- ══ PASO 2: Especialidad + Ciclo + Foto (movido desde registro modal) ══ -->
+            <div id="auth-step-registro" style="display: none;">
+                <div class="auth-header">
+                    <i class="fa-solid fa-id-card auth-icon"></i>
+                    <h2>Completa tu perfil</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+                        Esta información aparecerá en tu sidebar de inmediato.
                     </p>
-                    <div id="mi-card-estudiante"></div>
                 </div>
-            </div>
-
-            <!-- Grid de estudiantes -->
-            <div class="estudiantes-section-title">
-                <h3><i class="fa-solid fa-user-group"></i> Miembros de la comunidad</h3>
-                <div id="loading-estudiantes" class="loading-spinner" style="display:none;">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
-                </div>
-            </div>
-
-            <div id="estudiantes-grid" class="estudiantes-grid"></div>
-
-        </section>
-
-        <!-- ======================================================
-             SECCIÓN: CHAT (NUEVO)
-             ====================================================== -->
-        <section id="chat" class="section-content" style="display:none;">
-
-            <div class="header-section header-section-sticky">
-                <h2><i class="fa-solid fa-comment"></i> Chat</h2>
-                <p>Mensajes con tus contactos en tiempo real.</p>
-            </div>
-
-            <div class="chat-container">
-
-                <!-- Panel izquierdo: lista de chats -->
-                <div class="chat-sidebar-panel" id="chat-sidebar-panel">
-                    <div class="chat-list" id="chat-list">
-                        <p class="chat-empty">
-                            <i class="fa-solid fa-comment-slash"></i><br>
-                            No tienes chats aún.<br>
-                            Acepta solicitudes en Comunidad.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Panel derecho: ventana de mensajes -->
-                <div class="chat-main" id="chat-main">
-
-                    <!-- Placeholder cuando no hay chat abierto -->
-                    <div class="chat-placeholder" id="chat-placeholder">
-                        <i class="fa-solid fa-comment-dots"></i>
-                        <p>Selecciona un chat para comenzar</p>
-                    </div>
-
-                    <!-- Ventana de chat activa -->
-                    <div class="chat-window" id="chat-window" style="display:none;">
-                        <div class="chat-win-header" id="chat-win-header"></div>
-                        <div class="chat-messages" id="chat-messages"></div>
-                        <div class="chat-input-area">
-                            <input type="text" id="chat-input"
-                                   placeholder="Escribe un mensaje..."
-                                   onkeypress="if(event.key==='Enter') enviarMensaje()">
-                            <button onclick="enviarMensaje()" class="chat-send-btn">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
+                <div class="auth-body">
+                    <!-- Especialidad + Ciclo -->
+                    <div class="paso0-campos-row">
+                        <div class="form-group paso0-campo-half">
+                            <label for="selectEspecialidad">
+                                <i class="fa-solid fa-graduation-cap"></i> Especialidad
+                            </label>
+                            <select id="selectEspecialidad" class="paso0-select auth-select">
+                                <option value="" disabled selected>Elige</option>
+                                <option value="Comunicación">Comunicación</option>
+                            </select>
+                        </div>
+                        <div class="form-group paso0-campo-half">
+                            <label for="selectCiclo">
+                                <i class="fa-solid fa-layer-group"></i> Ciclo
+                            </label>
+                            <select id="selectCiclo" class="paso0-select auth-select">
+                                <option value="" disabled selected>Elige</option>
+                                <option value="VII">VII</option>
+                            </select>
                         </div>
                     </div>
 
+                    <!-- Foto de Perfil -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-camera"></i> Foto de Perfil
+                        </label>
+                        <div class="upload-area auth-upload-area" id="uploadAreaPaso0"
+                             onclick="document.getElementById('fotoInputPaso0').click()">
+                            <input type="file"
+                                   id="fotoInputPaso0"
+                                   accept="image/*"
+                                   style="display:none;"
+                                   onchange="previewImage(event)">
+                            <div id="uploadPlaceholderPaso0" class="upload-placeholder">
+                                <i class="fa-solid fa-cloud-upload-alt"></i>
+                                <p>Haz clic para seleccionar una foto</p>
+                                <span>JPG, PNG o GIF • Máx. 5MB</span>
+                            </div>
+                            <div id="imagePreviewPaso0" class="image-preview" style="display:none;">
+                                <img id="previewImgPaso0" src="" alt="Vista previa">
+                                <span class="paso0-foto-ok">
+                                    <i class="fa-solid fa-check-circle"></i> Foto seleccionada
+                                    <button type="button" class="btn-change-photo"
+                                            onclick="event.stopPropagation();document.getElementById('fotoInputPaso0').click()">
+                                        <i class="fa-solid fa-exchange-alt"></i> Cambiar
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="authRegistroError" class="auth-error" style="display: none;"></div>
+                    <button class="auth-submit" onclick="continuarDesdeAuth()">
+                        <i class="fa-solid fa-arrow-right"></i> Continuar
+                    </button>
                 </div>
             </div>
 
-        </section>
+            <!-- ══ PASO 3: Vincula tu cuenta de Google ══ -->
+            <div id="auth-step-google" style="display: none;">
+                <div class="auth-header">
+                    <i class="fa-solid fa-shield-halved auth-icon"></i>
+                    <h2>Vincula tu cuenta de Google</h2>
+                    <p id="auth-codigo-validado" style="color: #10b981; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 500;"></p>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.85rem;">
+                        Tu cuenta de Google será la llave de acceso permanente. Usa siempre la misma.
+                    </p>
+                </div>
+                <div class="auth-body">
+                    <button id="googleSignInBtn" class="google-signin-btn" onclick="signInWithGoogle()">
+                        <svg width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                            <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                    <div id="googleError" class="auth-error" style="display: none;"></div>
+                </div>
+            </div>
 
-    </main>
+            <!-- ══ PASO LAPTOP: Solo aparece en desktop ══ -->
+            <div id="auth-step-laptop" style="display: none;">
+                <div class="auth-header">
+                    <i class="fa-solid fa-laptop auth-icon"></i>
+                    <h2>Acceso desde Laptop</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+                        Ingresa tu API numérica para vincular este dispositivo.
+                    </p>
+                </div>
+                <div class="auth-body">
+                    <div class="auth-section">
+                        <p class="auth-text">Tu API fue asignada al registrarte desde tu móvil.</p>
+                        <input type="number" id="laptopApiInput" class="auth-input"
+                               placeholder="Ingresa tu API numérica" autocomplete="off"
+                               style="text-align:center; font-size:1.3rem; letter-spacing:3px; font-weight:700;">
+                    </div>
+                    <div id="laptopApiError" class="auth-error" style="display: none;"></div>
+                    <button id="laptopApiSubmit" class="auth-submit" onclick="validarAPI()">
+                        <i class="fa-solid fa-arrow-right"></i> Continuar
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ PASO GOOGLE LAPTOP: Google sign-in para desktop ══ -->
+            <div id="auth-step-google-laptop" style="display: none;">
+                <div class="auth-header">
+                    <i class="fa-solid fa-shield-halved auth-icon"></i>
+                    <h2>Vincula tu cuenta de Google</h2>
+                    <p id="auth-api-validado" style="color: #10b981; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 500;"></p>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.85rem;">
+                        Usa la misma cuenta de Google con la que te registraste en el móvil.
+                    </p>
+                </div>
+                <div class="auth-body">
+                    <button id="googleSignInBtnLaptop" class="google-signin-btn" onclick="signInWithGoogleLaptop()">
+                        <svg width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                            <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                    <div id="googleErrorLaptop" class="auth-error" style="display: none;"></div>
+                </div>
+            </div>
+
+           <!-- ══ PASO API REVEAL: Solo aparece en móvil después del auth ══ -->
+<div id="auth-step-api-reveal" style="display: none; position: relative;">
+    <button class="api-reveal-close-btn" onclick="finalizarRegistroMobile()">
+        <i class="fa-solid fa-times"></i>
+    </button>
+    <div class="auth-header">
+        <i class="fa-solid fa-check-circle auth-icon" style="color: var(--success);"></i>
+        <h2>¡Registro Completo!</h2>
+    </div>
+    <div class="auth-body">
+        <div class="api-reveal-container">
+            <p class="api-reveal-saludo" id="apiRevealSaludo">Hola</p>
+            <p class="api-reveal-desc">
+                <i class="fa-solid fa-laptop"></i>
+                Este es tu API para ingresar desde tu laptop:
+            </p>
+            <div class="api-reveal-number" id="apiRevealNumber">000000000</div>
+            <p class="api-reveal-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Guarda este número. Lo necesitarás para acceder desde tu laptop.
+            </p>
+        </div>
+        <button class="auth-submit" style="background: linear-gradient(135deg, #10b981, #0d9668);" onclick="finalizarRegistroMobile()">
+            <i class="fa-solid fa-check"></i> Entendido, Continuar
+        </button>
+    </div>
 </div>
 
-<!-- ============================================================
-     FOOTER MÓVIL (navegación inferior)
-     ============================================================ -->
-<footer class="mobile-footer">
-    <p class="footer-text">© 2025 EduSpace Plataforma Académica</p>
+        </div>
+    </div>
 
-    <button class="mobile-footer-btn" onclick="switchTab('trabajos')">
-        <div style="position:relative;display:inline-block;">
+    <!-- Mensaje Especial -->
+    <div id="specialUserMessage" class="special-user-message" style="display: none;">
+        <i class="fa-solid fa-star"></i>
+        <span>Bienvenido usuario especial con código 6578hy</span>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png" 
+                 alt="CloudDesk Logo" 
+                 class="sidebar-logo-img">
+            <span class="sidebar-logo-text">CloudDesk</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+    
+    <button id="tab-repositorio" class="sidebar-btn active" onclick="switchTab('repositorio')">
+        <i class="fa-solid fa-folder-open"></i>
+        <span class="sidebar-btn-text">Repositorio</span>
+    </button>
+    <button id="tab-trabajos" class="sidebar-btn" onclick="switchTab('trabajos')">
+        <div style="position: relative; display: inline-block;">
             <i class="fa-solid fa-clipboard-list"></i>
-            <span id="pending-badge-footer" class="notification-dot" style="display:none;"></span>
+            <span id="pending-badge" class="notification-dot" style="display: none;"></span>
+        </div>
+        <span class="sidebar-btn-text">Trabajos</span>
+    </button>
+    <button id="tab-recursos" class="sidebar-btn" onclick="switchTab('recursos')">
+        <i class="fa-solid fa-book"></i>
+        <span class="sidebar-btn-text">Recursos</span>
+    </button>
+    <button id="tab-docentes" class="sidebar-btn" onclick="switchTab('docentes')">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <span class="sidebar-btn-text">Docentes</span>
+    </button>
+    <button id="tab-estudiantes" class="sidebar-btn" onclick="switchTab('estudiantes')">
+        <i class="fa-solid fa-user-graduate"></i>
+        <span class="sidebar-btn-text">Estudiantes</span>
+    </button>
+    <!-- HTML CHANGE 1 — Botón Chat en sidebar -->
+    <button id="tab-chat" class="sidebar-btn" onclick="switchTab('chat')">
+        <div style="position: relative; display: inline-block;">
+            <i class="fa-solid fa-comment"></i>
+            <span id="chat-badge" class="notification-dot" style="display: none;"></span>
+        </div>
+        <span class="sidebar-btn-text">Chat</span>
+    </button>
+
+    <!-- Perfil del estudiante al fondo del sidebar -->
+    <div id="sidebar-profile-wrapper" class="sidebar-profile-wrapper" style="display:none;">
+        <div class="sidebar-profile-divider"></div>
+        <div class="sidebar-profile" onclick="abrirPerfilEstudiante()">
+            <div class="sidebar-profile-avatar">
+                <img id="sidebar-profile-img" src="" alt="Perfil" style="display:none;">
+                <span id="sidebar-profile-initial" style="display:flex;">?</span>
+            </div>
+            <span class="sidebar-profile-name" id="sidebar-profile-name">Mi Perfil</span>
+        </div>
+
+        <!-- API en sidebar (solo móvil, solo cuando sidebar está abierto) -->
+        <div id="sidebar-api-wrapper" class="sidebar-api-wrapper" style="display:none;">
+            <i class="fa-solid fa-key"></i>
+            <span class="sidebar-api-label">Mi API:</span>
+            <span id="sidebar-api-number" class="sidebar-api-number"></span>
+        </div>
+    </div>
+</aside>
+
+    <button class="mobile-menu-btn" id="mobileSidebarToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content" id="mainContent">
+        <main class="container">
+            <!-- Sección de Repositorio -->
+<section id="repositorio" class="section-content" style="display: block;">
+    <div class="header-section header-section-sticky">
+        <div class="header-with-search">
+            <div class="header-text">
+                <h2><i class="fa-solid fa-folder-open"></i> Archivos Académicos</h2>
+                <p>Selecciona un área para filtrar los recursos.</p>
+            </div>
+            <div class="search-container-inline">
+                <button class="search-toggle" onclick="toggleSearch('repositorio')">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+                <div class="search-bar-expandable" id="searchBarRepositorio">
+                    <input type="text" id="searchInputRepositorio" placeholder="Buscar archivos..." onkeyup="searchFiles()">
+                    <button class="search-close" onclick="toggleSearch('repositorio')">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterFiles('all')">Todo</button>
+            <button class="filter-btn" onclick="filterFiles('Matemáticas')">Matemáticas</button>
+            <button class="filter-btn" onclick="filterFiles('Ciencias')">Ciencias</button>
+            <button class="filter-btn" onclick="filterFiles('Literatura')">Literatura</button>
+            <button class="filter-btn" onclick="filterFiles('Historia')">Historia</button>
+        </div>
+    </div>
+    <div id="files-grid" class="grid-container"></div>
+</section>
+
+            <!-- Sección de Trabajos -->
+<section id="trabajos" class="section-content" style="display: none;">
+    <div class="header-section header-section-sticky">
+        <div class="trabajos-header-flex">
+            <div>
+                <h2><i class="fa-solid fa-clipboard-list"></i> Gestión de Trabajos</h2>
+                <p>Estado de entregas y tareas pendientes por docente.</p>
+            </div>
+            <button id="btn-trabajos-finalizados" class="btn-trabajos-finalizados" onclick="toggleTrabajosFinalizados()">
+                <i class="fa-solid fa-clock"></i> <span id="btn-trabajos-text">Ver trabajos finalizados</span>
+            </button>
+        </div>
+        <div id="trabajos-pendientes-title" style="display: block;">
+            <h3 class="subsection-title"><i class="fa-solid fa-hourglass-half"></i> Trabajos Pendientes</h3>
+        </div>
+        <div id="trabajos-finalizados-title" style="display: none;">
+            <h3 class="subsection-title"><i class="fa-solid fa-check-double"></i> Trabajos Finalizados</h3>
+        </div>
+    </div>
+    <div id="trabajos-pendientes-section" style="display: block;">
+        <div class="assignments-container" id="assignments-container"></div>
+    </div>
+    <div id="trabajos-finalizados-section" style="display: none;">
+        <div class="assignments-container" id="finalizados-container"></div>
+    </div>
+</section>
+
+            <!-- Sección de Recursos -->
+<section id="recursos" class="section-content" style="display: none;">
+    <div class="header-section header-section-sticky">
+        <div class="header-with-search">
+            <div class="header-text">
+                <h2><i class="fa-solid fa-book"></i> Recursos del Área de la Especialidad de Comunicación</h2>
+            </div>
+            <div class="search-container-inline">
+                <button class="search-toggle" onclick="toggleSearch('recursos')">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+                <div class="search-bar-expandable" id="searchBarRecursos">
+                    <input type="text" id="searchInputRecursos" placeholder="Buscar recursos..." onkeyup="searchRecursos()">
+                    <button class="search-close" onclick="toggleSearch('recursos')">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="recursos-filter-buttons">
+            <button class="recursos-filter-btn active" onclick="filterRecursos('Materiales')" data-category="Materiales">
+                <i class="fa-solid fa-folder"></i> Materiales
+                <i class="fa-solid fa-bars recursos-hamburger" onclick="toggleRecursosMenu(event, 'Materiales')"></i>
+            </button>
+            <button class="recursos-filter-btn" onclick="filterRecursos('Cuentos')" data-category="Cuentos">
+                <i class="fa-solid fa-book-open"></i> Cuentos
+                <i class="fa-solid fa-bars recursos-hamburger" onclick="toggleRecursosMenu(event, 'Cuentos')"></i>
+            </button>
+            <button class="recursos-filter-btn" onclick="filterRecursos('Historias')" data-category="Historias">
+                <i class="fa-solid fa-scroll"></i> Historias
+                <i class="fa-solid fa-bars recursos-hamburger" onclick="toggleRecursosMenu(event, 'Historias')"></i>
+            </button>
+            <button class="recursos-filter-btn" onclick="filterRecursos('Leyendas')" data-category="Leyendas">
+                <i class="fa-solid fa-dragon"></i> Leyendas
+                <i class="fa-solid fa-bars recursos-hamburger" onclick="toggleRecursosMenu(event, 'Leyendas')"></i>
+            </button>
+            <button class="recursos-filter-btn" onclick="filterRecursos('Poemas')" data-category="Poemas">
+                <i class="fa-solid fa-feather"></i> Poemas
+                <i class="fa-solid fa-bars recursos-hamburger" onclick="toggleRecursosMenu(event, 'Poemas')"></i>
+            </button>
+            <button class="recursos-filter-btn" onclick="filterRecursos('Libros')" data-category="Libros">
+                <i class="fa-solid fa-book"></i> Libros
+            </button>
+        </div>
+        <div id="recursosSubMenu" class="recursos-submenu" style="display: none;">
+            <button class="submenu-btn active" onclick="filterRecursosType('Documentos')">
+                <i class="fa-solid fa-file-lines"></i> Documentos
+            </button>
+            <button class="submenu-btn" onclick="filterRecursosType('Videos')">
+                <i class="fa-solid fa-video"></i> Videos
+            </button>
+            <button class="submenu-btn" onclick="filterRecursosType('Imágenes')">
+                <i class="fa-solid fa-image"></i> Imágenes
+            </button>
+        </div>
+    </div>
+    <div class="recursos-list">
+        <div id="recursos-container" class="recursos-grid"></div>
+    </div>
+</section>
+
+            <!-- Sección de Docentes -->
+<section id="docentes" class="section-content" style="display: none;">
+    <div class="header-section header-section-sticky">
+        <h2><i class="fa-solid fa-chalkboard-user"></i> Directorio de Docentes</h2>
+        <p>Información de contacto y perfil de los profesores.</p>
+    </div>
+    <div id="docentes-grid" class="grid-container"></div>
+</section>
+
+            <!-- Sección de Estudiantes -->
+<section id="estudiantes" class="section-content" style="display: none;">
+    <!-- Header cuando NO está unido -->
+    <div id="estudiantes-header-unirse" class="header-section header-section-sticky header-with-button">
+        <div class="header-text-estudiantes">
+            <h2><i class="fa-solid fa-user-graduate"></i> Registro de Estudiantes</h2>
+            <p>Únete a la comunidad de estudiantes de Comunicación VII.</p>
+        </div>
+        <button id="btn-registrarme" class="btn-registrarme" onclick="openRegistroModal()">
+            <i class="fa-solid fa-user-plus"></i> Unirme
+        </button>
+    </div>
+    <!-- Header cuando YA está unido (reemplaza al anterior) -->
+    <div id="estudiantes-header-miembro" class="header-section header-section-sticky" style="display:none;">
+        <div id="mi-card-estudiante"></div>
+    </div>
+    <div id="estudiantes-grid" class="grid-container">
+        <div class="loading-estudiantes" id="loading-estudiantes">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <p>Cargando estudiantes...</p>
+        </div>
+    </div>
+</section>
+
+            <!-- HTML CHANGE 2 — Sección Chat -->
+<section id="chat" class="section-content" style="display: none;">
+    <div class="header-section header-section-sticky">
+        <h2><i class="fa-solid fa-comment"></i> Chat</h2>
+        <p>Mensajes con tus contactos.</p>
+    </div>
+    <div class="chat-container">
+        <div class="chat-sidebar-panel" id="chat-sidebar-panel">
+            <div class="chat-list" id="chat-list">
+                <p class="chat-empty">
+                    <i class="fa-solid fa-comment-slash"></i><br>
+                    No tienes chats aún.<br>Acepta solicitudes en Comunidad.
+                </p>
+            </div>
+        </div>
+        <div class="chat-main" id="chat-main">
+            <div class="chat-placeholder" id="chat-placeholder">
+                <i class="fa-solid fa-comment-dots"></i>
+                <p>Selecciona un chat para comenzar</p>
+            </div>
+            <div class="chat-window" id="chat-window" style="display:none;">
+                <div class="chat-win-header" id="chat-win-header"></div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input"
+                           placeholder="Escribe un mensaje..."
+                           onkeypress="if(event.key==='Enter')enviarMensaje()">
+                    <button onclick="enviarMensaje()" class="chat-send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        </main>
+
+        <!-- HTML CHANGE 3 — Footer actualizado -->
+        <footer>
+    <p class="footer-text">© 2025 EduSpace Plataforma Académica - Todos los derechos reservados.</p>
+    <button class="mobile-footer-btn" onclick="switchTab('trabajos')">
+        <div style="position: relative;">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span id="pending-badge-footer" class="notification-dot" style="display: none;"></span>
         </div>
         <span>Trabajos</span>
     </button>
-
-    <!-- NUEVO: Chat en footer -->
     <button class="mobile-footer-btn" onclick="switchTab('chat')">
-        <div style="position:relative;display:inline-block;">
+        <div style="position: relative;">
             <i class="fa-solid fa-comment"></i>
-            <span id="chat-badge-footer" class="notification-dot" style="display:none;"></span>
+            <span id="chat-badge-footer" class="notification-dot" style="display: none;"></span>
         </div>
         <span>Chat</span>
     </button>
-
     <button class="mobile-footer-btn" onclick="switchTab('repositorio')">
         <i class="fa-solid fa-home"></i>
         <span>Inicio</span>
     </button>
-
     <button class="mobile-footer-btn" onclick="switchTab('estudiantes')">
         <i class="fa-solid fa-user-group"></i>
         <span>Comunidad</span>
     </button>
-
     <button class="mobile-footer-btn" onclick="toggleSidebar()">
         <i class="fa-solid fa-bars"></i>
         <span>Menú</span>
     </button>
 </footer>
 
-<!-- ============================================================
-     MODAL: VER PERFIL DE DOCENTE
-     ============================================================ -->
-<div id="profileModal" class="modal-overlay" onclick="if(event.target===this)closeProfileModal()">
-    <div class="modal-box">
-        <button class="modal-close-btn" onclick="closeProfileModal()">
-            <i class="fa-solid fa-times"></i>
-        </button>
-        <div class="modal-profile-content">
-            <img id="modalProfileImage" src="" alt="Docente" class="modal-profile-img">
+    </div>
+
+    <!-- Modal Perfil Docente -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeProfileModal()">×</span>
+            <img id="modalProfileImage" src="" alt="Foto de perfil">
             <div id="modalProfileInfo" class="modal-profile-info"></div>
         </div>
     </div>
-</div>
 
-<!-- ============================================================
-     MODAL: DETALLES DEL TRABAJO
-     ============================================================ -->
-<div id="detailsModal" class="modal-overlay" onclick="if(event.target===this)closeDetailsModal()">
-    <div class="modal-box modal-box-wide">
-        <button class="modal-close-btn" onclick="closeDetailsModal()">
-            <i class="fa-solid fa-times"></i>
-        </button>
-        <h3 class="modal-title"><i class="fa-solid fa-info-circle"></i> Detalles del Trabajo</h3>
-
-        <div class="details-grid">
-            <div class="details-item">
-                <span class="details-label">Trabajo:</span>
-                <span id="detailsTaskName" class="details-value"></span>
+    <!-- Modal Detalles -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content-details">
+            <div class="modal-header-details">
+                <h2 id="detailsTitle"><i class="fa-solid fa-file-lines"></i> Detalles del Trabajo</h2>
+                <span class="close-modal" onclick="closeDetailsModal()">×</span>
             </div>
-            <div class="details-item">
-                <span class="details-label">Docente:</span>
-                <span id="detailsTeacher" class="details-value"></span>
-            </div>
-            <div class="details-item">
-                <span class="details-label">Fecha límite:</span>
-                <span id="detailsDeadline" class="details-value"></span>
-            </div>
-            <div class="details-item">
-                <span class="details-label">Estado:</span>
-                <span id="detailsStatus"></span>
-            </div>
-        </div>
-
-        <div class="details-section">
-            <h4><i class="fa-solid fa-align-left"></i> Descripción</h4>
-            <p id="detailsDescription" class="details-description"></p>
-        </div>
-
-        <div class="details-section">
-            <h4><i class="fa-solid fa-list-check"></i> Requisitos</h4>
-            <ul id="detailsRequirements" class="details-requirements"></ul>
-        </div>
-
-        <div class="details-section">
-            <h4><i class="fa-solid fa-paperclip"></i> Archivos adjuntos</h4>
-            <div id="detailsAttachments" class="details-attachments"></div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================
-     MODAL: VISOR DE ARCHIVOS
-     ============================================================ -->
-<div id="fileViewerModal" class="modal-overlay file-viewer-modal" onclick="if(event.target===this)closeFileViewerModal()">
-    <div class="file-viewer-box">
-        <div class="file-viewer-toolbar">
-            <button class="file-viewer-btn" onclick="openFullscreen()">
-                <i class="fa-solid fa-expand"></i> Pantalla completa
-            </button>
-            <button class="file-viewer-btn file-viewer-btn-close" onclick="closeFileViewerModal()">
-                <i class="fa-solid fa-times"></i> Cerrar
-            </button>
-        </div>
-        <div id="fileViewerContent" class="file-viewer-content"></div>
-    </div>
-</div>
-
-<!-- ============================================================
-     MODAL: CONFIRMAR TRABAJO COMPLETADO
-     ============================================================ -->
-<div id="completedModal" class="modal-overlay" onclick="if(event.target===this)closeCompletedModal()">
-    <div class="modal-box modal-box-sm">
-        <div class="completed-modal-icon">
-            <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <h3 class="modal-title">¿Marcar como completado?</h3>
-        <p id="completedMessage" class="completed-message"></p>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeCompletedModal()">
-                <i class="fa-solid fa-times"></i> Cancelar
-            </button>
-            <button class="btn btn-success" onclick="confirmCompleted()">
-                <i class="fa-solid fa-check"></i> Sí, completado
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================
-     MODAL: REGISTRO EN COMUNIDAD
-     ============================================================ -->
-<div id="registroModal" class="modal-overlay" onclick="if(event.target===this)closeRegistroModal()">
-    <div class="modal-box modal-box-wide">
-        <button class="modal-close-btn" onclick="closeRegistroModal()">
-            <i class="fa-solid fa-times"></i>
-        </button>
-
-        <!-- Sin perfil completo -->
-        <div id="registro-sin-perfil" style="display:none;">
-            <div class="registro-sin-perfil-content">
-                <i class="fa-solid fa-circle-exclamation" style="font-size:3rem;color:var(--warning);margin-bottom:1rem;"></i>
-                <h3>Perfil incompleto</h3>
-                <p>Para unirte a la comunidad necesitas haber completado tu perfil (especialidad, ciclo y foto) durante el registro inicial.</p>
-                <p style="margin-top:.5rem;color:var(--text-muted);font-size:.9rem;">Cierra sesión e inicia de nuevo para completarlo.</p>
-            </div>
-        </div>
-
-        <!-- Aceptación de términos -->
-        <div class="terminos-container">
-            <div class="terminos-icon"><i class="fa-solid fa-file-contract"></i></div>
-            <h3 class="terminos-title">Términos de la Comunidad</h3>
-            <div class="terminos-texto">
-                <p>Al unirte a la comunidad CloudDesk:</p>
-                <ul>
-                    <li>Tu nombre, foto, especialidad y ciclo serán visibles para otros miembros.</li>
-                    <li>Te comprometes a mantener un trato respetuoso.</li>
-                    <li>No compartas información personal sensible.</li>
-                    <li>El administrador puede remover miembros que incumplan las normas.</li>
-                </ul>
-            </div>
-            <label class="terminos-check-label">
-                <input type="checkbox" id="aceptoTerminos">
-                <span>He leído y acepto los términos</span>
-            </label>
-        </div>
-
-        <!-- Formulario de registro -->
-        <div id="form-registro" style="display:none;opacity:0;">
-            <h3 class="modal-title"><i class="fa-solid fa-user-plus"></i> Únete a la Comunidad</h3>
-
-            <div class="registro-perfil-preview">
-                <img id="fotoConfirmacion" src="" alt="Tu foto" class="registro-foto-preview">
-                <div class="registro-preview-info">
-                    <p id="displayEspecialidad" class="preview-especialidad"></p>
-                    <p id="displayCiclo" class="preview-ciclo"></p>
+            <div class="modal-body-details">
+                <div class="detail-section">
+                    <h3 id="detailsTaskName"></h3>
+                    <div class="detail-info">
+                        <p><i class="fa-solid fa-user-tie"></i> <strong>Profesor:</strong> <span id="detailsTeacher"></span></p>
+                        <p><i class="fa-regular fa-calendar"></i> <strong>Fecha límite:</strong> <span id="detailsDeadline"></span></p>
+                        <p><i class="fa-solid fa-circle-info"></i> <strong>Estado:</strong> <span id="detailsStatus"></span></p>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-clipboard-check"></i> Descripción del Trabajo</h4>
+                    <div class="description-box" id="detailsDescription"></div>
+                </div>
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-list-check"></i> Requisitos</h4>
+                    <ul class="requirements-list" id="detailsRequirements"></ul>
+                </div>
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-paperclip"></i> Recursos Adjuntos</h4>
+                    <div class="attachments-list" id="detailsAttachments"></div>
                 </div>
             </div>
-
-            <div class="form-group-auth" style="margin-top:1.2rem;">
-                <label for="nombreCompleto">
-                    <i class="fa-solid fa-user"></i> Confirma tu nombre completo
-                </label>
-                <input type="text" id="nombreCompleto" placeholder="Ej: Luis Alberto Pérez García" autocomplete="off">
-                <p class="form-hint-small">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Usa el mismo nombre con el que te registraste. Será visible en la comunidad.
-                </p>
-            </div>
-
-            <button id="btnRegistrar" class="btn-auth-primary" style="margin-top:1rem;" onclick="registrarEstudiante()">
-                <i class="fa-solid fa-check-circle"></i> Unirme Ahora
-            </button>
-        </div>
-
-    </div>
-</div>
-
-<!-- ============================================================
-     MODAL: PERFIL DE ESTUDIANTE (ver mi perfil)
-     ============================================================ -->
-<div id="modal-perfil-estudiante" class="modal-overlay" onclick="if(event.target===this)cerrarPerfilEstudiante()" style="display:none;">
-    <div class="modal-box modal-perfil-est">
-        <button class="modal-close-btn" onclick="cerrarPerfilEstudiante()">
-            <i class="fa-solid fa-times"></i>
-        </button>
-        <div class="modal-perfil-est-content">
-            <div class="modal-perfil-est-foto-wrapper">
-                <img id="perfil-modal-foto" src="" alt="Mi foto" class="modal-perfil-est-foto">
-            </div>
-            <div class="modal-perfil-est-info">
-                <h3 id="perfil-modal-nombre" class="modal-perfil-est-nombre"></h3>
-                <p id="perfil-modal-especialidad" class="modal-perfil-est-esp"></p>
-                <p id="perfil-modal-ciclo" class="modal-perfil-est-ciclo"></p>
+            <div class="modal-footer-details">
+                <button class="btn-modal btn-close" onclick="closeDetailsModal()">
+                    <i class="fa-solid fa-xmark"></i> Cerrar
+                </button>
             </div>
         </div>
     </div>
-</div>
 
-<!-- ============================================================
-     OVERLAY: SOLICITUDES RECIBIDAS (NUEVO)
-     ============================================================ -->
-<div id="solicitudes-overlay" class="solicitudes-overlay"
-     style="display:none;" onclick="cerrarSolicitudes()">
-    <div class="solicitudes-panel" onclick="event.stopPropagation()">
-        <div class="solicitudes-header">
-            <h3><i class="fa-solid fa-user-plus"></i> Solicitudes recibidas</h3>
-            <button class="sol-close-btn" onclick="cerrarSolicitudes()">
+    <!-- Modal Visor -->
+    <div id="fileViewerModal" class="modal">
+        <div class="modal-content-viewer">
+            <div class="modal-header-viewer">
+                <h2 id="viewerTitle"><i class="fa-solid fa-eye"></i> Vista Previa del Archivo</h2>
+                <span class="close-modal" onclick="closeFileViewerModal()">×</span>
+            </div>
+            <div class="modal-body-viewer">
+                <div id="fileViewerContent" class="file-viewer-content"></div>
+                <div class="viewer-controls">
+                    <button class="viewer-control-btn" onclick="openFullscreen()" title="Pantalla completa">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Completado -->
+    <div id="completedModal" class="modal">
+        <div class="modal-content-completed">
+            <div class="modal-header-completed">
+                <h2><i class="fa-solid fa-check-circle"></i> Confirmar Finalización</h2>
+                <span class="close-modal" onclick="closeCompletedModal()">×</span>
+            </div>
+            <div class="modal-body-completed">
+                <div class="completed-message">
+                    <i class="fa-solid fa-info-circle completed-icon"></i>
+                    <p id="completedMessage"></p>
+                </div>
+            </div>
+            <div class="modal-footer-completed">
+                <button class="btn-modal btn-cancel" onclick="closeCompletedModal()">
+                    <i class="fa-solid fa-times"></i> Cancelar
+                </button>
+                <button class="btn-modal btn-confirm" onclick="confirmCompleted()">
+                    <i class="fa-solid fa-check"></i> Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Registro Estudiante (sin PASO 0, empieza con Términos) -->
+    <div id="registroModal" class="modal">
+        <div class="modal-content-registro">
+            <span class="close-modal" onclick="closeRegistroModal()">×</span>
+            <div class="registro-modal-body">
+                <div class="registro-imagen-container">
+                    <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771094272/BackgroundEraser_20260214_132959021_rfzi5a.png" 
+                         alt="Registro Estudiante" 
+                         class="registro-imagen-decorativa">
+                </div>
+                <div class="registro-form-container">
+                    <h2><i class="fa-solid fa-user-graduate"></i> Únete a CloudDesk</h2>
+
+                    <!-- Mensaje para usuarios sin perfil (fallback) -->
+                    <div id="registro-sin-perfil" style="display: none; text-align: center; padding: 1.5rem 0;">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem; display: block;"></i>
+                        <h3 style="color: var(--text-light); margin-bottom: 1rem;">Perfil incompleto</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
+                            Para unirte a la comunidad primero debes completar tu perfil.<br>
+                            Cierra sesión e inicia nuevamente para hacerlo.
+                        </p>
+                        <button onclick="cerrarSesionYReingresar()" style="padding: 0.8rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión e ingresar de nuevo
+                        </button>
+                    </div>
+
+                    <!-- ══ TÉRMINOS Y CONDICIONES ══ -->
+                    <div class="terminos-container" style="display: none;">
+                        <div class="terminos-scroll">
+                            <h3>📋 Términos y Condiciones</h3>
+                            <p><strong>Al registrarte en CloudDesk, aceptas lo siguiente:</strong></p>
+                            <ul>
+                                <li>✓ Compartir tu <strong>nombre completo</strong> y <strong>fotografía de perfil</strong> con la comunidad educativa.</li>
+                                <li>✓ Tus datos serán <strong>visibles públicamente</strong> para todos los usuarios de la plataforma.</li>
+                                <li>✓ CloudDesk <strong>no se responsabiliza</strong> por el uso indebido de la información compartida por terceros.</li>
+                                <li>✓ Garantizamos el <strong>almacenamiento seguro</strong> de tus datos en servidores certificados (Supabase + Cloudinary).</li>
+                                <li>✓ Puedes solicitar la <strong>eliminación de tus datos</strong> contactando al administrador del sistema.</li>
+                                <li>✓ Tu foto será procesada y almacenada en <strong>Cloudinary</strong>, cumpliendo con estándares de privacidad internacionales.</li>
+                                <li>✓ No compartiremos tus datos con terceros sin tu consentimiento explícito.</li>
+                            </ul>
+                            <p class="terminos-footer">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <strong>Política de Privacidad:</strong> Tus datos están protegidos bajo encriptación SSL/TLS.
+                            </p>
+                        </div>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="aceptoTerminos">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">He leído y acepto los términos y condiciones</span>
+                        </label>
+                    </div>
+
+                    <!-- ══ CONFIRMACIÓN AUTORELLENADA (solo lectura) ══ -->
+                    <div id="form-registro" class="form-registro" style="display:none; opacity: 0;">
+                        <!-- Foto del perfil (autorellenada desde auth, no editable aquí) -->
+                        <div class="confirmacion-foto-wrap">
+                            <img id="fotoConfirmacion" src=""
+                                 alt="Tu foto"
+                                 class="confirmacion-foto"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=?&background=3b82f6&color=fff&size=200'">
+                        </div>
+
+                        <!-- Nombre (autorellenado, readonly) -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-solid fa-user"></i> Nombre Completo
+                            </label>
+                            <input type="text" id="nombreCompleto" maxlength="100" readonly
+                                   class="confirmacion-input"
+                                   placeholder="Autocompletado desde tu cuenta">
+                        </div>
+
+                        <!-- Especialidad + Ciclo (badges) -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-solid fa-graduation-cap"></i> Especialidad y Ciclo
+                            </label>
+                            <div class="form-autodata-row">
+                                <span class="form-autodata-badge" id="displayEspecialidad">—</span>
+                                <span class="form-autodata-badge form-autodata-ciclo" id="displayCiclo">—</span>
+                            </div>
+                        </div>
+
+                        <p class="confirmacion-hint">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Para cambiar tu foto, usa la opción en el menú lateral (sidebar).
+                        </p>
+
+                        <button id="btnRegistrar" class="btn-registrar" onclick="registrarEstudiante()">
+                            <i class="fa-solid fa-check-circle"></i> Unirme Ahora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Perfil Estudiante (sidebar) -->
+    <div id="modal-perfil-estudiante" class="modal-perfil-overlay" style="display:none;" onclick="cerrarPerfilEstudiante()">
+        <div class="modal-perfil-box" onclick="event.stopPropagation()">
+            <button class="modal-perfil-close" onclick="cerrarPerfilEstudiante()">
                 <i class="fa-solid fa-times"></i>
             </button>
-        </div>
-        <div id="solicitudes-lista" class="solicitudes-lista">
-            <p style="text-align:center;color:var(--text-muted);padding:2rem;">
-                Sin solicitudes pendientes.
-            </p>
+            <div class="modal-perfil-foto-wrap">
+                <img id="perfil-modal-foto" src="" alt="Foto de perfil" class="modal-perfil-foto"
+                     onerror="this.src='https://ui-avatars.com/api/?name=?&background=3b82f6&color=fff&size=200'">
+            </div>
+            <h3 class="modal-perfil-nombre" id="perfil-modal-nombre">—</h3>
+            <div class="modal-perfil-badges">
+                <span class="modal-perfil-badge-esp"  id="perfil-modal-especialidad">—</span>
+                <span class="modal-perfil-badge-ciclo" id="perfil-modal-ciclo">—</span>
+            </div>
+            <!-- Botón cambiar foto SOLO aquí en el sidebar -->
+            <input type="file" id="sidebar-foto-file-input" accept="image/*" style="display:none;"
+                   onchange="procesarNuevaFotoPerfil(event)">
+            <button id="btn-cambiar-foto-sidebar" class="btn-cambiar-foto-sidebar"
+                    onclick="cambiarFotoSidebar()">
+                <i class="fa-solid fa-camera"></i> Cambiar foto
+            </button>
         </div>
     </div>
-</div>
 
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+    <!-- HTML CHANGE 4 — Overlay Solicitudes -->
+    <div id="solicitudes-overlay" class="solicitudes-overlay"
+         style="display:none;" onclick="cerrarSolicitudes()">
+        <div class="solicitudes-panel" onclick="event.stopPropagation()">
+            <div class="solicitudes-header">
+                <h3><i class="fa-solid fa-user-plus"></i> Solicitudes recibidas</h3>
+                <button class="sol-close-btn" onclick="cerrarSolicitudes()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div id="solicitudes-lista" class="solicitudes-lista">
+                <p style="text-align:center;color:var(--text-muted);padding:2rem;">
+                    Sin solicitudes pendientes.
+                </p>
+            </div>
+        </div>
+    </div>
 
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
