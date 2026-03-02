@@ -1826,13 +1826,15 @@ let _mensajesListenerRef = null;
 let _amigosListenerRef   = null;
 
 async function cargarListaChats() {
-    const chatList = document.getElementById('chat-list');
+    const chatList   = document.getElementById('chat-list');
+    const chatHeader = document.getElementById('chat-header-section');
     if (!chatList) return;
     const miKey    = getMiKey();
     const miPerfil = getMiPerfil();
 
     if (!miKey || !miPerfil?.supabase_registered) {
         chatList.innerHTML = '<p class="chat-empty"><i class="fa-solid fa-user-lock"></i><br>Únete a la comunidad para chatear.</p>';
+        if (chatHeader) chatHeader.style.display = 'block';
         return;
     }
 
@@ -1842,8 +1844,11 @@ async function cargarListaChats() {
 
         if (!amigos || !Object.keys(amigos).length) {
             chatList.innerHTML = '<p class="chat-empty"><i class="fa-solid fa-comment-slash"></i><br>No tienes contactos aún.<br>Acepta solicitudes en Comunidad.</p>';
+            if (chatHeader) chatHeader.style.display = 'block';
             return;
         }
+        // Hay chats → ocultar header
+        if (chatHeader) chatHeader.style.display = 'none';
 
         chatList.innerHTML = '';
         for (const [amigoKey, amigoData] of Object.entries(amigos)) {
@@ -1996,5 +2001,17 @@ async function enviarMensaje() {
         if (itemUlt) itemUlt.textContent = texto;
     } catch(e) { console.error('Error enviando mensaje:', e); }
 }
+
+// ── Fix teclado móvil en chat ──
+if ('visualViewport' in window) {
+    window.visualViewport.addEventListener('resize', () => {
+        const chatMain = document.getElementById('chat-main');
+        if (!chatMain || !chatMain.classList.contains('mobile-visible')) return;
+        const vv = window.visualViewport;
+        chatMain.style.height = vv.height + 'px';
+        chatMain.style.top    = vv.offsetTop + 'px';
+    });
+}
+
 
 
