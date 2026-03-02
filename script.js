@@ -517,7 +517,7 @@ async function validateAuthWithFirebase(googleUid) {
         if (deviceType === 'mobile' && codigoData.api) localStorage.setItem('eduspace_api', String(codigoData.api));
         if (codigo === '6578hy') showSpecialUserMessage();
         return true;
-    } catch(e) { console.error('Error validando autenticación:', e); localStorage.removeItem('eduspace_auth'); return false; }
+    } catch(e) { console.error('Error validando autenticación:', e); return true; }
 }
 
 function showAuthError(message) {
@@ -542,7 +542,7 @@ async function cerrarSesionYReingresar() {
 // INICIALIZACIÓN
 // ============================================
 let _appInicializada = false;
-
+let _authValidating = false;
 document.addEventListener('DOMContentLoaded', async () => {
     showConnectionLoader();
     const isMobile = getDeviceType() === 'mobile';
@@ -556,30 +556,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('laptopApiInput')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') validarAPI(); });
     }
 
-    auth.onAuthStateChanged(async (user) => {
-        hideConnectionLoader();
-        if (user) {
-            const authData = localStorage.getItem('eduspace_auth');
-            if (authData) {
-                const ok = await validateAuthWithFirebase(user.uid);
-                if (ok) {
-                    const apiRevealStep = document.getElementById('auth-step-api-reveal');
-                    if (!apiRevealStep || apiRevealStep.style.display === 'none') hideAuthModal();
-                    iniciarListenerBloqueo();
-                    iniciarListenerSupabaseRegistered();
-                    actualizarPerfilSidebar();
-                } else { showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop(); }
-            } else {
-                if (_registrandoAhora) return;
-                try { await user.delete(); } catch(e) { await auth.signOut().catch(console.error); }
-                showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop();
-            }
-        } else { showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop(); }
-
-        if (!_appInicializada) {
-            _appInicializada = true; updatePendingBadge(); actualizarPerfilSidebar(); switchTab('repositorio');
+   auth.onAuthStateChanged(async (user) => {
+    if (_authValidating) { hideConnectionLoader(); return; }
+    _authValidating = true;
+    hideConnectionLoader();
+    if (user) {
+        const authData = localStorage.getItem('eduspace_auth');
+        if (authData) {
+            const ok = await validateAuthWithFirebase(user.uid);
+            if (ok) {
+                const apiRevealStep = document.getElementById('auth-step-api-reveal');
+                if (!apiRevealStep || apiRevealStep.style.display === 'none') hideAuthModal();
+                iniciarListenerBloqueo();
+                iniciarListenerSupabaseRegistered();
+                actualizarPerfilSidebar();
+            } else { showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop(); }
+        } else {
+            if (_registrandoAhora) { _authValidating = false; return; }
+            await auth.signOut().catch(console.error);
+            showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop();
         }
-    });
+    } else { showAuthModal(); isMobile ? mostrarPaso1() : mostrarPasoLaptop(); }
+
+    if (!_appInicializada) {
+        _appInicializada = true; updatePendingBadge(); actualizarPerfilSidebar(); switchTab('repositorio');
+    }
+    setTimeout(() => { _authValidating = false; }, 4000);
+});
 
     const checkbox = document.getElementById('aceptoTerminos');
     if (checkbox) {
@@ -1993,4 +1996,5 @@ async function enviarMensaje() {
         if (itemUlt) itemUlt.textContent = texto;
     } catch(e) { console.error('Error enviando mensaje:', e); }
 }
+
 
