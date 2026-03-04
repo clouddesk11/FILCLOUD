@@ -4447,5 +4447,95 @@ footer {
     }
 }
 
+/* ============================================
+   BOTÓN AMIGOS
+   ============================================ */
+.btn-amigos {
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1.5px solid var(--success);
+    border-radius: 8px;
+    color: var(--success);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+.btn-amigos:hover { background: rgba(16, 185, 129, 0.1); }
+
+/* ============================================
+   FILA HORIZONTAL EN DESKTOP (card + botones)
+   ============================================ */
+.mi-card-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mi-card-header-row .mi-card-wrapper {
+    flex: 1;
+    min-width: 250px;
+}
+
+.mi-card-btns-col {
+    display: flex;
+    flex-direction: row;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .mi-card-header-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .mi-card-btns-col {
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   ITEM DE AMIGO EN EL PANEL
+   ============================================ */
+.amigo-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.amigo-foto {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--success);
+    flex-shrink: 0;
+}
+
+.amigo-info { flex: 1; }
+.amigo-nombre { font-weight: 700; color: var(--text-light); font-size: 0.95rem; }
+.amigo-esp { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+.btn-eliminar-amigo {
+    padding: 0.4rem 0.9rem;
+    background: transparent;
+    border: 1px solid var(--danger);
+    border-radius: 6px;
+    color: var(--danger);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.btn-eliminar-amigo:hover { background: rgba(239, 68, 68, 0.1); }
 
 
