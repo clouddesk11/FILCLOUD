@@ -1248,7 +1248,7 @@ async function cargarEstudiantes() {
 // ============================================
 // RENDER ESTUDIANTES — CON BOTÓN SOLICITUD
 // ============================================
-function renderEstudiantesReales(estudiantes) {
+async function renderEstudiantesReales(estudiantes) {
     const grid    = document.getElementById('estudiantes-grid');
     const loading = document.getElementById('loading-estudiantes');
     if (loading) loading.style.display = 'none';
@@ -1264,15 +1264,28 @@ function renderEstudiantesReales(estudiantes) {
 
     const perfilActual = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
     const nombreActual = perfilActual?.nombre?.trim().toLowerCase() || '';
+    const miKey        = getMiKey();
+
+    // Obtener lista de amigos actuales para excluirlos
+    let amigosKeys = [];
+    if (miKey) {
+        try {
+            const snapAmigos = await database.ref(`amigos/${miKey}`).once('value');
+            if (snapAmigos.val()) amigosKeys = Object.keys(snapAmigos.val());
+        } catch(e) { console.error('Error cargando amigos:', e); }
+    }
 
     grid.innerHTML = '';
 
     estudiantes.forEach((estudiante, index) => {
-        // Excluir al propio usuario de la grilla pública
-        if (perfilActual?.supabase_registered &&
-            estudiante.nombre_completo.trim().toLowerCase() === nombreActual) {
-            return;
-        }
+        const esYoMismo = perfilActual?.supabase_registered &&
+            estudiante.nombre_completo.trim().toLowerCase() === nombreActual;
+
+        const otroKey = toKey(estudiante.nombre_completo);
+        const esAmigo = amigosKeys.includes(otroKey);
+
+        // Excluir al propio usuario y a sus amigos
+        if (esYoMismo || esAmigo) return;
 
         const card = document.createElement('div');
         card.classList.add('estudiante-card');
@@ -1282,9 +1295,6 @@ function renderEstudiantesReales(estudiantes) {
         const espBadge = estudiante.especialidad
             ? `<p class="estudiante-especialidad"><i class="fa-solid fa-graduation-cap"></i> ${estudiante.especialidad} &nbsp;·&nbsp; Ciclo ${estudiante.ciclo || ''}</p>`
             : '';
-
-        // Clave única del otro usuario para Firebase
-        const otroKey = toKey(estudiante.nombre_completo);
 
         card.dataset.otroKey   = otroKey;
         card.dataset.otroNom   = estudiante.nombre_completo;
@@ -1303,7 +1313,6 @@ function renderEstudiantesReales(estudiantes) {
             </button>
         `;
 
-        // Evento click seguro (sin caracteres raros en onclick)
         const btnSol = card.querySelector('.btn-solicitud');
         btnSol.addEventListener('click', function() {
             const c = this.closest('.estudiante-card');
@@ -1317,7 +1326,6 @@ function renderEstudiantesReales(estudiantes) {
             );
         });
 
-        // Solo mostrar botón si el usuario actual es miembro
         if (!perfilActual?.supabase_registered) {
             btnSol.style.display = 'none';
         } else {
@@ -1367,34 +1375,38 @@ function actualizarEncabezadoEstudiantes() {
     if (miCardEl && perfil) {
         const fecha = perfil.fecha_registro || '—';
         miCardEl.innerHTML = `
-            <div class="mi-card-wrapper">
-                <img src="${perfil.foto_url || ''}"
-                     alt="${perfil.nombre || ''}"
-                     class="mi-card-foto"
-                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(perfil.nombre || '?')}&background=3b82f6&color=fff&size=200'">
-                <div class="mi-card-info">
-                    <span class="mi-card-nombre">${perfil.nombre || '—'}</span>
-                    <div class="mi-card-badges">
-                        <span class="mi-card-badge-esp">
-                            <i class="fa-solid fa-graduation-cap"></i> ${perfil.especialidad || '—'}
+            <div class="mi-card-header-row">
+                <div class="mi-card-wrapper">
+                    <img src="${perfil.foto_url || ''}"
+                         alt="${perfil.nombre || ''}"
+                         class="mi-card-foto"
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(perfil.nombre || '?')}&background=3b82f6&color=fff&size=200'">
+                    <div class="mi-card-info">
+                        <span class="mi-card-nombre">${perfil.nombre || '—'}</span>
+                        <div class="mi-card-badges">
+                            <span class="mi-card-badge-esp">
+                                <i class="fa-solid fa-graduation-cap"></i> ${perfil.especialidad || '—'}
+                            </span>
+                            <span class="mi-card-badge-ciclo">Ciclo ${perfil.ciclo || '—'}</span>
+                        </div>
+                        <span class="mi-card-fecha">
+                            <i class="fa-solid fa-calendar-check"></i> ${fecha}
                         </span>
-                        <span class="mi-card-badge-ciclo">Ciclo ${perfil.ciclo || '—'}</span>
                     </div>
-                    <span class="mi-card-fecha">
-                        <i class="fa-solid fa-calendar-check"></i> ${fecha}
+                    <span class="mi-card-tag">
+                        <i class="fa-solid fa-check-circle"></i> Miembro
                     </span>
                 </div>
-                <span class="mi-card-tag">
-                    <i class="fa-solid fa-check-circle"></i> Miembro
-                </span>
-            </div>
-            <div class="btn-solicitudes-wrapper">
-                <button class="btn-solicitudes" id="btn-solicitudes" onclick="abrirSolicitudes()">
-                    <i class="fa-solid fa-user-clock"></i> Solicitudes
-                </button>
+                <div class="mi-card-btns-col">
+                    <button class="btn-solicitudes" id="btn-solicitudes" onclick="abrirSolicitudes()">
+                        <i class="fa-solid fa-user-clock"></i> Solicitudes
+                    </button>
+                    <button class="btn-amigos" id="btn-amigos" onclick="abrirAmigos()">
+                        <i class="fa-solid fa-user-friends"></i> Amigos
+                    </button>
+                </div>
             </div>
         `;
-        // Iniciar listener de notificación de solicitudes
         iniciarListenerSolicitudes();
     }
 }
@@ -2013,5 +2025,102 @@ if ('visualViewport' in window) {
     });
 }
 
+// ── Abrir/cerrar overlay de Amigos ───────────────────────────────────────────
+function abrirAmigos() {
+    const overlay = document.getElementById('amigos-overlay');
+    if (overlay) { overlay.style.display = 'flex'; cargarAmigosPanel(); }
+}
 
+function cerrarAmigos() {
+    const overlay = document.getElementById('amigos-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// ── Cargar lista de amigos en el panel ────────────────────────────────────────
+async function cargarAmigosPanel() {
+    const lista = document.getElementById('amigos-lista');
+    if (!lista) return;
+    lista.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:1rem;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</p>';
+    const miKey = getMiKey();
+    if (!miKey) return;
+
+    try {
+        const snap   = await database.ref(`amigos/${miKey}`).once('value');
+        const amigos = snap.val();
+
+        if (!amigos || !Object.keys(amigos).length) {
+            lista.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">Sin amigos aún.</p>';
+            return;
+        }
+
+        lista.innerHTML = '';
+        for (const [amigoKey, amigoData] of Object.entries(amigos)) {
+            const item = document.createElement('div');
+            item.className = 'amigo-item';
+            item.innerHTML = `
+                <img src="${amigoData.foto || ''}" alt="${amigoData.nombre}"
+                     class="amigo-foto"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(amigoData.nombre)}&background=10b981&color=fff&size=200'">
+                <div class="amigo-info">
+                    <div class="amigo-nombre">${amigoData.nombre}</div>
+                </div>
+                <button class="btn-eliminar-amigo" id="btn-del-${amigoKey}">
+                    <i class="fa-solid fa-user-minus"></i> Eliminar
+                </button>
+            `;
+
+            item.querySelector(`#btn-del-${amigoKey}`).addEventListener('click', () => {
+                eliminarAmigo(amigoKey, amigoData.nombre);
+            });
+
+            lista.appendChild(item);
+        }
+    } catch(e) {
+        console.error('Error cargando amigos:', e);
+        lista.innerHTML = '<p style="text-align:center;color:var(--danger);padding:2rem;">Error al cargar.</p>';
+    }
+}
+
+// ── Eliminar amigo ─────────────────────────────────────────────────────────────
+async function eliminarAmigo(amigoKey, amigoNombre) {
+    const confirmar = confirm(`¿Seguro que quieres eliminar a "${amigoNombre}"?`);
+    if (!confirmar) return;
+
+    const miKey  = getMiKey();
+    if (!miKey) return;
+
+    const chatId = getChatId(miKey, amigoKey);
+
+    try {
+        const updates = {};
+        // Eliminar amistad en ambos lados
+        updates[`amigos/${miKey}/${amigoKey}`]     = null;
+        updates[`amigos/${amigoKey}/${miKey}`]     = null;
+        // Eliminar chat completo (mensajes, info, último mensaje)
+        updates[`chats/${chatId}`]                 = null;
+        // Limpiar solicitudes residuales en ambos lados
+        updates[`solicitudes_enviadas/${miKey}/${amigoKey}`]  = null;
+        updates[`solicitudes_enviadas/${amigoKey}/${miKey}`]  = null;
+        updates[`solicitudes/${miKey}/pendientes/${amigoKey}`] = null;
+        updates[`solicitudes/${amigoKey}/pendientes/${miKey}`] = null;
+
+        await database.ref().update(updates);
+
+        mostrarToast(`✅ "${amigoNombre}" eliminado de tus amigos`);
+
+        // Si el chat eliminado estaba abierto, cerrarlo
+        if (_chatActivoOtroKey === amigoKey) {
+            volverListaChats();
+        }
+
+        // Recargar todo
+        cargarAmigosPanel();
+        cargarListaChats();
+        cargarEstudiantes();
+
+    } catch(e) {
+        console.error('Error eliminando amigo:', e);
+        mostrarToast('❌ Error al eliminar amigo', 'fa-times-circle');
+    }
+}
 
