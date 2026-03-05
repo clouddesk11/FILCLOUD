@@ -1205,7 +1205,6 @@ async function registrarEstudiante() {
         perfil.supabase_registered = true;
         perfil.foto_url = fotoUrl;
         perfil.fecha_registro = new Date().toLocaleDateString('es-ES');
-        }
         localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
 
         const authDataReg = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
@@ -2122,5 +2121,6 @@ async function eliminarAmigo(amigoKey, amigoNombre) {
         mostrarToast('❌ Error al eliminar amigo', 'fa-times-circle');
     }
 }
+
 
 
