@@ -1933,6 +1933,9 @@ function abrirChatConAmigo(chatId, otroKey, otroNombre, otroFoto) {
             <img src="${otroFoto}" alt="${otroNombre}" class="chat-header-foto"
                  onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(otroNombre)}&background=3b82f6&color=fff&size=200'">
             <span class="chat-header-nombre">${otroNombre}</span>
+            <button class="btn-denunciar-chat" onclick="abrirDenuncia('${otroNombre.replace(/'/g,"\\'")}')">
+                <i class="fa-solid fa-flag"></i><span class="btn-den-txt"> Denunciar</span>
+            </button>
         `;
     }
 
@@ -2126,4 +2129,233 @@ async function eliminarAmigo(amigoKey, amigoNombre) {
 
 
 
+// ============================================
+// SISTEMA DE DENUNCIAS
+// ============================================
+let _denEvidFile    = null;
+let _denEvidTipo    = 'foto';
+let _denAudioBlob   = null;
+let _denMediaRec    = null;
+let _denAudioChunks = [];
+let _denGrabando    = false;
+let _denTimerIntvl  = null;
+let _denTimerSecs   = 0;
 
+function abrirDenuncia(nombrePrerellenado) {
+    // Reset todo
+    _denEvidFile = null; _denAudioBlob = null; _denAudioChunks = [];
+    _denGrabando = false; _denEvidTipo = 'foto';
+    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
+
+    const ahora = new Date();
+    document.getElementById('denuncia-nombre').value      = nombrePrerellenado || '';
+    document.getElementById('denuncia-cargo').value       = '';
+    document.getElementById('denuncia-ciclo').value = '';
+const espEl = document.getElementById('denuncia-especialidad');
+if (espEl) espEl.value = '';
+const rowEst = document.getElementById('denuncia-estudiante-row');
+if (rowEst) rowEst.style.display = 'none';
+    document.getElementById('denuncia-descripcion').value = '';
+    document.getElementById('denuncia-terminos-check').checked = false;
+    document.getElementById('denuncia-fecha').value = ahora.toISOString().split('T')[0];
+    document.getElementById('denuncia-hora').value  = ahora.toTimeString().substring(0,5);
+    document.getElementById('den-ev-preview').innerHTML  = '';
+    document.getElementById('den-ev-preview').style.display = 'none';
+    document.getElementById('den-audio-preview').innerHTML  = '';
+    document.getElementById('den-audio-preview').style.display = 'none';
+    ['ev-input-foto','ev-input-video','ev-input-audio'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    const btnGrab = document.getElementById('btn-grabar-den');
+    const btnStop = document.getElementById('btn-detener-den');
+    const timer   = document.getElementById('den-timer');
+    if (btnGrab) btnGrab.style.display = 'flex';
+    if (btnStop) btnStop.style.display = 'none';
+    if (timer)   timer.style.display   = 'none';
+
+    selTabEv('foto');
+    _mostrarDenStep(1);
+    document.getElementById('denunciaModal').style.display = 'block';
+}
+
+function _mostrarDenStep(n) {
+    ['denuncia-step-terms','denuncia-step-form','denuncia-step-success'].forEach((id, i) => {
+        document.getElementById(id).style.display = (i + 1 === n) ? 'block' : 'none';
+    });
+}
+
+function continuarAFormulario() {
+    if (!document.getElementById('denuncia-terminos-check').checked) {
+        mostrarToast('⚠️ Debes aceptar los términos para continuar', 'fa-exclamation-circle');
+        return;
+    }
+    _mostrarDenStep(2);
+}
+
+function closeDenunciaModal() {
+    document.getElementById('denunciaModal').style.display = 'none';
+    if (_denMediaRec && _denMediaRec.state !== 'inactive') _denMediaRec.stop();
+    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
+}
+
+function onCargoCambio() {
+    const v = document.getElementById('denuncia-cargo').value;
+    const isEst = v === 'Estudiante';
+    const rowEst = document.getElementById('denuncia-estudiante-row');
+    if (rowEst) rowEst.style.display = isEst ? 'grid' : 'none';
+    if (!isEst) {
+        const espEl  = document.getElementById('denuncia-especialidad');
+        const cicEl  = document.getElementById('denuncia-ciclo');
+        if (espEl) espEl.value = '';
+        if (cicEl) cicEl.value = '';
+    }
+}
+
+function selTabEv(tipo) {
+    _denEvidTipo = tipo;
+    ['foto','video','audio'].forEach(t => {
+        document.getElementById(`tab-ev-${t}`).classList.toggle('active', t === tipo);
+        document.getElementById(`ev-panel-${t}`).style.display = t === tipo ? 'block' : 'none';
+    });
+}
+
+function onEvFile(event, tipo) {
+    const file = event.target.files[0]; if (!file) return;
+    _denEvidFile = file; _denEvidTipo = tipo;
+    const preview     = document.getElementById('den-ev-preview');
+    const audPreview  = document.getElementById('den-audio-preview');
+
+    if (tipo === 'foto') {
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%;max-height:140px;border-radius:8px;margin-top:0.5rem;display:block;">
+            <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else if (tipo === 'video') {
+        const url = URL.createObjectURL(file);
+        preview.innerHTML = `<video src="${url}" controls style="max-width:100%;max-height:140px;border-radius:8px;margin-top:0.5rem;display:block;"></video>
+        <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
+        preview.style.display = 'block';
+    } else if (tipo === 'audio') {
+        const url = URL.createObjectURL(file);
+        audPreview.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:0.5rem;"></audio>
+        <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
+        audPreview.style.display = 'block';
+        _denAudioBlob = null; // usar el file, no blob
+    }
+}
+
+async function iniciarGrabacion() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        _denAudioChunks = [];
+        _denMediaRec = new MediaRecorder(stream);
+        _denMediaRec.ondataavailable = e => _denAudioChunks.push(e.data);
+        _denMediaRec.onstop = () => {
+            _denAudioBlob = new Blob(_denAudioChunks, { type: 'audio/webm' });
+            const url = URL.createObjectURL(_denAudioBlob);
+            const prev = document.getElementById('den-audio-preview');
+            prev.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:0.5rem;"></audio>
+            <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> Audio grabado</p>`;
+            prev.style.display = 'block';
+            stream.getTracks().forEach(t => t.stop());
+        };
+        _denMediaRec.start();
+        _denGrabando = true;
+        _denTimerSecs = 0;
+        document.getElementById('btn-grabar-den').style.display  = 'none';
+        document.getElementById('btn-detener-den').style.display = 'flex';
+        document.getElementById('den-timer').style.display       = 'inline-block';
+        _denTimerIntvl = setInterval(() => {
+            _denTimerSecs++;
+            const m = String(Math.floor(_denTimerSecs/60)).padStart(2,'0');
+            const s = String(_denTimerSecs%60).padStart(2,'0');
+            document.getElementById('den-timer').textContent = `🔴 ${m}:${s}`;
+        }, 1000);
+    } catch(e) {
+        mostrarToast('❌ No se pudo acceder al micrófono', 'fa-microphone-slash');
+    }
+}
+
+function detenerGrabacion() {
+    if (_denMediaRec && _denMediaRec.state !== 'inactive') _denMediaRec.stop();
+    _denGrabando = false;
+    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
+    document.getElementById('btn-grabar-den').style.display  = 'flex';
+    document.getElementById('btn-detener-den').style.display = 'none';
+    document.getElementById('den-timer').style.display       = 'none';
+}
+
+async function enviarDenuncia() {
+    const nombre      = document.getElementById('denuncia-nombre').value.trim();
+    const cargo       = document.getElementById('denuncia-cargo').value;
+    const ciclo        = document.getElementById('denuncia-ciclo').value;
+    const especialidad = document.getElementById('denuncia-especialidad')?.value || '';
+    const descripcion = document.getElementById('denuncia-descripcion').value.trim();
+    const fecha       = document.getElementById('denuncia-fecha').value;
+    const hora        = document.getElementById('denuncia-hora').value;
+    const btn         = document.getElementById('btn-enviar-denuncia');
+
+    if (!nombre || !cargo || !descripcion) {
+        mostrarToast('⚠️ Completa los campos obligatorios', 'fa-exclamation-circle'); return;
+    }
+    if (descripcion.length < 20) {
+        mostrarToast('⚠️ La descripción es muy corta (mín. 20 caracteres)', 'fa-exclamation-circle'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';
+
+    try {
+        let evidenciaUrl  = '';
+        let evidenciaTipo = '';
+
+        const archivoASubir = _denEvidFile || (_denAudioBlob ? new File([_denAudioBlob], 'audio_denuncia.webm', { type:'audio/webm' }) : null);
+
+        if (archivoASubir) {
+            evidenciaTipo = _denEvidFile
+                ? (_denEvidFile.type.startsWith('image/') ? 'foto' : _denEvidFile.type.startsWith('video/') ? 'video' : 'audio')
+                : 'audio';
+
+            const resourceType = evidenciaTipo === 'foto' ? 'image' : evidenciaTipo === 'video' ? 'video' : 'raw';
+            const endpoint     = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/${resourceType}/upload`;
+
+            const fd = new FormData();
+            fd.append('file', archivoASubir);
+            fd.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+            fd.append('folder', 'denuncias_clouddesk');
+
+            const res = await fetch(endpoint, { method:'POST', body:fd });
+            if (res.ok) { const data = await res.json(); evidenciaUrl = data.secure_url; }
+        }
+
+        const idAnonimo = 'DEN-' + Math.random().toString(36).substring(2,8).toUpperCase();
+
+        await database.ref('denuncias').push({
+            denunciado_nombre: nombre,
+            denunciado_cargo: cargo === 'Estudiante'
+    ? `${cargo}${especialidad ? ' · ' + especialidad : ''}${ciclo ? ' · Ciclo ' + ciclo : ''}`
+    : cargo,
+            descripcion,
+            evidencia_url:  evidenciaUrl,
+            evidencia_tipo: evidenciaTipo,
+            fecha,
+            hora,
+            timestamp:   Date.now(),
+            estado:      'pendiente',
+            id_anonimo:  idAnonimo
+        });
+
+      
+        _mostrarDenStep(3);
+
+    } catch(e) {
+        console.error('Error enviando denuncia:', e);
+        mostrarToast('❌ Error al enviar la denuncia. Intenta de nuevo.', 'fa-times-circle');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Denuncia';
+    }
+}
