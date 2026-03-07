@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudDesk</title>
-<link rel="icon" type="image/png" sizes="16x16" 
+<link rel="icon" type="image/png" sizes="16x16"
   href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_16,h_16/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
-<link rel="icon" type="image/png" sizes="32x32" 
+<link rel="icon" type="image/png" sizes="32x32"
   href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_32,h_32/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
-<link rel="icon" type="image/png" sizes="48x48" 
+<link rel="icon" type="image/png" sizes="48x48"
   href="https://res.cloudinary.com/dwzwa3gp0/image/upload/e_trim/ar_1:1,c_lpad,b_transparent/w_48,h_48/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,11 +26,9 @@
             <p>Por favor espera mientras verificamos tu sesión</p>
         </div>
     </div>
-
     <!-- Modal de Autenticación -->
     <div id="authModal" class="auth-modal" style="display: none;">
         <div class="auth-modal-content">
-
             <!-- ══ PASO 1: Nombre + Código ══ -->
             <div id="auth-step-code">
                 <div class="auth-header">
@@ -52,7 +50,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- ══ PASO 2: Especialidad + Ciclo + Foto (movido desde registro modal) ══ -->
             <div id="auth-step-registro" style="display: none;">
                 <div class="auth-header">
@@ -84,7 +81,6 @@
                             </select>
                         </div>
                     </div>
-
                     <!-- Foto de Perfil -->
                     <div class="form-group">
                         <label>
@@ -114,14 +110,12 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="authRegistroError" class="auth-error" style="display: none;"></div>
                     <button class="auth-submit" onclick="continuarDesdeAuth()">
                         <i class="fa-solid fa-arrow-right"></i> Continuar
                     </button>
                 </div>
             </div>
-
             <!-- ══ PASO 3: Vincula tu cuenta de Google ══ -->
             <div id="auth-step-google" style="display: none;">
                 <div class="auth-header">
@@ -145,7 +139,6 @@
                     <div id="googleError" class="auth-error" style="display: none;"></div>
                 </div>
             </div>
-
             <!-- ══ PASO LAPTOP: Solo aparece en desktop ══ -->
             <div id="auth-step-laptop" style="display: none;">
                 <div class="auth-header">
@@ -168,7 +161,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- ══ PASO GOOGLE LAPTOP: Google sign-in para desktop ══ -->
             <div id="auth-step-google-laptop" style="display: none;">
                 <div class="auth-header">
@@ -192,7 +184,6 @@
                     <div id="googleErrorLaptop" class="auth-error" style="display: none;"></div>
                 </div>
             </div>
-
            <!-- ══ PASO API REVEAL: Solo aparece en móvil después del auth ══ -->
 <div id="auth-step-api-reveal" style="display: none; position: relative;">
     <button class="api-reveal-close-btn" onclick="finalizarRegistroMobile()">
@@ -220,22 +211,19 @@
         </button>
     </div>
 </div>
-
         </div>
     </div>
-
     <!-- Mensaje Especial -->
     <div id="specialUserMessage" class="special-user-message" style="display: none;">
         <i class="fa-solid fa-star"></i>
         <span>Bienvenido usuario especial con código 6578hy</span>
     </div>
-
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">
-            <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png" 
-                 alt="CloudDesk Logo" 
+            <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771013132/BackgroundEraser_20260213_121333179_r5yzoo.png"
+                 alt="CloudDesk Logo"
                  class="sidebar-logo-img">
             <span class="sidebar-logo-text">CloudDesk</span>
         </div>
@@ -243,7 +231,7 @@
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
-    
+  
     <button id="tab-repositorio" class="sidebar-btn active" onclick="switchTab('repositorio')">
         <i class="fa-solid fa-folder-open"></i>
         <span class="sidebar-btn-text">Repositorio</span>
@@ -275,7 +263,6 @@
         </div>
         <span class="sidebar-btn-text">Chat</span>
     </button>
-
     <!-- Perfil del estudiante al fondo del sidebar -->
     <div id="sidebar-profile-wrapper" class="sidebar-profile-wrapper" style="display:none;">
         <div class="sidebar-profile-divider"></div>
@@ -286,7 +273,6 @@
             </div>
             <span class="sidebar-profile-name" id="sidebar-profile-name">Mi Perfil</span>
         </div>
-
         <!-- API en sidebar (solo móvil, solo cuando sidebar está abierto) -->
         <div id="sidebar-api-wrapper" class="sidebar-api-wrapper" style="display:none;">
             <i class="fa-solid fa-key"></i>
@@ -295,12 +281,10 @@
         </div>
     </div>
 </aside>
-
     <button class="mobile-menu-btn" id="mobileSidebarToggle" onclick="toggleSidebar()">
         <i class="fa-solid fa-bars"></i>
     </button>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
     <!-- CONTENIDO PRINCIPAL -->
     <div class="main-content" id="mainContent">
         <main class="container">
@@ -334,7 +318,6 @@
     </div>
     <div id="files-grid" class="grid-container"></div>
 </section>
-
             <!-- Sección de Trabajos -->
 <section id="trabajos" class="section-content" style="display: none;">
     <div class="header-section header-section-sticky">
@@ -361,7 +344,6 @@
         <div class="assignments-container" id="finalizados-container"></div>
     </div>
 </section>
-
             <!-- Sección de Recursos -->
 <section id="recursos" class="section-content" style="display: none;">
     <div class="header-section header-section-sticky">
@@ -422,7 +404,6 @@
         <div id="recursos-container" class="recursos-grid"></div>
     </div>
 </section>
-
             <!-- Sección de Docentes -->
 <section id="docentes" class="section-content" style="display: none;">
     <div class="header-section header-section-sticky">
@@ -431,7 +412,6 @@
     </div>
     <div id="docentes-grid" class="grid-container"></div>
 </section>
-
             <!-- Sección de Estudiantes -->
 <section id="estudiantes" class="section-content" style="display: none;">
     <!-- Header cuando NO está unido -->
@@ -455,7 +435,6 @@
         </div>
     </div>
 </section>
-
             <!-- HTML CHANGE 2 — Sección Chat -->
 <section id="chat" class="section-content" style="display: none;">
     <div class="header-section header-section-sticky" id="chat-header-section" style="display:none;">
@@ -464,7 +443,13 @@
     </div>
     <div class="chat-container">
         <div class="chat-sidebar-panel" id="chat-sidebar-panel">
-            <div class="chat-list" id="chat-list">
+    <div class="chat-panel-topbar">
+        <span class="chat-panel-title"><i class="fa-solid fa-comment"></i> Chats</span>
+        <button class="btn-denunciar-topbar" onclick="abrirDenuncia('')">
+            <i class="fa-solid fa-flag"></i> Denunciar
+        </button>
+    </div>
+    <div class="chat-list" id="chat-list">
                 <p class="chat-empty">
                     <i class="fa-solid fa-comment-slash"></i><br>
                     No tienes chats aún.<br>Acepta solicitudes en Comunidad.
@@ -491,9 +476,7 @@
         </div>
     </div>
 </section>
-
         </main>
-
         <!-- HTML CHANGE 3 — Footer actualizado -->
         <footer>
     <p class="footer-text">© 2025 EduSpace Plataforma Académica - Todos los derechos reservados.</p>
@@ -524,9 +507,7 @@
         <span>Menú</span>
     </button>
 </footer>
-
     </div>
-
     <!-- Modal Perfil Docente -->
     <div id="profileModal" class="modal">
         <div class="modal-content">
@@ -535,7 +516,6 @@
             <div id="modalProfileInfo" class="modal-profile-info"></div>
         </div>
     </div>
-
     <!-- Modal Detalles -->
     <div id="detailsModal" class="modal">
         <div class="modal-content-details">
@@ -572,7 +552,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal Visor -->
     <div id="fileViewerModal" class="modal">
         <div class="modal-content-viewer">
@@ -590,7 +569,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal Completado -->
     <div id="completedModal" class="modal">
         <div class="modal-content-completed">
@@ -614,20 +592,18 @@
             </div>
         </div>
     </div>
-
     <!-- Modal Registro Estudiante (sin PASO 0, empieza con Términos) -->
     <div id="registroModal" class="modal">
         <div class="modal-content-registro">
             <span class="close-modal" onclick="closeRegistroModal()">×</span>
             <div class="registro-modal-body">
                 <div class="registro-imagen-container">
-                    <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771094272/BackgroundEraser_20260214_132959021_rfzi5a.png" 
-                         alt="Registro Estudiante" 
+                    <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771094272/BackgroundEraser_20260214_132959021_rfzi5a.png"
+                         alt="Registro Estudiante"
                          class="registro-imagen-decorativa">
                 </div>
                 <div class="registro-form-container">
                     <h2><i class="fa-solid fa-user-graduate"></i> Únete a CloudDesk</h2>
-
                     <!-- Mensaje para usuarios sin perfil (fallback) -->
                     <div id="registro-sin-perfil" style="display: none; text-align: center; padding: 1.5rem 0;">
                         <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem; display: block;"></i>
@@ -640,7 +616,6 @@
                             <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión e ingresar de nuevo
                         </button>
                     </div>
-
                     <!-- ══ TÉRMINOS Y CONDICIONES ══ -->
                     <div class="terminos-container" style="display: none;">
                         <div class="terminos-scroll">
@@ -666,7 +641,6 @@
                             <span class="checkbox-label">He leído y acepto los términos y condiciones</span>
                         </label>
                     </div>
-
                     <!-- ══ CONFIRMACIÓN AUTORELLENADA (solo lectura) ══ -->
                     <div id="form-registro" class="form-registro" style="display:none; opacity: 0;">
                         <!-- Foto del perfil (autorellenada desde auth, no editable aquí) -->
@@ -676,7 +650,6 @@
                                  class="confirmacion-foto"
                                  onerror="this.src='https://ui-avatars.com/api/?name=?&background=3b82f6&color=fff&size=200'">
                         </div>
-
                         <!-- Nombre (autorellenado, readonly) -->
                         <div class="form-group">
                             <label>
@@ -686,7 +659,6 @@
                                    class="confirmacion-input"
                                    placeholder="Autocompletado desde tu cuenta">
                         </div>
-
                         <!-- Especialidad + Ciclo (badges) -->
                         <div class="form-group">
                             <label>
@@ -697,12 +669,10 @@
                                 <span class="form-autodata-badge form-autodata-ciclo" id="displayCiclo">—</span>
                             </div>
                         </div>
-
                         <p class="confirmacion-hint">
                             <i class="fa-solid fa-circle-info"></i>
                             Para cambiar tu foto, usa la opción en el menú lateral (sidebar).
                         </p>
-
                         <button id="btnRegistrar" class="btn-registrar" onclick="registrarEstudiante()">
                             <i class="fa-solid fa-check-circle"></i> Unirme Ahora
                         </button>
@@ -711,7 +681,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal Perfil Estudiante (sidebar) -->
     <div id="modal-perfil-estudiante" class="modal-perfil-overlay" style="display:none;" onclick="cerrarPerfilEstudiante()">
         <div class="modal-perfil-box" onclick="event.stopPropagation()">
@@ -724,7 +693,7 @@
             </div>
             <h3 class="modal-perfil-nombre" id="perfil-modal-nombre">—</h3>
             <div class="modal-perfil-badges">
-                <span class="modal-perfil-badge-esp"  id="perfil-modal-especialidad">—</span>
+                <span class="modal-perfil-badge-esp" id="perfil-modal-especialidad">—</span>
                 <span class="modal-perfil-badge-ciclo" id="perfil-modal-ciclo">—</span>
             </div>
             <!-- Botón cambiar foto SOLO aquí en el sidebar -->
@@ -736,7 +705,6 @@
             </button>
         </div>
     </div>
-
     <!-- HTML CHANGE 4 — Overlay Solicitudes -->
     <div id="solicitudes-overlay" class="solicitudes-overlay"
          style="display:none;" onclick="cerrarSolicitudes()">
@@ -754,7 +722,6 @@
             </div>
         </div>
     </div>
-
     <!-- Overlay Amigos -->
 <div id="amigos-overlay" class="solicitudes-overlay"
      style="display:none;" onclick="cerrarAmigos()">
@@ -772,15 +739,205 @@
         </div>
     </div>
 </div>
-
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="script.js"></script>
+<!-- ══ MODAL DENUNCIA ══ -->
+<div id="denunciaModal" class="modal">
+    <div class="modal-content-denuncia">
+        <button class="denuncia-close-btn" onclick="closeDenunciaModal()">
+            <i class="fa-solid fa-times"></i>
+        </button>
+        
+        <!-- PASO 1: Términos -->
+<div id="denuncia-step-terms">
+    <div class="denuncia-header">
+        <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1772830986/BackgroundEraser_20260306_160112932_e67sfh.png"
+             alt="Advertencia"
+             style="width:100px;height:100px;object-fit:contain;margin-bottom:0.7rem;">
+        <h2>Antes de Denunciar</h2>
+        <p>Lee cuidadosamente antes de continuar</p>
+    </div>
+    <div class="denuncia-terminos-scroll">
+                <div class="denuncia-termino-item">
+                    <i class="fa-solid fa-user-secret"></i>
+                    <div><strong>Anonimato Garantizado</strong>
+                    <p>Tu identidad NO será revelada. La denuncia es completamente anónima.</p></div>
+                </div>
+                <div class="denuncia-termino-item warning">
+                    <i class="fa-solid fa-gavel"></i>
+                    <div><strong>Uso Responsable</strong>
+                    <p>Las denuncias falsas o malintencionadas pueden tener consecuencias. Úsalo solo para situaciones reales y graves.</p></div>
+                </div>
+                <div class="denuncia-termino-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div><strong>Protección de Datos</strong>
+                    <p>La información será tratada con confidencialidad y solo revisada por el administrador.</p></div>
+                </div>
+                <div class="denuncia-termino-item warning">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div><strong>Exención de Responsabilidad</strong>
+                    <p>CloudDesk actúa como intermediario. La plataforma NO se hace responsable por las consecuencias derivadas del contenido ni por decisiones tomadas a partir de las denuncias.</p></div>
+                </div>
+                <div class="denuncia-termino-item">
+                    <i class="fa-solid fa-clock"></i>
+                    <div><strong>Tiempo de Respuesta</strong>
+                    <p>Las denuncias serán revisadas por el administrador. No se garantiza un tiempo específico de respuesta.</p></div>
+                </div>
+                <div class="denuncia-termino-item warning">
+                    <i class="fa-solid fa-ban"></i>
+                    <div><strong>Denuncias No Permitidas</strong>
+                    <p>No se permiten denuncias con contenido ofensivo, discriminatorio, sexual o que atente contra la dignidad de las personas.</p></div>
+                </div>
+            <label class="denuncia-check-label">
+            <input type="checkbox" id="denuncia-terminos-check">
+            <span>He leído y acepto los términos y condiciones del sistema de denuncias</span>
+        </label>
+        <button class="denuncia-btn-primary" onclick="continuarAFormulario()">
+            <i class="fa-solid fa-arrow-right"></i> Continuar
+        </button>
+    </div>
+</div>
+        <!-- PASO 2: Formulario -->
+        <div id="denuncia-step-form" style="display:none;">
+            <div class="denuncia-header">
+                <i class="fa-solid fa-flag denuncia-icon" style="color:#ef4444;"></i>
+                <h2>Nueva Denuncia</h2>
+                <p>Los campos con * son obligatorios · Es anónimo</p>
+            </div>
+            <div class="denuncia-form-body">
+                <div class="denuncia-form-group">
+                    <label><i class="fa-solid fa-user"></i> Nombre del denunciado *</label>
+                    <input type="text" id="denuncia-nombre" class="denuncia-input" placeholder="Nombre completo">
+                </div>
+                <div class="denuncia-form-group">
+                    <label><i class="fa-solid fa-id-badge"></i> Cargo *</label>
+                    <select id="denuncia-cargo" class="denuncia-select" onchange="onCargoCambio()">
+                        <option value="" disabled selected>Selecciona un cargo</option>
+                        <option value="Docente">Docente</option>
+                        <option value="Estudiante">Estudiante</option>
+                        <option value="Director">Director</option>
+                    </select>
+                </div>
+                <!-- CAMBIO A: Nuevo row con Especialidad + Ciclo -->
+                <div class="denuncia-row-2" id="denuncia-estudiante-row" style="display:none;">
+                    <div class="denuncia-form-group">
+                        <label><i class="fa-solid fa-graduation-cap"></i> Especialidad</label>
+                        <select id="denuncia-especialidad" class="denuncia-select">
+                            <option value="" disabled selected>Selecciona</option>
+                            <option value="Comunicación">Comunicación</option>
+                        </select>
+                    </div>
+                    <div class="denuncia-form-group" id="denuncia-ciclo-row">
+                        <label><i class="fa-solid fa-layer-group"></i> Ciclo</label>
+                        <select id="denuncia-ciclo" class="denuncia-select">
+                            <option value="" disabled selected>Selecciona el ciclo</option>
+                            <option>I</option><option>II</option><option>III</option>
+                            <option>IV</option><option>V</option><option>VI</option>
+                            <option>VII</option><option>VIII</option><option>IX</option><option>X</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="denuncia-form-group">
+                    <label><i class="fa-solid fa-align-left"></i> Descripción * <small style="color:var(--text-muted);font-weight:400;">(mín. 20 caracteres)</small></label>
+                    <textarea id="denuncia-descripcion" class="denuncia-textarea"
+                              placeholder="Describe detalladamente los hechos que motivan esta denuncia…" rows="4"></textarea>
+                </div>
+                <!-- Evidencia -->
+                <div class="denuncia-form-group">
+                    <label><i class="fa-solid fa-paperclip"></i> Evidencia <small style="color:var(--text-muted);font-weight:400;">(opcional)</small></label>
+                    <div class="denuncia-ev-tabs">
+                        <button class="denuncia-ev-tab active" id="tab-ev-foto" onclick="selTabEv('foto')"><i class="fa-solid fa-image"></i> Foto</button>
+                        <button class="denuncia-ev-tab" id="tab-ev-video" onclick="selTabEv('video')"><i class="fa-solid fa-video"></i> Video</button>
+                        <button class="denuncia-ev-tab" id="tab-ev-audio" onclick="selTabEv('audio')"><i class="fa-solid fa-microphone"></i> Audio</button>
+                    </div>
+                    <!-- Panel Foto -->
+                    <div id="ev-panel-foto">
+                        <div class="denuncia-upload-area" onclick="document.getElementById('ev-input-foto').click()">
+                            <input type="file" id="ev-input-foto" accept="image/*" style="display:none;" onchange="onEvFile(event,'foto')">
+                            <i class="fa-solid fa-cloud-upload-alt"></i>
+                            <p>Clic para seleccionar imagen</p>
+                            <span>JPG, PNG, GIF · Máx 10MB</span>
+                        </div>
+                    </div>
+                    <!-- Panel Video -->
+                    <div id="ev-panel-video" style="display:none;">
+                        <div class="denuncia-upload-area" onclick="document.getElementById('ev-input-video').click()">
+                            <input type="file" id="ev-input-video" accept="video/*" style="display:none;" onchange="onEvFile(event,'video')">
+                            <i class="fa-solid fa-film"></i>
+                            <p>Clic para seleccionar video</p>
+                            <span>MP4, MOV, AVI · Máx 50MB</span>
+                        </div>
+                    </div>
+                    <!-- Panel Audio -->
+                    <div id="ev-panel-audio" style="display:none;">
+                        <div class="denuncia-audio-controls">
+                            <button class="denuncia-btn-grabar" id="btn-grabar-den" onclick="iniciarGrabacion()">
+                                <i class="fa-solid fa-microphone"></i> Grabar Audio
+                            </button>
+                            <button class="denuncia-btn-detener" id="btn-detener-den" style="display:none;" onclick="detenerGrabacion()">
+                                <i class="fa-solid fa-stop"></i> Detener
+                            </button>
+                            <span id="den-timer" style="display:none;" class="denuncia-timer">🔴 00:00</span>
+                        </div>
+                        <p style="color:var(--text-muted);font-size:0.8rem;text-align:center;margin:0.5rem 0;">— o sube un archivo —</p>
+                        <div class="denuncia-upload-area" onclick="document.getElementById('ev-input-audio').click()">
+                            <input type="file" id="ev-input-audio" accept="audio/*" style="display:none;" onchange="onEvFile(event,'audio')">
+                            <i class="fa-solid fa-file-audio"></i>
+                            <p>Clic para subir audio</p>
+                            <span>MP3, WAV, M4A · Máx 20MB</span>
+                        </div>
+                        <div id="den-audio-preview" style="display:none;margin-top:0.5rem;"></div>
+                    </div>
+                    <!-- Preview foto/video -->
+                    <div id="den-ev-preview"></div>
+                </div>
+                <!-- Fecha y Hora -->
+                <div class="denuncia-row-2">
+                    <div class="denuncia-form-group">
+                        <label><i class="fa-regular fa-calendar"></i> Fecha *</label>
+                        <input type="date" id="denuncia-fecha" class="denuncia-input">
+                    </div>
+                    <div class="denuncia-form-group">
+                        <label><i class="fa-regular fa-clock"></i> Hora *</label>
+                        <input type="time" id="denuncia-hora" class="denuncia-input">
+                    </div>
+                </div>
+                <button class="denuncia-btn-primary" id="btn-enviar-denuncia" onclick="enviarDenuncia()">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Denuncia
+                </button>
+            </div>
+        </div>
+        <!-- CAMBIO B: Nuevo paso de éxito -->
+        <!-- PASO 3: Éxito -->
+        <div id="denuncia-step-success" style="display:none;">
+            <div class="denuncia-success-wrap">
+                <div class="denuncia-success-icon">
+    <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1772829179/BackgroundEraser_20260306_152927767_zjhezt.png"
+         alt="Denuncia enviada"
+         style="width:100px;height:100px;object-fit:contain;">
+</div>
+                <div class="denuncia-success-florero">🌸 🌿 🌸</div>
+                <h2>¡Tu denuncia fue enviada!</h2>
+                <p class="denuncia-success-sub">
+                    Fue recibida de forma <strong>completamente anónima</strong>.<br>
+                    El administrador la revisará a la brevedad.
+                </p>
+                <div class="denuncia-success-badges">
+                    <span><i class="fa-solid fa-user-secret"></i> Anónimo</span>
+                    <span><i class="fa-solid fa-lock"></i> Seguro</span>
+                    <span><i class="fa-solid fa-magnifying-glass"></i> En revisión</span>
+                </div>
+                <button class="denuncia-btn-primary" onclick="closeDenunciaModal()"
+                        style="background:linear-gradient(135deg,var(--success),#0d9668);margin-top:1.5rem;">
+                    <i class="fa-solid fa-check"></i> Entendido
+                </button>
+            </div>
+        </div>
+    </div><!-- /modal-content-denuncia -->
+</div><!-- /denunciaModal -->
 </body>
-
 </html>
-
-
