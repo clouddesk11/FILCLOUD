@@ -162,6 +162,104 @@
                     <div id="googleErrorLaptop" class="auth-error" style="display: none;"></div>
                 </div>
             </div>
+          
+          <!-- ══ PASO NO REGISTRADO: Saber Más ══ -->
+<div id="auth-step-no-registrado" style="display: none;">
+    <div class="no-reg-layout">
+
+        <!-- Imagen del personaje (izquierda, como el muñeco del dibujo) -->
+        <div class="no-reg-imagen-col">
+            <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1772986102/Humaaans_-_Standing_t9jpmk.png"
+                 alt="Soporte CloudDesk"
+                 class="no-reg-img">
+        </div>
+
+        <!-- Caja de contenido con scroll amarillo (derecha) -->
+        <div class="no-reg-content-col">
+            <div class="no-reg-scroll-box">
+
+                <h3 class="no-reg-titulo">
+                    <i class="fa-solid fa-circle-info"></i> ¿Por qué no puedo acceder?
+                </h3>
+
+                <p class="no-reg-texto">
+                    Lamentablemente, tu cuenta de Google no se encuentra registrada en nuestra
+                    base de datos actual. Esto puede deberse a dos razones principales:
+                </p>
+
+                <!-- Razón 1 -->
+                <div class="no-reg-razon">
+                    <div class="no-reg-razon-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div class="no-reg-razon-texto">
+                        <strong>Confirmación de correo</strong>
+                        <p>Asegúrate de que el correo de Google con el que intentas acceder
+                        sea exactamente el mismo que proporcionaste a tu delegado.</p>
+                    </div>
+                </div>
+
+                <!-- Razón 2 -->
+                <div class="no-reg-razon">
+                    <div class="no-reg-razon-icon">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="no-reg-razon-texto">
+                        <strong>Especialidad no vinculada</strong>
+                        <p>Actualmente, CloudDesk solo está habilitado para las
+                        siguientes especialidades:</p>
+
+                        <!-- Aquí se cargan dinámicamente las especialidades activas -->
+                        <div id="no-reg-especialidades" class="no-reg-esp-list">
+                            <div class="no-reg-loading">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                Cargando especialidades…
+                            </div>
+                        </div>
+
+                        <p class="no-reg-esp-footer">
+                            Si tu especialidad aún no está conectada, no te preocupes:
+                            puedes solicitar a tu delegado de aula que gestione la
+                            incorporación de tu especialidad con el equipo de soporte.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sección de Soporte -->
+                <div class="no-reg-soporte-box">
+                    <div class="no-reg-advertencia">
+                        <i class="fa-solid fa-triangle-exclamation no-reg-adv-icon"></i>
+                        <div>
+                            <strong>Gestión de Soporte</strong>
+                            <p>Las incidencias son procesadas solo a través del delegado
+                            de tu sección. Él es el único canal autorizado para solicitar
+                            la integración de tu aula a CloudDesk.</p>
+                        </div>
+                    </div>
+
+                    <!--
+                        ⚠️ REEMPLAZA "51XXXXXXXXX" con tu número de WhatsApp
+                        Ejemplo: si tu número es 999888777 (Perú), pon: 51999888777
+                    -->
+                    <a href="https://wa.me/51XXXXXXXXX?text=Hola%2C%20soy%20delegado%20de%20aula%20y%20quisiera%20solicitar%20la%20integraci%C3%B3n%20de%20mi%20secci%C3%B3n%20a%20CloudDesk."
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="no-reg-wa-btn">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        Contactar Soporte vía WhatsApp
+                    </a>
+                </div>
+
+            </div><!-- /no-reg-scroll-box -->
+        </div><!-- /no-reg-content-col -->
+    </div><!-- /no-reg-layout -->
+
+    <button class="no-reg-volver-btn" onclick="volverAlLogin()">
+        <i class="fa-solid fa-arrow-left"></i> Volver al inicio de sesión
+    </button>
+</div>
+          
+          
            <!-- ══ PASO API REVEAL: Solo aparece en móvil después del auth ══ -->
 <div id="auth-step-api-reveal" style="display: none; position: relative;">
     <button class="api-reveal-close-btn" onclick="finalizarRegistroMobile()">
