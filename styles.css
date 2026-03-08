@@ -4813,3 +4813,52 @@ footer {
     font-size: 0.8rem;
     font-weight: 600;
 }
+
+/* ============================================
+   TEMA INICIAL — ROSADO
+   ============================================ */
+body.tema-inicial {
+    --primary-color: #ec4899;
+    --secondary-color: #db2777;
+    --accent-color: #f9a8d4;
+}
+
+body.tema-inicial .sidebar {
+    background: linear-gradient(180deg, #1a0d12 0%, #050505 100%);
+}
+
+body.tema-inicial .sidebar-btn.active {
+    background-color: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+}
+
+body.tema-inicial .sidebar-btn.active::before {
+    background: #ec4899;
+}
+
+body.tema-inicial .sidebar-btn:hover {
+    background-color: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+body.tema-inicial .sidebar-toggle {
+    border-color: #ec4899;
+    color: #ec4899;
+}
+
+body.tema-inicial .chat-send-btn {
+    background: #ec4899;
+}
+
+body.tema-inicial .chat-send-btn:hover {
+    background: #db2777;
+}
+
+body.tema-inicial .btn-primary,
+body.tema-inicial .auth-submit {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+body.tema-inicial .notification-dot {
+    background: #ec4899;
+}
