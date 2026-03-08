@@ -29,74 +29,65 @@
     <!-- Modal de Autenticación -->
     <div id="authModal" class="auth-modal" style="display: none;">
         <div class="auth-modal-content">
-            <!-- ══ PASO 1: Nombre + Código ══ -->
-            <div id="auth-step-code">
-                <div class="auth-header">
-                    <i class="fa-solid fa-graduation-cap auth-icon"></i>
-                    <h2>Hola, bienvenido a EduSpace</h2>
-                </div>
-                <div class="auth-body">
-                    <div class="auth-section">
-                        <p class="auth-text">Regístrate con tu nombre.</p>
-                        <input type="text" id="authUserName" class="auth-input" placeholder="Ingresa tu nombre completo" autocomplete="off">
-                    </div>
-                    <div class="auth-section">
-                        <p class="auth-text">Ingresa tu código de compra. Si aún no dispones de uno, solicítalo al administrador del sistema.</p>
-                        <input type="text" id="authCode" class="auth-input" placeholder="Ingresa tu código" autocomplete="off">
-                    </div>
-                    <div id="authError" class="auth-error" style="display: none;"></div>
-                    <button id="authSubmit" class="auth-submit">
-                        <i class="fa-solid fa-arrow-right"></i> Continuar
-                    </button>
-                </div>
-            </div>
-            <!-- ══ PASO 2: Especialidad + Ciclo + Foto (movido desde registro modal) ══ -->
-            <div id="auth-step-registro" style="display: none;">
+           <!-- ══ PASO 1: Solo Google ══ -->
+<div id="auth-step-code">
+    <div class="auth-header">
+        <i class="fa-solid fa-graduation-cap auth-icon"></i>
+        <h2>Bienvenido a EduSpace</h2>
+        <p style="color:var(--text-muted);font-size:.85rem;margin-top:.5rem;">
+            Inicia sesión con tu cuenta institucional de Google
+        </p>
+    </div>
+    <div class="auth-body">
+        <button id="googleSignInBtn" class="google-signin-btn" onclick="signInWithGoogle()">
+            <svg width="20" height="20" viewBox="0 0 48 48">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+            </svg>
+            Continuar con Google
+        </button>
+        <div id="authError" class="auth-error" style="display:none;"></div>
+    </div>
+</div>
+            <!-- ══ PASO 2: Confirmar perfil + Foto ══ -->
+            <div id="auth-step-registro" style="display:none;">
                 <div class="auth-header">
                     <i class="fa-solid fa-id-card auth-icon"></i>
-                    <h2>Completa tu perfil</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-                        Esta información aparecerá en tu sidebar de inmediato.
+                    <h2>Tu perfil</h2>
+                    <p style="color:var(--text-muted);font-size:.85rem;margin-top:.5rem;">
+                        Datos cargados desde el sistema. Solo la foto es opcional.
                     </p>
                 </div>
                 <div class="auth-body">
-                    <!-- Especialidad + Ciclo -->
+                    <!-- Nombre (solo lectura) -->
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Nombre Completo</label>
+                        <input type="text" id="reg-nombre" class="auth-input confirmacion-input" readonly placeholder="Cargando...">
+                    </div>
+                    <!-- Especialidad + Ciclo (solo lectura) -->
                     <div class="paso0-campos-row">
                         <div class="form-group paso0-campo-half">
-                            <label for="selectEspecialidad">
-                                <i class="fa-solid fa-graduation-cap"></i> Especialidad
-                            </label>
-                            <select id="selectEspecialidad" class="paso0-select auth-select">
-                                <option value="" disabled selected>Elige</option>
-                                <option value="Comunicación">Comunicación</option>
-                            </select>
+                            <label><i class="fa-solid fa-graduation-cap"></i> Especialidad</label>
+                            <input type="text" id="reg-especialidad" class="auth-input confirmacion-input" readonly placeholder="—">
                         </div>
                         <div class="form-group paso0-campo-half">
-                            <label for="selectCiclo">
-                                <i class="fa-solid fa-layer-group"></i> Ciclo
-                            </label>
-                            <select id="selectCiclo" class="paso0-select auth-select">
-                                <option value="" disabled selected>Elige</option>
-                                <option value="VII">VII</option>
-                            </select>
+                            <label><i class="fa-solid fa-layer-group"></i> Ciclo</label>
+                            <input type="text" id="reg-ciclo" class="auth-input confirmacion-input" readonly placeholder="—">
                         </div>
                     </div>
-                    <!-- Foto de Perfil -->
+                    <!-- Foto (opcional) -->
                     <div class="form-group">
-                        <label>
-                            <i class="fa-solid fa-camera"></i> Foto de Perfil
-                        </label>
+                        <label><i class="fa-solid fa-camera"></i> Foto de Perfil <small style="color:var(--text-muted);font-weight:400;">(opcional)</small></label>
                         <div class="upload-area auth-upload-area" id="uploadAreaPaso0"
                              onclick="document.getElementById('fotoInputPaso0').click()">
-                            <input type="file"
-                                   id="fotoInputPaso0"
-                                   accept="image/*"
-                                   style="display:none;"
-                                   onchange="previewImage(event)">
+                            <input type="file" id="fotoInputPaso0" accept="image/*"
+                                   style="display:none;" onchange="previewImage(event)">
                             <div id="uploadPlaceholderPaso0" class="upload-placeholder">
                                 <i class="fa-solid fa-cloud-upload-alt"></i>
                                 <p>Haz clic para seleccionar una foto</p>
-                                <span>JPG, PNG o GIF • Máx. 5MB</span>
+                                <span>JPG, PNG o GIF · Máx. 5MB</span>
                             </div>
                             <div id="imagePreviewPaso0" class="image-preview" style="display:none;">
                                 <img id="previewImgPaso0" src="" alt="Vista previa">
@@ -110,33 +101,20 @@
                             </div>
                         </div>
                     </div>
-                    <div id="authRegistroError" class="auth-error" style="display: none;"></div>
+                    <!-- API (solo si existe, solo en móvil) -->
+                    <div id="reg-api-wrapper" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:.9rem 1rem;text-align:center;">
+                        <p style="color:var(--text-muted);font-size:.8rem;margin-bottom:.4rem;">
+                            <i class="fa-solid fa-laptop"></i> Tu API para acceder desde laptop:
+                        </p>
+                        <div id="reg-api-number" style="font-size:1.8rem;font-weight:900;color:var(--success);letter-spacing:4px;font-family:monospace;"></div>
+                        <p style="color:var(--warning);font-size:.75rem;margin-top:.4rem;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Guárdala, la necesitarás en tu laptop.
+                        </p>
+                    </div>
+                    <div id="authRegistroError" class="auth-error" style="display:none;"></div>
                     <button class="auth-submit" onclick="continuarDesdeAuth()">
-                        <i class="fa-solid fa-arrow-right"></i> Continuar
+                        <i class="fa-solid fa-check"></i> Entrar
                     </button>
-                </div>
-            </div>
-            <!-- ══ PASO 3: Vincula tu cuenta de Google ══ -->
-            <div id="auth-step-google" style="display: none;">
-                <div class="auth-header">
-                    <i class="fa-solid fa-shield-halved auth-icon"></i>
-                    <h2>Vincula tu cuenta de Google</h2>
-                    <p id="auth-codigo-validado" style="color: #10b981; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 500;"></p>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.85rem;">
-                        Tu cuenta de Google será la llave de acceso permanente. Usa siempre la misma.
-                    </p>
-                </div>
-                <div class="auth-body">
-                    <button id="googleSignInBtn" class="google-signin-btn" onclick="signInWithGoogle()">
-                        <svg width="20" height="20" viewBox="0 0 48 48">
-                            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                            <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-                            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-                        </svg>
-                        Continuar con Google
-                    </button>
-                    <div id="googleError" class="auth-error" style="display: none;"></div>
                 </div>
             </div>
             <!-- ══ PASO LAPTOP: Solo aparece en desktop ══ -->
@@ -231,7 +209,7 @@
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
-  
+ 
     <button id="tab-repositorio" class="sidebar-btn active" onclick="switchTab('repositorio')">
         <i class="fa-solid fa-folder-open"></i>
         <span class="sidebar-btn-text">Repositorio</span>
@@ -751,7 +729,7 @@
         <button class="denuncia-close-btn" onclick="closeDenunciaModal()">
             <i class="fa-solid fa-times"></i>
         </button>
-        
+       
         <!-- PASO 1: Términos -->
 <div id="denuncia-step-terms">
     <div class="denuncia-header">
@@ -827,9 +805,10 @@
                     <div class="denuncia-form-group">
                         <label><i class="fa-solid fa-graduation-cap"></i> Especialidad</label>
                         <select id="denuncia-especialidad" class="denuncia-select">
-                            <option value="" disabled selected>Selecciona</option>
-                            <option value="Comunicación">Comunicación</option>
-                        </select>
+    <option value="" disabled selected>Selecciona</option>
+    <option value="Comunicación">Comunicación</option>
+    <option value="Inicial">Inicial</option>
+</select>
                     </div>
                     <div class="denuncia-form-group" id="denuncia-ciclo-row">
                         <label><i class="fa-solid fa-layer-group"></i> Ciclo</label>
