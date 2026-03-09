@@ -1,4 +1,3 @@
-
 // ============================================
 // CONFIGURACIÓN DE FIREBASE
 // ============================================
@@ -1371,7 +1370,8 @@ async function renderEstudiantesReales(estudiantes) {
         `;
 
         const btnSol = card.querySelector('.btn-solicitud');
-        btnSol.addEventListener('click', function() {
+        btnSol.addEventListener('click', function(e) {
+            e.stopPropagation();
             const c = this.closest('.estudiante-card');
             manejarBtnSolicitud(
                 c.dataset.otroKey,
@@ -1380,6 +1380,15 @@ async function renderEstudiantesReales(estudiantes) {
                 c.dataset.otroEsp,
                 c.dataset.otroCiclo,
                 this
+            );
+        });
+
+        // Click en la tarjeta para ver la foto ampliada
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-solicitud')) return;
+            abrirFotoEstudiante(
+                this.dataset.otroFoto,
+                this.dataset.otroNom
             );
         });
 
@@ -1458,13 +1467,43 @@ function actualizarEncabezadoEstudiantes() {
 
     if (miCardEl && perfil) {
         const fecha = perfil.fecha_registro || '—';
+        const tieneFotoMenu = !!(perfil.foto_url && perfil.foto_url.trim() !== '');
         miCardEl.innerHTML = `
             <div class="mi-card-header-row">
                 <div class="mi-card-wrapper">
-                    <img src="${perfil.foto_url || ''}"
-                         alt="${perfil.nombre || ''}"
-                         class="mi-card-foto"
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(perfil.nombre || '?')}&background=3b82f6&color=fff&size=200'">
+                  <div class="mi-card-foto-wrap">
+                <img src="${perfil.foto_url || ''}"
+                     alt="${perfil.nombre || ''}"
+                     class="mi-card-foto"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(perfil.nombre || '?')}&background=3b82f6&color=fff&size=200'">
+                <button class="mi-card-lapiz" title="Opciones de foto"
+                        onclick="event.stopPropagation(); toggleMenuFotoMiCard()">
+                    <i class="fa-solid fa-pencil"></i>
+                </button>
+              ${tieneFotoMenu ? `
+            <div class="mi-card-menu-foto" id="mi-card-menu-foto" style="display:none;">
+                <button onclick="verFotoMiPerfil()">
+                    <i class="fa-solid fa-eye"></i> Ver foto
+                </button>
+                <hr>
+                <button onclick="document.getElementById('mi-card-foto-input').click(); cerrarMenuFotoMiCard()">
+                    <i class="fa-solid fa-camera"></i> Cambiar foto
+                </button>
+                <hr>
+                <button class="btn-eliminar-foto" onclick="eliminarFotoMiPerfil()">
+                    <i class="fa-solid fa-trash"></i> Eliminar foto
+                </button>
+            </div>
+            ` : `
+            <div class="mi-card-menu-foto" id="mi-card-menu-foto" style="display:none;">
+                <button onclick="document.getElementById('mi-card-foto-input').click(); cerrarMenuFotoMiCard()">
+                    <i class="fa-solid fa-camera"></i> Subir foto
+                </button>
+            </div>
+            `}
+            </div>
+            <input type="file" id="mi-card-foto-input" accept="image/*"
+                   style="display:none;" onchange="procesarNuevaFotoPerfil(event)">
                     <div class="mi-card-info">
                         <span class="mi-card-nombre">${perfil.nombre || '—'}</span>
                         <div class="mi-card-badges">
@@ -1533,8 +1572,20 @@ function abrirPerfilEstudiante() {
     document.getElementById('perfil-modal-especialidad').textContent = perfil.especialidad || '—';
     document.getElementById('perfil-modal-ciclo').textContent        = perfil.ciclo ? `Ciclo ${perfil.ciclo}` : '—';
     const img = document.getElementById('perfil-modal-foto');
-    if (img) img.src = perfil.foto_url || '';
-    modal.style.display = 'flex';
+    if (img) {
+        const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(perfil.nombre || 'Usuario')}&background=3b82f6&color=fff&size=200`;
+        img.src     = perfil.foto_url || fallback;
+        img.onerror = function() { this.src = fallback; this.onerror = null; };
+    }
+   modal.style.display = 'flex';
+
+    const btnCambiarFoto = document.getElementById('btn-cambiar-foto-sidebar');
+    if (btnCambiarFoto) {
+        const tieneFoto = !!(perfil.foto_url && perfil.foto_url.trim() !== '');
+        btnCambiarFoto.innerHTML = tieneFoto
+            ? '<i class="fa-solid fa-camera"></i> Cambiar foto'
+            : '<i class="fa-solid fa-camera"></i> Subir foto';
+    }
 }
 
 function cambiarFotoSidebar() { const input = document.getElementById('sidebar-foto-file-input'); if (input) input.click(); }
@@ -1545,14 +1596,21 @@ async function procesarNuevaFotoPerfil(event) {
     if (!file.type.startsWith('image/')) { alert('⚠️ Selecciona un archivo de imagen válido.'); return; }
     const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
     if (!perfil) { alert('❌ No se encontró tu perfil.'); return; }
+
+    
+    // Preview inmediato en sidebar y modal — skeleton en mi-card hasta subir
     const reader = new FileReader();
     reader.onload = function(e) {
         const imgModal   = document.getElementById('perfil-modal-foto');
         const imgSidebar = document.getElementById('sidebar-profile-img');
-        if (imgModal)   imgModal.src   = e.target.result;
-        if (imgSidebar) imgSidebar.src = e.target.result;
+        const initial    = document.getElementById('sidebar-profile-initial');
+        if (imgModal)   { imgModal.src = e.target.result; }
+        if (imgSidebar) { imgSidebar.src = e.target.result; imgSidebar.style.display = 'block'; }
+        if (initial)    { initial.style.display = 'none'; }
+        mostrarSkeletonFoto();
     };
     reader.readAsDataURL(file);
+
     const btnCambiar = document.getElementById('btn-cambiar-foto-sidebar');
     if (btnCambiar) { btnCambiar.disabled = true; btnCambiar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...'; }
     try {
@@ -1561,18 +1619,42 @@ async function procesarNuevaFotoPerfil(event) {
         const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload`, { method:'POST', body:formData });
         if (!res.ok) throw new Error('Error al subir la imagen');
         const data = await res.json(); const nuevaUrl = data.secure_url;
-        if (supabaseClient && perfil.supabase_registered) {
-            const { error } = await supabaseClient.from('estudiantes').update({ foto_url: nuevaUrl }).eq('nombre_completo', perfil.nombre);
-            if (error) console.warn('No se actualizó en Supabase:', error.message);
+
+        // Quitar skeleton y mostrar nueva foto en mi-card
+        ocultarSkeletonFoto();
+        const imgMiCard = document.querySelector('.mi-card-foto');
+        if (imgMiCard) imgMiCard.src = nuevaUrl;
+
+        
+
+        // Borrar foto anterior de Cloudinary
+        if (perfil.foto_url && perfil.foto_url !== nuevaUrl) {
+            eliminarImagenCloudinary(perfil.foto_url).catch(console.error);
         }
+
+        // Actualizar Supabase con el nuevo enlace
+        if (supabaseClient && perfil.supabase_registered) {
+            const { error } = await supabaseClient
+                .from('estudiantes')
+                .update({ foto_url: nuevaUrl })
+                .eq('nombre_completo', perfil.nombre);
+            if (error) console.warn('No se actualizó en Supabase:', error.message);
+            else cargarEstudiantes(); // refresca el grid de comunidad
+        }
+
+        // Actualizar Firebase
         const authData = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
         if (authData.codigo) await _savePerfilToFirebase(authData.codigo, { ...perfil, foto_url: nuevaUrl }).catch(console.error);
+
+        // Guardar en localStorage
         perfil.foto_url = nuevaUrl;
         localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
+
         actualizarPerfilSidebar();
         actualizarEncabezadoEstudiantes();
         mostrarToast('✅ Foto actualizada correctamente');
     } catch(err) {
+        ocultarSkeletonFoto();
         console.error(err); alert('❌ Error al actualizar la foto: ' + err.message);
     } finally {
         if (btnCambiar) { btnCambiar.disabled = false; btnCambiar.innerHTML = '<i class="fa-solid fa-camera"></i> Cambiar foto'; }
@@ -1653,6 +1735,35 @@ function switchTab(tab) {
     }
 }
 
+// ============================================
+// CLOUDINARY — ELIMINAR IMAGEN VIA SUPABASE
+// ============================================
+function getCloudinaryPublicId(url) {
+    if (!url || !url.includes('cloudinary.com')) return null;
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+    return match ? match[1] : null;
+}
+
+async function eliminarImagenCloudinary(url) {
+    const publicId = getCloudinaryPublicId(url);
+    if (!publicId) return;
+    try {
+        const res = await fetch(
+            `${SUPABASE_CONFIG.URL}/functions/v1/eliminar-foto`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type':  'application/json',
+                    'Authorization': `Bearer ${SUPABASE_CONFIG.KEY}`
+                },
+                body: JSON.stringify({ public_id: publicId })
+            }
+        );
+        await res.json();
+    } catch(e) {
+        console.error('Error eliminando imagen de Cloudinary:', e);
+    }
+}
 // ============================================
 // CHAT Y SOLICITUDES — SISTEMA COMPLETO
 // ============================================
@@ -1823,21 +1934,19 @@ let _amigosListenerRef   = null;
 
 async function cargarListaChats() {
     const chatList   = document.getElementById('chat-list');
-    const chatHeader = document.getElementById('chat-header-section');
     if (!chatList) return;
     const miKey = getMiKey(); const miPerfil = getMiPerfil();
     if (!miKey || !miPerfil?.supabase_registered) {
         chatList.innerHTML = '<p class="chat-empty"><i class="fa-solid fa-user-lock"></i><br>Únete a la comunidad para chatear.</p>';
-        if (chatHeader) chatHeader.style.display = 'block'; return;
+        return;
     }
     try {
         const snap   = await database.ref(`amigos/${miKey}`).once('value');
         const amigos = snap.val();
         if (!amigos || !Object.keys(amigos).length) {
             chatList.innerHTML = '<p class="chat-empty"><i class="fa-solid fa-comment-slash"></i><br>No tienes contactos aún.<br>Acepta solicitudes en Comunidad.</p>';
-            if (chatHeader) chatHeader.style.display = 'block'; return;
+            return;
         }
-        if (chatHeader) chatHeader.style.display = 'none';
         chatList.innerHTML = '';
         for (const [amigoKey, amigoData] of Object.entries(amigos)) {
             const chatId = getChatId(miKey, amigoKey);
@@ -2304,6 +2413,124 @@ async function cargarEspecialidadesActivas() {
 function volverAlLogin() {
     _ocultarTodosLosSteps();
     mostrarPaso1();
+}
+
+// ============================================
+// FOTO AMPLIADA DE ESTUDIANTE
+// ============================================
+function abrirFotoEstudiante(fotoUrl, nombre) {
+    const modal = document.getElementById('fotoEstudianteModal');
+    const img   = document.getElementById('fotoEstudianteImg');
+    if (!modal || !img) return;
+    img.alt = nombre || '';
+    img.onerror = function() {
+        this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(nombre || '?') + '&background=3b82f6&color=fff&size=200';
+    };
+    img.src = fotoUrl || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(nombre || '?') + '&background=3b82f6&color=fff&size=200');
+    modal.style.display = 'flex';
+}
+
+// ============================================
+// MENÚ FOTO MI PERFIL (LÁPIZ EN MI CARD)
+// ============================================
+function toggleMenuFotoMiCard() {
+    const menu = document.getElementById('mi-card-menu-foto');
+    if (!menu) return;
+    const estaAbierto = menu.style.display === 'block';
+    menu.style.display = estaAbierto ? 'none' : 'block';
+    if (!estaAbierto) {
+        setTimeout(() => {
+            document.addEventListener('click', _cerrarMenuFotoFuera, { once: true });
+        }, 10);
+    }
+}
+
+function cerrarMenuFotoMiCard() {
+    const menu = document.getElementById('mi-card-menu-foto');
+    if (menu) menu.style.display = 'none';
+}
+
+function _cerrarMenuFotoFuera(e) {
+    const wrap = document.querySelector('.mi-card-foto-wrap');
+    if (wrap && !wrap.contains(e.target)) cerrarMenuFotoMiCard();
+}
+
+function verFotoMiPerfil() {
+    cerrarMenuFotoMiCard();
+    const perfil = getMiPerfil();
+    if (!perfil) return;
+    if (!perfil.foto_url) {
+        mostrarToast('⚠️ Aún no tienes foto de perfil', 'fa-exclamation-circle');
+        return;
+    }
+    abrirFotoEstudiante(perfil.foto_url, perfil.nombre || '');
+}
+
+async function eliminarFotoMiPerfil() {
+    cerrarMenuFotoMiCard();
+    const perfil = getMiPerfil();
+    if (!perfil) return;
+    if (!perfil.foto_url) {
+        mostrarToast('⚠️ No tienes foto de perfil', 'fa-exclamation-circle');
+        return;
+    }
+    const confirmar = confirm('¿Seguro que quieres eliminar tu foto de perfil?');
+    if (!confirmar) return;
+
+    const authData  = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
+    const urlActual = perfil.foto_url;
+
+    // Mostrar skeleton mientras se elimina
+    mostrarSkeletonFoto();
+
+    // Actualizar localStorage
+    perfil.foto_url = '';
+    localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
+
+    // Actualizar sidebar ya (no tiene skeleton)
+    actualizarPerfilSidebar();
+
+    // Esperar eliminación en Cloudinary
+    await eliminarImagenCloudinary(urlActual).catch(e => console.error('Cloudinary error:', e));
+
+    // Firebase (background)
+    if (authData.codigo) {
+        database.ref(`codigos/${authData.codigo}/perfil/foto_url`)
+            .set('').catch(console.error);
+    }
+
+    // Supabase (background)
+    if (supabaseClient && perfil.supabase_registered) {
+        supabaseClient
+            .from('estudiantes')
+            .update({ foto_url: '' })
+            .eq('nombre_completo', perfil.nombre)
+            .then(({ error }) => {
+                if (error) console.error('Supabase error al borrar foto:', error);
+                else cargarEstudiantes();
+            })
+            .catch(console.error);
+    }
+
+    // Quitar skeleton, actualizar UI y mostrar mensaje UNA sola vez
+    ocultarSkeletonFoto();
+    actualizarEncabezadoEstudiantes();
+    mostrarToast('✅ Foto eliminada con éxito', 'fa-check-circle');
+}
+
+function cerrarFotoEstudiante() {
+    const modal = document.getElementById('fotoEstudianteModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function mostrarSkeletonFoto() {
+    const wrap = document.querySelector('.mi-card-foto-wrap');
+    if (wrap) wrap.classList.add('foto-cargando');
+}
+
+function ocultarSkeletonFoto() {
+    const wrap = document.querySelector('.mi-card-foto-wrap');
+    if (wrap) wrap.classList.remove('foto-cargando');
 }
 
 function previewFotoRegistro(event) {
