@@ -426,7 +426,7 @@ async function procesarLoginGoogle(user) {
         }
 
         const perfilExistente  = localStorage.getItem('eduspace_student_profile');
-        const perfilEnFirebase = codigoEncontrado.perfil?.foto_url;
+        const perfilEnFirebase = codigoEncontrado.perfil?.nombre;
 
       if (perfilExistente || perfilEnFirebase) {
             if (perfilEnFirebase && !perfilExistente) {
@@ -1616,8 +1616,8 @@ async function procesarNuevaFotoPerfil(event) {
     const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
     if (!perfil) { alert('❌ No se encontró tu perfil.'); return; }
 
-    
-    // Preview inmediato en sidebar y modal — skeleton en mi-card hasta subir
+    mostrarSkeletonFoto();
+
     const reader = new FileReader();
     reader.onload = function(e) {
         const imgModal   = document.getElementById('perfil-modal-foto');
@@ -1626,7 +1626,7 @@ async function procesarNuevaFotoPerfil(event) {
         if (imgModal)   { imgModal.src = e.target.result; }
         if (imgSidebar) { imgSidebar.src = e.target.result; imgSidebar.style.display = 'block'; }
         if (initial)    { initial.style.display = 'none'; }
-        mostrarSkeletonFoto();
+        // mostrarSkeletonFoto() ← ELIMINAR esta línea que estaba aquí
     };
     reader.readAsDataURL(file);
 
@@ -1639,41 +1639,36 @@ async function procesarNuevaFotoPerfil(event) {
         if (!res.ok) throw new Error('Error al subir la imagen');
         const data = await res.json(); const nuevaUrl = data.secure_url;
 
-        // Quitar skeleton y mostrar nueva foto en mi-card
-        ocultarSkeletonFoto();
+        // ocultarSkeletonFoto() ← ELIMINAR esta línea que estaba aquí
         const imgMiCard = document.querySelector('.mi-card-foto');
         if (imgMiCard) imgMiCard.src = nuevaUrl;
 
-        
-
-        // Borrar foto anterior de Cloudinary
         if (perfil.foto_url && perfil.foto_url !== nuevaUrl) {
             eliminarImagenCloudinary(perfil.foto_url).catch(console.error);
         }
 
-        // Actualizar Supabase con el nuevo enlace
         if (supabaseClient && perfil.supabase_registered) {
             const { error } = await supabaseClient
                 .from('estudiantes')
                 .update({ foto_url: nuevaUrl })
                 .eq('nombre_completo', perfil.nombre);
             if (error) console.warn('No se actualizó en Supabase:', error.message);
-            else cargarEstudiantes(); // refresca el grid de comunidad
+            else cargarEstudiantes();
         }
 
-        // Actualizar Firebase
         const authData = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
         if (authData.codigo) await _savePerfilToFirebase(authData.codigo, { ...perfil, foto_url: nuevaUrl }).catch(console.error);
 
-        // Guardar en localStorage
         perfil.foto_url = nuevaUrl;
         localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
 
         actualizarPerfilSidebar();
         actualizarEncabezadoEstudiantes();
+        ocultarSkeletonFoto();
         mostrarToast('✅ Foto actualizada correctamente');
     } catch(err) {
         ocultarSkeletonFoto();
+        // ocultarSkeletonFoto() ← ELIMINAR esta línea que estaba aquí
         console.error(err); alert('❌ Error al actualizar la foto: ' + err.message);
     } finally {
         if (btnCambiar) { btnCambiar.disabled = false; btnCambiar.innerHTML = '<i class="fa-solid fa-camera"></i> Cambiar foto'; }
@@ -2499,26 +2494,20 @@ async function eliminarFotoMiPerfil() {
     const authData  = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
     const urlActual = perfil.foto_url;
 
-    // Mostrar skeleton mientras se elimina
     mostrarSkeletonFoto();
 
-    // Actualizar localStorage
     perfil.foto_url = '';
     localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
 
-    // Actualizar sidebar ya (no tiene skeleton)
     actualizarPerfilSidebar();
 
-    // Esperar eliminación en Cloudinary
     await eliminarImagenCloudinary(urlActual).catch(e => console.error('Cloudinary error:', e));
 
-    // Firebase (background)
     if (authData.codigo) {
         database.ref(`codigos/${authData.codigo}/perfil/foto_url`)
             .set('').catch(console.error);
     }
 
-    // Supabase (background)
     if (supabaseClient && perfil.supabase_registered) {
         supabaseClient
             .from('estudiantes')
@@ -2531,9 +2520,9 @@ async function eliminarFotoMiPerfil() {
             .catch(console.error);
     }
 
-    // Quitar skeleton, actualizar UI y mostrar mensaje UNA sola vez
-    ocultarSkeletonFoto();
+    // ocultarSkeletonFoto() ← ELIMINAR esta línea que estaba aquí
     actualizarEncabezadoEstudiantes();
+    ocultarSkeletonFoto();
     mostrarToast('✅ Foto eliminada con éxito', 'fa-check-circle');
 }
 
