@@ -1,7 +1,7 @@
 // ============================================
 // CONFIGURACIÓN DE FIREBASE
 // ============================================
-const firebaseConfig = {
+const firebaseConfig = { 
     apiKey: "AIzaSyBKiq_t-gZj_l1Bzj9Y1Jpft03b60pyyuQ",
     authDomain: "eduspace-auth-d7577.firebaseapp.com",
     databaseURL: "https://eduspace-auth-d7577-default-rtdb.firebaseio.com",
@@ -256,35 +256,27 @@ async function completarRegistroLaptop(user) {
             await _cargarPerfilDesdeFirebase(freshData, userName);
             _guardarSesionLocal(userName, codigo, googleUid, 'desktop');
             _setTempValidacion(null); hideAuthModal();
-            if (codigo === '6578hy') showSpecialUserMessage();
-            iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered();
-            actualizarPerfilSidebar(); return;
-        }
-        const desktopCount = Object.values(dispositivos).filter(d => d.tipo === 'desktop').length;
-        if (desktopCount >= 1) { await _cerrarSesionLaptopYMostrarError('💻 Este código ya tiene una laptop registrada. Solo se permite 1 laptop por código.', errEl, btn); return; }
-        const updates = {};
-        updates[`codigos/${codigo}/dispositivos/${deviceKey}`] = { googleUid, googleEmail: user.email, tipo: 'desktop', usuario: userName, fechaRegistro: new Date().toISOString(), ultimoAcceso: new Date().toISOString() };
-        await database.ref().update(updates);
-        await _cargarPerfilDesdeFirebase(freshData, userName);
-        _guardarSesionLocal(userName, codigo, googleUid, 'desktop');
-        _setTempValidacion(null); hideAuthModal();
-        if (codigo === '6578hy') showSpecialUserMessage();
-        iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered();
-        actualizarPerfilSidebar();
-    } catch (error) {
+if (codigo === '6578hy') showSpecialUserMessage();
+iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered(); iniciarListenerFotoPerfil();
+actualizarPerfilSidebar(); return;
+}
+const desktopCount = Object.values(dispositivos).filter(d => d.tipo === 'desktop').length;
+if (desktopCount >= 1) { await _cerrarSesionLaptopYMostrarError('💻 Este código ya tiene una laptop registrada. Solo se permite 1 laptop por código.', errEl, btn); return; }
+const updates = {};
+updates[`codigos/${codigo}/dispositivos/${deviceKey}`] = { googleUid, googleEmail: user.email, tipo: 'desktop', usuario: userName, fechaRegistro: new Date().toISOString(), ultimoAcceso: new Date().toISOString() };
+await database.ref().update(updates);
+await _cargarPerfilDesdeFirebase(freshData, userName);
+_guardarSesionLocal(userName, codigo, googleUid, 'desktop');
+_setTempValidacion(null); hideAuthModal();
+if (codigo === '6578hy') showSpecialUserMessage();
+iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered(); iniciarListenerFotoPerfil();
+actualizarPerfilSidebar();
+} catch (error) {
         console.error('Error en completarRegistroLaptop:', error);
-        if (btn) { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
-        if (errEl) { errEl.textContent = '❌ Error de conexión. Intenta nuevamente.'; errEl.style.display = 'block'; }
-    } finally { _registrandoAhora = false; }
+        if (btn)   { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
+    }
 }
 
-async function _cerrarSesionLaptopYMostrarError(mensaje, errEl, btn) {
-    const userActual = auth.currentUser;
-    if (userActual) { try { await userActual.delete(); } catch(e) { await auth.signOut().catch(console.error); } }
-    _setTempValidacion(null);
-    if (errEl) { errEl.innerHTML = mensaje; errEl.style.display = 'block'; }
-    if (btn)   { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
-}
 
 async function _cargarPerfilDesdeFirebase(codigoData, userName) {
     const perfil = codigoData.perfil;
@@ -445,9 +437,10 @@ async function procesarLoginGoogle(user) {
             hideAuthModal();
             if (codigo === '6578hy') showSpecialUserMessage();
             iniciarListenerBloqueo();
-            iniciarListenerSupabaseRegistered();
-            actualizarPerfilSidebar();
-            return;
+iniciarListenerSupabaseRegistered();
+iniciarListenerFotoPerfil();
+actualizarPerfilSidebar();
+return;
         }
 
         mostrarPasoRegistroNuevo(nombre, esp, ciclo, apiNum);
@@ -531,8 +524,9 @@ async function continuarDesdeAuth() {
         hideAuthModal();
         if (codigo === '6578hy') showSpecialUserMessage();
         iniciarListenerBloqueo();
-        iniciarListenerSupabaseRegistered();
-        actualizarPerfilSidebar();
+iniciarListenerSupabaseRegistered();
+iniciarListenerFotoPerfil();
+actualizarPerfilSidebar();
 
     } catch(err) {
         console.error(err);
@@ -614,8 +608,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const apiRevealStep = document.getElementById('auth-step-api-reveal');
                     if (!apiRevealStep || apiRevealStep.style.display === 'none') hideAuthModal();
                     iniciarListenerBloqueo();
-                    iniciarListenerSupabaseRegistered();
-                    actualizarPerfilSidebar();
+iniciarListenerSupabaseRegistered();
+iniciarListenerFotoPerfil();
+actualizarPerfilSidebar();
                 } else {
                     showAuthModal(); getDeviceType() === 'mobile' ? mostrarPaso1() : mostrarPasoLaptop();
                 }
@@ -690,6 +685,7 @@ if (fotoConfirm) {
 // ============================================
 let bloqueoListener = null;
 let supabaseRegistradoListener = null;
+let fotoPerfilListener = null;
 
 function iniciarListenerBloqueo() {
     const authData = localStorage.getItem('eduspace_auth');
@@ -758,6 +754,29 @@ function iniciarListenerSupabaseRegistered() {
     } catch(e) { console.error('Error listener supabase_registered:', e); }
 }
 
+function iniciarListenerFotoPerfil() {
+    const authData = localStorage.getItem('eduspace_auth');
+    if (!authData) return;
+    try {
+        const parsed = JSON.parse(authData);
+        const { codigo } = parsed;
+        if (fotoPerfilListener) {
+            database.ref(`codigos/${codigo}/perfil/foto_url`).off('value', fotoPerfilListener);
+        }
+        fotoPerfilListener = database.ref(`codigos/${codigo}/perfil/foto_url`).on('value', (snapshot) => {
+            const nuevaFoto = snapshot.val() || '';
+            const perfilLocal = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+            if (!perfilLocal) return;
+            if (nuevaFoto === perfilLocal.foto_url) return;
+            perfilLocal.foto_url = nuevaFoto;
+            localStorage.setItem('eduspace_student_profile', JSON.stringify(perfilLocal));
+            actualizarPerfilSidebar();
+            actualizarEncabezadoEstudiantes();
+            if (currentTab === 'estudiantes') cargarEstudiantes();
+        });
+    } catch(e) { console.error('Error listener foto perfil:', e); }
+}
+
 function mostrarNotificacionDesbloqueo() {
     const notif = document.createElement('div');
     notif.style.cssText = `position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#10b981,#0d9668);color:white;padding:1rem 1.5rem;border-radius:12px;box-shadow:0 4px 15px rgba(16,185,129,0.4);display:flex;align-items:center;gap:10px;font-weight:600;z-index:9999;animation:slideInRight 0.5s ease;`;
@@ -772,7 +791,8 @@ window.addEventListener('beforeunload', () => {
         try {
             const parsed = JSON.parse(authData);
             if (bloqueoListener) database.ref(`codigos/${parsed.codigo}/bloqueado`).off('value', bloqueoListener);
-            if (supabaseRegistradoListener) database.ref(`codigos/${parsed.codigo}/perfil/supabase_registered`).off('value', supabaseRegistradoListener);
+          if (supabaseRegistradoListener) database.ref(`codigos/${parsed.codigo}/perfil/supabase_registered`).off('value', supabaseRegistradoListener);
+            if (fotoPerfilListener) database.ref(`codigos/${parsed.codigo}/perfil/foto_url`).off('value', fotoPerfilListener);
         } catch(e) { console.error(e); }
     }
 });
