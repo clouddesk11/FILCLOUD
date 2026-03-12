@@ -118,8 +118,16 @@
                             </div>
                         </div>
                     </div>
-                    
-                  
+                    <!-- API (solo si existe, solo en móvil) -->
+                    <div id="reg-api-wrapper" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:.9rem 1rem;text-align:center;">
+                        <p style="color:var(--text-muted);font-size:.8rem;margin-bottom:.4rem;">
+                            <i class="fa-solid fa-laptop"></i> Tu API para acceder desde laptop:
+                        </p>
+                        <div id="reg-api-number" style="font-size:1.8rem;font-weight:900;color:var(--success);letter-spacing:4px;font-family:monospace;"></div>
+                        <p style="color:var(--warning);font-size:.75rem;margin-top:.4rem;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Guárdala, la necesitarás en tu laptop.
+                        </p>
+                    </div>
                     <div id="authRegistroError" class="auth-error" style="display:none;"></div>
                     <button class="auth-submit" onclick="continuarDesdeAuth()">
                         <i class="fa-solid fa-check"></i> Entrar
@@ -345,12 +353,12 @@
         </div>
         <span class="sidebar-btn-text">Chat</span>
     </button>
-   <!-- Botón Ajustes al fondo del sidebar -->
-<div class="sidebar-bottom-spacer"></div>
-<button id="tab-ajustes" class="sidebar-btn" onclick="abrirAjustes()">
-    <i class="fa-solid fa-gear"></i>
-    <span class="sidebar-btn-text">Ajustes</span>
-</button>
+    <!-- Botón Ajustes al fondo del sidebar -->
+    <div class="sidebar-bottom-spacer" style="flex:1;"></div>
+    <button id="tab-ajustes" class="sidebar-btn" onclick="abrirAjustes()">
+        <i class="fa-solid fa-gear"></i>
+        <span class="sidebar-btn-text">Ajustes</span>
+    </button>
 </aside>
     <button class="mobile-menu-btn" id="mobileSidebarToggle" onclick="toggleSidebar()">
         <i class="fa-solid fa-bars"></i>
@@ -485,11 +493,10 @@
 </section>
             <!-- Sección de Estudiantes -->
 <section id="estudiantes" class="section-content" style="display: none;">
-    
-    <!-- Header Estudiantes (siempre muestra la mi-card) -->
-<div id="estudiantes-header-miembro" class="header-section header-section-sticky">
-    <div id="mi-card-estudiante"></div>
-</div>
+    <!-- Header de Estudiantes (siempre visible, muestra la mi-card) -->
+    <div id="estudiantes-header-miembro" class="header-section header-section-sticky">
+        <div id="mi-card-estudiante"></div>
+    </div>
     <div id="estudiantes-grid" class="grid-container">
         <div class="loading-estudiantes" id="loading-estudiantes">
     <div class="loading-icon-wrapper">
@@ -539,45 +546,37 @@
         </div>
     </div>
 </section>
-          
-           <!-- Sección Ajustes -->
+
+            <!-- Sección Ajustes -->
 <section id="ajustes" class="section-content" style="display: none;">
     <div class="header-section header-section-sticky">
         <h2><i class="fa-solid fa-gear"></i> Ajustes</h2>
     </div>
     <div class="ajustes-container">
-
-        <!-- Bloque Seguridad -->
         <div class="ajustes-bloque">
             <button class="ajustes-bloque-header" onclick="toggleSeguridad()">
                 <span><i class="fa-solid fa-shield-halved"></i> Seguridad</span>
                 <i class="fa-solid fa-chevron-down ajustes-chevron" id="seguridad-chevron"></i>
             </button>
             <div class="ajustes-bloque-body" id="seguridad-body" style="display:none;">
-
-                <!-- Opción 1: Vincular Escritorio (SOLO MÓVIL — se muestra/oculta con JS) -->
+                <!-- Opción 1: Vincular Escritorio — SOLO MÓVIL (JS controla visibilidad) -->
                 <button class="ajustes-opcion" id="btn-vincular-escritorio" onclick="abrirVincularEscritorio()" style="display:none;">
                     <i class="fa-solid fa-laptop"></i>
                     <span>Vincular Escritorio</span>
                     <i class="fa-solid fa-chevron-right ajustes-opcion-arrow"></i>
                 </button>
-
-                <!-- Opción 2: Cerrar Sesión (SIEMPRE visible) -->
+                <!-- Opción 2: Cerrar Sesión — SIEMPRE visible -->
                 <button class="ajustes-opcion ajustes-opcion-danger" onclick="cerrarSesion()">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Cerrar sesión</span>
                     <i class="fa-solid fa-chevron-right ajustes-opcion-arrow"></i>
                 </button>
-
             </div>
         </div>
-
     </div>
 </section>
-          
+
         </main>
-     
-      
         <!-- HTML CHANGE 3 — Footer actualizado -->
         <footer>
     <p class="footer-text">© 2025 EduSpace Plataforma Académica - Todos los derechos reservados.</p>
@@ -693,94 +692,32 @@
             </div>
         </div>
     </div>
-    
-                    <!-- ══ TÉRMINOS Y CONDICIONES ══ -->
-                    <div class="terminos-container" style="display: none;">
-                        <div class="terminos-scroll">
-                            <h3>📋 Términos y Condiciones</h3>
-                            <p><strong>Al registrarte en CloudDesk, aceptas lo siguiente:</strong></p>
-                            <ul>
-                                <li>✓ Compartir tu <strong>nombre completo</strong> y <strong>fotografía de perfil</strong> con la comunidad educativa.</li>
-                                <li>✓ Tus datos serán <strong>visibles públicamente</strong> para todos los usuarios de la plataforma.</li>
-                                <li>✓ CloudDesk <strong>no se responsabiliza</strong> por el uso indebido de la información compartida por terceros.</li>
-                                <li>✓ Garantizamos el <strong>almacenamiento seguro</strong> de tus datos en servidores certificados (Supabase + Cloudinary).</li>
-                                <li>✓ Puedes solicitar la <strong>eliminación de tus datos</strong> contactando al administrador del sistema.</li>
-                                <li>✓ Tu foto será procesada y almacenada en <strong>Cloudinary</strong>, cumpliendo con estándares de privacidad internacionales.</li>
-                                <li>✓ No compartiremos tus datos con terceros sin tu consentimiento explícito.</li>
-                            </ul>
-                            <p class="terminos-footer">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <strong>Política de Privacidad:</strong> Tus datos están protegidos bajo encriptación SSL/TLS.
-                            </p>
-                        </div>
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="aceptoTerminos">
-                            <span class="checkmark"></span>
-                            <span class="checkbox-label">He leído y acepto los términos y condiciones</span>
-                        </label>
-                    </div>
-                    <!-- ══ CONFIRMACIÓN AUTORELLENADA (solo lectura) ══ -->
-                    <div id="form-registro" class="form-registro" style="display:none; opacity: 0;">
-                        <!-- Foto del perfil (obligatoria para unirse) -->
-<div class="confirmacion-foto-wrap">
-    <div class="confirmacion-foto-container" id="confirmacion-foto-container">
-        <!-- Imagen (visible cuando ya hay foto) -->
-        <img id="fotoConfirmacion" src=""
-             alt="Tu foto"
-             class="confirmacion-foto"
-             style="display:none;"
-             onerror="this.src='https://ui-avatars.com/api/?name=?&background=3b82f6&color=fff&size=200'">
-        <!-- Zona de subida (visible cuando NO hay foto) -->
-        <div id="reg-foto-upload-area" class="reg-foto-upload-area"
-             onclick="document.getElementById('fotoInputRegistro').click()">
-            <i class="fa-solid fa-camera"></i>
-            <p>Subir foto <strong style="color:var(--danger);">*</strong></p>
-            <span>Obligatorio</span>
-        </div>
-        <!-- Botón cambiar (overlay sobre la imagen cuando SÍ hay foto) -->
-        <button type="button" id="reg-foto-cambiar-btn"
-                class="reg-foto-cambiar-btn" style="display:none;"
-                onclick="document.getElementById('fotoInputRegistro').click()">
-            <i class="fa-solid fa-camera"></i>
+    <!-- Modal Registro Estudiante (sin PASO 0, empieza con Términos) -->
+    <!-- Modal Vincular Escritorio (solo móvil) -->
+<div id="vincularEscritorioModal" class="vincular-overlay" style="display:none;" onclick="cerrarVincularEscritorio()">
+    <div class="vincular-modal" onclick="event.stopPropagation()">
+        <button class="vincular-close" onclick="cerrarVincularEscritorio()">
+            <i class="fa-solid fa-times"></i>
         </button>
-        <input type="file" id="fotoInputRegistro" accept="image/*"
-               style="display:none;" onchange="previewFotoRegistro(event)">
-    </div>
-    <p id="reg-foto-error" class="reg-foto-error" style="display:none;">
-        <i class="fa-solid fa-exclamation-circle"></i> La foto es obligatoria para unirte
-    </p>
-</div>
-                        <!-- Nombre (autorellenado, readonly) -->
-                        <div class="form-group">
-                            <label>
-                                <i class="fa-solid fa-user"></i> Nombre Completo
-                            </label>
-                            <input type="text" id="nombreCompleto" maxlength="100" readonly
-                                   class="confirmacion-input"
-                                   placeholder="Autocompletado desde tu cuenta">
-                        </div>
-                        <!-- Especialidad + Ciclo (badges) -->
-                        <div class="form-group">
-                            <label>
-                                <i class="fa-solid fa-graduation-cap"></i> Especialidad y Ciclo
-                            </label>
-                            <div class="form-autodata-row">
-                                <span class="form-autodata-badge" id="displayEspecialidad">—</span>
-                                <span class="form-autodata-badge form-autodata-ciclo" id="displayCiclo">—</span>
-                            </div>
-                        </div>
-                        <p class="confirmacion-hint">
-                            <i class="fa-solid fa-circle-info"></i>
-                            Para cambiar tu foto, usa la opción en el menú lateral (sidebar).
-                        </p>
-                        <button id="btnRegistrar" class="btn-registrar" onclick="registrarEstudiante()">
-                            <i class="fa-solid fa-check-circle"></i> Unirme Ahora
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="vincular-header">
+            <i class="fa-solid fa-laptop vincular-icon"></i>
+            <h2>Vincular Escritorio</h2>
         </div>
+        <p class="vincular-instruccion">
+            Pega este código en la aplicación de tu laptop para sincronizar a CloudDesk.
+        </p>
+        <div class="vincular-api-row">
+            <input type="password" id="vincular-api-input"
+                   class="vincular-api-input" readonly placeholder="Cargando...">
+            <button class="vincular-ojo-btn" onclick="toggleVerAPIVincular()">
+                <i class="fa-solid fa-eye" id="vincular-ojo-icon"></i>
+            </button>
+        </div>
+        <button id="btn-copiar-clave" class="vincular-copiar-btn" onclick="copiarClave()">
+            <i class="fa-solid fa-copy"></i> Copiar Clave
+        </button>
     </div>
+</div>
     <!-- Modal Perfil Estudiante (sidebar) -->
     <div id="modal-perfil-estudiante" class="modal-perfil-overlay" style="display:none;" onclick="cerrarPerfilEstudiante()">
         <div class="modal-perfil-box" onclick="event.stopPropagation()">
@@ -1047,32 +984,5 @@
         <img id="fotoEstudianteImg" src="" alt="">
     </div>
 </div>
-  
-  <!-- Modal Vincular Escritorio (solo móvil) -->
-<div id="vincularEscritorioModal" class="vincular-overlay" style="display:none;">
-    <div class="vincular-modal" onclick="event.stopPropagation()">
-        <button class="vincular-close" onclick="cerrarVincularEscritorio()">
-            <i class="fa-solid fa-times"></i>
-        </button>
-        <div class="vincular-header">
-            <i class="fa-solid fa-laptop vincular-icon"></i>
-            <h2>Vincular Escritorio</h2>
-        </div>
-        <p class="vincular-instruccion">
-            Pega este código en la aplicación de tu laptop para sincronizar a CloudDesk.
-        </p>
-        <div class="vincular-api-row">
-            <input type="password" id="vincular-api-input"
-                   class="vincular-api-input" readonly placeholder="Cargando...">
-            <button class="vincular-ojo-btn" onclick="toggleVerAPIVincular()">
-                <i class="fa-solid fa-eye" id="vincular-ojo-icon"></i>
-            </button>
-        </div>
-        <button id="btn-copiar-clave" class="vincular-copiar-btn" onclick="copiarClave()">
-            <i class="fa-solid fa-copy"></i> Copiar Clave
-        </button>
-    </div>
-</div>
-  
 </body>
 </html>
