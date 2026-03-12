@@ -491,7 +491,6 @@ if (!perfilCheck.supabase_registered && supabaseClient && perfilCheck.nombre) {
 }
 
 hideAuthModal();
-            if (codigo === '6578hy') showSpecialUserMessage();
             iniciarListenerBloqueo();
 iniciarListenerSupabaseRegistered();
 iniciarListenerFotoPerfil();
@@ -610,7 +609,6 @@ if (!perfilFinal.supabase_registered && supabaseClient) {
 }
 
 hideAuthModal();
-        if (codigo === '6578hy') showSpecialUserMessage();
         iniciarListenerBloqueo();
 iniciarListenerSupabaseRegistered();
 iniciarListenerFotoPerfil();
@@ -1527,8 +1525,8 @@ function actualizarEncabezadoEstudiantes() {
 // PERFIL EN SIDEBAR
 // ============================================
 function actualizarPerfilSidebar() {
-    const perfil  = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
-    if (perfil.especialidad) aplicarTemaEspecialidad(perfil.especialidad);
+    const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    if (perfil?.especialidad) aplicarTemaEspecialidad(perfil.especialidad);
 }
 
 function previewImage(event) {
@@ -2668,4 +2666,3 @@ async function cerrarSesion() {
         getDeviceType() === 'mobile' ? mostrarPaso1() : mostrarPasoLaptop();
     }, 1500);
 }
-
