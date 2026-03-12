@@ -3953,3 +3953,267 @@ body.tema-inicial .notification-dot {
     height: auto;
     display: block;
 }
+
+/* ============================================
+   SETTINGS PANEL
+   ============================================ */
+.sidebar-settings-wrapper {
+    margin-top: auto;
+    width: 100%;
+    padding-bottom: 0.5rem;
+}
+
+.sidebar-profile-divider {
+    width: 80%;
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.8rem auto;
+    opacity: 0.6;
+}
+
+.settings-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.25s ease;
+}
+
+.settings-panel {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    animation: slideDown 0.3s ease;
+    overflow: hidden;
+}
+
+.settings-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.settings-panel-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.settings-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.2s;
+}
+.settings-close-btn:hover { opacity: 0.7; }
+
+.settings-body {
+    padding: 1rem;
+}
+
+.settings-section {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.settings-section-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1.1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border: none;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+.settings-section-toggle:hover { background: rgba(59, 130, 246, 0.1); }
+
+.settings-section-toggle span {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+.settings-section-toggle span i { color: var(--primary-color); }
+
+#security-chevron {
+    transition: transform 0.3s ease;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+#security-chevron.open { transform: rotate(180deg); }
+
+.settings-section-options {
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.settings-option-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+    font-family: inherit;
+    text-align: left;
+}
+.settings-option-btn i { color: var(--primary-color); width: 18px; text-align: center; }
+.settings-option-btn:hover { background: rgba(59, 130, 246, 0.08); }
+
+.settings-danger-btn { color: var(--danger) !important; }
+.settings-danger-btn i { color: var(--danger) !important; }
+.settings-danger-btn:hover { background: rgba(239, 68, 68, 0.08) !important; }
+
+/* ============================================
+   MODAL VINCULAR ESCRITORIO
+   ============================================ */
+.modal-content-vincular {
+    position: relative;
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-darker) 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 92%;
+    animation: slideDown 0.4s ease;
+    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.2);
+    margin: auto;
+    text-align: center;
+}
+
+.vincular-close-btn {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+.vincular-close-btn:hover { color: var(--danger); }
+
+.vincular-header { margin-bottom: 1.2rem; }
+
+.vincular-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.8rem;
+    animation: pulse 2s infinite;
+}
+
+.vincular-header h3 {
+    color: var(--text-light);
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.vincular-instruccion {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.vincular-api-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--bg-darker);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.3s;
+}
+.vincular-api-wrapper:focus-within { border-color: var(--primary-color); }
+
+.vincular-api-input {
+    flex: 1;
+    padding: 0.9rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.3rem;
+    font-family: monospace;
+    letter-spacing: 4px;
+    outline: none;
+    text-align: center;
+    min-width: 0;
+}
+
+.vincular-eye-btn {
+    padding: 0 1rem;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+.vincular-eye-btn:hover { color: var(--primary-color); }
+
+.vincular-copy-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    font-family: inherit;
+}
+.vincular-copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+}
+.vincular-copy-btn.copiado {
+    background: linear-gradient(135deg, var(--success), #0d9668);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
