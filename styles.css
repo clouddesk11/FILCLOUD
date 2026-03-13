@@ -20,47 +20,6 @@
 }
 
 /* ============================================
-   SIDEBAR COLAPSABLE
-   ============================================ */
-
-/* ============================================
-   SIDEBAR COLAPSABLE - VERSIÓN MEJORADA
-   ============================================ */
-
-body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-}
-
-/* Sidebar principal */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 80px;
-    height: 100vh;
-    background: linear-gradient(180deg, var(--card-bg) 0%, var(--bg-darker) 100%);
-    border-right: 2px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 0;
-    z-index: 1000;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-    transition: width 0.3s ease;
-    overflow-x: hidden;
-}
-
-.sidebar.open {
-    width: 250px;
-}
-
-/* ============================================
-   HEADER DEL SIDEBAR - NUEVA ESTRUCTURA
-   ============================================ */
-
-/* ============================================
    SIDEBAR COLAPSABLE - VERSIÓN FINAL CORREGIDA
    ============================================ */
 
@@ -3336,7 +3295,7 @@ footer {
 
 
 /* ============================================
-   PASO 0 DEL REGISTRO (Especialidad + Ciclo)
+   PASO 0 DEL REGISTRO (ESPECIALIDAD + CICLO)
    ============================================ */
 
 .registro-paso0 {
@@ -5394,35 +5353,73 @@ body.tema-inicial .notification-dot {
     display: block;
 }
 
-/* ══ AJUSTES SIDEBAR ══ */
-.sidebar-ajustes-wrapper {
-    padding: 0 0.75rem 0.75rem;
-    width: 100%;
-    box-sizing: border-box;
-}
-.sidebar-ajustes-btn {
+/* ══ MODAL AJUSTES — centrado en pantalla ══ */
+.ajustes-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    width: 100%;
-    background: rgba(255,255,255,0.06);
+    justify-content: center;
+    padding: 1rem;
+}
+.ajustes-modal-box {
+    background: #1a1a2e;
     border: 1px solid rgba(255,255,255,0.1);
-    color: #a0aec0;
-    border-radius: 10px;
-    padding: 0.6rem 0.9rem;
+    border-radius: 18px;
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 360px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: fadeIn 0.2s ease;
+}
+.ajustes-modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #aaa;
+    width: 32px; height: 32px;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.88rem;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
 }
-.sidebar-ajustes-btn:hover { background: rgba(59,130,246,0.15); color: #3b82f6; }
-.ajustes-panel {
-    margin-top: 0.5rem;
-    background: rgba(0,0,0,0.25);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    overflow: hidden;
+.ajustes-modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.ajustes-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+.ajustes-modal-header i {
+    font-size: 1.3rem;
+    color: #3b82f6;
+}
+.ajustes-modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+}
+.ajustes-modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ══ AJUSTES SIDEBAR — solo wrapper, el botón usa .sidebar-btn ══ */
+#sidebar-ajustes-wrapper {
+    width: 100%;
+}
+
+
 .ajustes-seguridad-btn {
     display: flex;
     align-items: center;
@@ -5473,7 +5470,7 @@ body.tema-inicial .notification-dot {
     inset: 0;
     background: rgba(0,0,0,0.65);
     backdrop-filter: blur(4px);
-    z-index: 9999;
+    z-index: 10001;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5556,3 +5553,54 @@ body.tema-inicial .notification-dot {
 .vincular-copiar-btn:hover { background: #2563eb; }
 .vincular-copiar-btn:active { transform: scale(0.98); }
 .vincular-copiar-btn.copiado { background: #10b981; pointer-events: none; }
+/* ============================================
+   MOBILE TOP HEADER FIJO - Solo en móvil
+   ============================================ */
+.mobile-top-header {
+    display: none; /* Invisible en escritorio */
+}
+
+@media (max-width: 768px) {
+
+    /* El nuevo header fijo con "CloudDesk" */
+    .mobile-top-header {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        background-color: #000000;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding-left: 70px; /* Espacio para el botón hamburguesa */
+        z-index: 998;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    }
+
+    /* Texto "CloudDesk" dentro del nuevo header */
+    .mobile-top-header-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 1px;
+        font-family: 'Lucida Console', monospace;
+    }
+
+    /* Ocultar el bloque del sidebar que tenía "CloudDesk" */
+    /* (así los botones Recursos y Docentes suben automáticamente) */
+    .sidebar-header {
+        display: none;
+    }
+
+    /* Bajar el contenido principal para que no quede tapado por el header */
+    .main-content {
+        padding-top: 56px;
+    }
+
+    /* Reubicar el botón hamburguesa para que quede centrado en el nuevo header */
+    .mobile-menu-btn {
+        top: 3px;  /* Antes era top: 20px */
+        left: 10px;
+    }
+}
