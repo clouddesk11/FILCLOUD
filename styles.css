@@ -302,6 +302,8 @@ body {
    ============================================ */
 
 @media (max-width: 768px) {
+
+  
     .sidebar {
         width: 250px;
         transform: translateX(-100%);
@@ -5563,6 +5565,15 @@ body.tema-inicial .notification-dot {
 }
 
 @media (max-width: 768px) {
+
+  /* ─── 0. BLOQUEAR SCROLL DEL NAVEGADOR ─── */
+    html,
+    body {
+        height: 100% !important;
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
 
     /* ─── 1. BARRA "CloudDesk" FIJA ARRIBA ─── */
     .mobile-topbar {
