@@ -5555,21 +5555,19 @@ body.tema-inicial .notification-dot {
 .vincular-copiar-btn.copiado { background: #10b981; pointer-events: none; }
 
 /* ============================================
-   TOPBAR FIJA MÓVIL — CLOUDDESK
-   (Solo afecta pantallas de 768px o menos)
+   INTERFAZ APP MÓVIL — CLOUDDESK
    ============================================ */
 
-/* En desktop: completamente invisible */
 .mobile-topbar {
     display: none;
 }
 
 @media (max-width: 768px) {
 
-    /* ── 1. La nueva barra superior fija ── */
+    /* ─── 1. BARRA "CloudDesk" FIJA ARRIBA ─── */
     .mobile-topbar {
         display: flex;
-        position: fixed;   /* No se mueve NUNCA */
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
@@ -5578,8 +5576,8 @@ body.tema-inicial .notification-dot {
         border-bottom: 1px solid var(--border-color);
         align-items: center;
         padding: 0 1.2rem;
-        z-index: 1002;     /* Encima de TODO (sidebar=1000, footer=998) */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        z-index: 1002;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.4);
     }
 
     .mobile-topbar-title {
@@ -5589,34 +5587,90 @@ body.tema-inicial .notification-dot {
         letter-spacing: 0.5px;
     }
 
-    /* ── 2. Ocultar "CloudDesk" del sidebar en móvil ──
-       (Ya no necesita estar ahí, está en la topbar) */
+    /* ─── 2. SIDEBAR: sin "CloudDesk", encajado entre topbar y footer ─── */
+    /* Ocultar el título "CloudDesk" que estaba arriba del sidebar */
     .sidebar-header {
         display: none !important;
     }
 
-    /* ── 3. El sidebar empieza debajo de la topbar ──
-       Para que Recursos y Docentes no queden tapados */
+    /* El sidebar ahora empieza justo debajo de la topbar
+       y termina justo encima del footer — así "Mi perfil" siempre es visible */
     .sidebar {
-        padding-top: 56px !important;
+        top: 56px !important;
+        height: calc(100dvh - 56px - 60px) !important;
+        padding-top: 0.5rem !important;
+        overflow-y: auto !important;
     }
 
-    /* ── 4. El contenido principal empieza debajo de la topbar ──
-       Evita que "Archivos Académicos" quede tapado */
+    /* ─── 3. CONTENEDOR PRINCIPAL: caja fija entre topbar y footer ─── */
+    /* Esta es la clave: el área de contenido nunca se mueve */
     .main-content {
-        padding-top: 56px;
+        position: fixed !important;
+        top: 56px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 60px !important;
+        margin-left: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        min-height: 0 !important;
     }
 
-    /* ── 5. Los headers de sección se pegan debajo de la topbar ──
-       Antes era top:0, ahora es top:56px
-       Esto evita que "Archivos Académicos", "Gestión de Trabajos",
-       etc. se muevan o queden tapados al hacer scroll */
+    /* El container interno llena exactamente ese espacio */
+    .main-content .container {
+        height: 100%;
+        padding: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    /* ─── 4. SECCIONES: cada una ocupa todo el espacio y maneja su propio scroll ─── */
+    /* La sección entera hace scroll, NO la página */
+    .section-content {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ─── 5. HEADERS: se pegan al tope cuando scrolleas dentro de la sección ─── */
+    /* "Archivos Académicos", "Gestión de Trabajos", etc. NUNCA se mueven */
     .header-section-sticky {
-        top: 56px;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        background-color: var(--bg-dark) !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
-    /* ── 6. Corregir altura del chat con la nueva topbar ── */
+    /* ─── 6. CHAT: maneja su scroll interno propio ─── */
+    #chat.section-content {
+        overflow: hidden !important;
+    }
+
     .chat-container {
-        height: calc(100dvh - 56px - 60px);
+        height: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* ─── 7. FOOTER: siempre al fondo, nunca se mueve ─── */
+    footer {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 60px !important;
+        z-index: 998 !important;
+    }
+
+    /* ─── 8. Pequeños ajustes de espaciado ─── */
+    .recursos-list {
+        margin-top: 0 !important;
+    }
+
+    #trabajos-pendientes-section,
+    #trabajos-finalizados-section {
+        margin-top: 0 !important;
     }
 }
