@@ -5610,7 +5610,18 @@ body.tema-inicial .notification-dot {
         top: 56px !important;
         height: calc(100dvh - 56px - 60px) !important;
         padding-top: 0.5rem !important;
+        padding-bottom: 0 !important;
         overflow-y: auto !important;
+    }
+
+  /* Quitar espacio extra debajo del perfil */
+    .sidebar-profile-wrapper {
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .sidebar-profile-divider:last-of-type {
+        display: none !important;
     }
 
     /* ─── 3. CONTENEDOR PRINCIPAL: caja fija entre topbar y footer ─── */
