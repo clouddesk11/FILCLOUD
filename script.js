@@ -436,7 +436,7 @@ async function procesarLoginGoogle(user) {
         const codigoEncontrado = await buscarCodigoPorEmail(user.email);
 
         if (!codigoEncontrado) {
-            await supabaseClient.auth.signOut(); 
+            await supabaseClient.auth.signOut();
             if (errEl) {
                 errEl.innerHTML = '🚫 Tu cuenta de Google no está registrada en el sistema. <span class="saber-mas-link" onclick="mostrarSaberMas()">Saber más</span>';
                 errEl.style.display = 'block';
@@ -447,7 +447,6 @@ async function procesarLoginGoogle(user) {
 
         if (codigoEncontrado.bloqueado === true) {
             await supabaseClient.auth.signOut();
-            showAuthModal();
             if (errEl) {
                 errEl.textContent = `🚫 ACCESO BLOQUEADO: ${codigoEncontrado.motivo_bloqueo || 'Tu acceso ha sido bloqueado.'}`;
                 errEl.style.display = 'block';
@@ -517,7 +516,6 @@ async function procesarLoginGoogle(user) {
 
     } catch (error) {
         console.error('Error en procesarLoginGoogle:', error);
-        showAuthModal(); 
         if (errEl) { errEl.textContent = '❌ Error de conexión. Intenta nuevamente.'; errEl.style.display = 'block'; }
         if (btn) { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
     }
@@ -660,11 +658,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        // DESPUÉS (cámbialo por esto):
-if (_authValidating) {
-    if (_authValidating) { hideConnectionLoader(); return; }
-    _authValidating = false; // tiene sesión válida, resetea el bloqueo
-}
+        if (_authValidating) { hideConnectionLoader(); return; }
+        _authValidating = true;
+        hideConnectionLoader();
 
         const user = session?.user ?? null;
 
@@ -706,7 +702,7 @@ if (_authValidating) {
             actualizarPerfilSidebar();
             switchTab('repositorio');
         }
-        setTimeout(() => { _authValidating = false; }, 4000);
+        setTimeout(() => { _authValidating = false; }, 800);
     });
 
     const checkbox = document.getElementById('aceptoTerminos');
