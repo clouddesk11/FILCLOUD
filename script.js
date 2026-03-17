@@ -1443,7 +1443,7 @@ async function renderEstudiantesReales(estudiantes) {
         grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">
             <i class="fa-solid fa-users" style="font-size:4rem;margin-bottom:1rem;opacity:.5;"></i>
             <p style="font-size:1.2rem;">Aún no hay estudiantes registrados.</p>
-            <p>¡Sé el primero en unirte!</p>
+            <p>Los estudiantes aparecerán aquí una vez sean registrados.</p>
         </div>`;
         return;
     }
