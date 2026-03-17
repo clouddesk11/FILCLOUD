@@ -101,7 +101,7 @@ function _setTempValidacion(val) {
 // ============================================
 function _ocultarTodosLosSteps() {
     const ids = [
-        'auth-step-code', 'auth-step-registro', 'auth-step-google',
+        'auth-step-code', 'auth-step-google',
         'auth-step-api-reveal', 'auth-step-laptop', 'auth-step-google-laptop',
         'auth-step-no-registrado'
     ];
@@ -461,41 +461,21 @@ actualizarPerfilSidebar();
 return;
         }
 
-        mostrarPasoRegistroNuevo(nombre, esp, ciclo, apiNum);
+        // Sin perfil aún: entra directo. El admin asignará sus datos desde el panel.
+if (apiNum && getDeviceType() === 'mobile') localStorage.setItem('eduspace_api', String(apiNum));
+_setTempValidacion(null);
+hideAuthModal();
+if (codigo === '6578hy') showSpecialUserMessage();
+iniciarListenerBloqueo();
+iniciarListenerSupabaseRegistered();
+iniciarListenerFotoPerfil();
+actualizarPerfilSidebar();
 
     } catch (error) {
         console.error('Error en procesarLoginGoogle:', error);
         if (errEl) { errEl.textContent = '❌ Error de conexión. Intenta nuevamente.'; errEl.style.display = 'block'; }
         if (btn) { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
     }
-}
-
-function mostrarPasoRegistroNuevo(nombre, especialidad, ciclo, api) {
-    _ocultarTodosLosSteps();
-    document.getElementById('auth-step-registro').style.display = 'block';
-
-    const inputNombre = document.getElementById('reg-nombre');
-    const inputEsp    = document.getElementById('reg-especialidad');
-    const inputCiclo  = document.getElementById('reg-ciclo');
-    if (inputNombre) inputNombre.value = nombre;
-    if (inputEsp)    inputEsp.value    = especialidad;
-    if (inputCiclo)  inputCiclo.value  = ciclo ? `Ciclo ${ciclo}` : '—';
-
-    selectedEspecialidad = especialidad;
-    selectedCiclo        = ciclo;
-
-    const apiWrapper = document.getElementById('reg-api-wrapper');
-    const apiNumEl   = document.getElementById('reg-api-number');
-    if (api && getDeviceType() === 'mobile' && apiWrapper && apiNumEl) {
-        apiWrapper.style.display = 'block';
-        apiNumEl.textContent     = api;
-        localStorage.setItem('eduspace_api', String(api));
-    }
-
-    aplicarTemaEspecialidad(especialidad);
-
-    resetImagePreview();
-    selectedImageFile = null; selectedImageDataUrl = '';
 }
 
 async function continuarDesdeAuth() {
@@ -647,56 +627,9 @@ actualizarPerfilSidebar();
         setTimeout(() => { _authValidating = false; }, 4000);
     });
 
-    const checkbox = document.getElementById('aceptoTerminos');
-    if (checkbox) {
-        checkbox.addEventListener('change', function() {
-            const formRegistro      = document.getElementById('form-registro');
-            const terminosContainer = document.querySelector('.terminos-container');
-            if (this.checked) {
-                const perfil   = JSON.parse(localStorage.getItem('eduspace_student_profile') || '{}');
-                const authData = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
-                const inputNombre = document.getElementById('nombreCompleto');
-                if (inputNombre) inputNombre.value = perfil.nombre || authData.userName || '';
-                const dispEsp   = document.getElementById('displayEspecialidad');
-                const dispCiclo = document.getElementById('displayCiclo');
-                if (dispEsp)   dispEsp.textContent   = perfil.especialidad || '—';
-                if (dispCiclo) dispCiclo.textContent = perfil.ciclo ? `Ciclo ${perfil.ciclo}` : '—';
-               const fotoConfirm = document.getElementById('fotoConfirmacion');
-const uploadArea  = document.getElementById('reg-foto-upload-area');
-const cambiarBtn  = document.getElementById('reg-foto-cambiar-btn');
-const tieneFoto   = !!(perfil.foto_url && perfil.foto_url.trim() !== '');
-registroFotoFile  = null;
-if (fotoConfirm) {
-    if (tieneFoto) {
-        fotoConfirm.src          = perfil.foto_url;
-        fotoConfirm.style.display = 'block';
-        if (uploadArea) uploadArea.style.display = 'none';
-        if (cambiarBtn) cambiarBtn.style.display = 'flex';
-    } else {
-        fotoConfirm.style.display = 'none';
-        if (uploadArea) uploadArea.style.display = 'flex';
-        if (cambiarBtn) cambiarBtn.style.display = 'none';
-    }
-}
-                terminosContainer.style.transition = 'opacity .3s ease, transform .3s ease';
-                terminosContainer.style.opacity    = '0';
-                terminosContainer.style.transform  = 'translateY(-20px)';
-                setTimeout(() => {
-                    terminosContainer.style.display = 'none'; formRegistro.style.display = 'block';
-                    formRegistro.style.opacity = '0'; formRegistro.style.transform = 'translateY(20px)';
-                    setTimeout(() => { formRegistro.style.transition = 'opacity .3s ease, transform .3s ease'; formRegistro.style.opacity = '1'; formRegistro.style.transform = 'translateY(0)'; }, 10);
-                }, 300);
-            } else {
-                formRegistro.style.opacity = '0'; formRegistro.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    formRegistro.style.display = 'none'; terminosContainer.style.display = 'block';
-                    terminosContainer.style.opacity = '0'; terminosContainer.style.transform = 'translateY(-20px)';
-                    setTimeout(() => { terminosContainer.style.opacity = '1'; terminosContainer.style.transform = 'translateY(0)'; }, 10);
-                }, 300);
-            }
-        });
-    }
-});
+    
+    });
+
 
 // ============================================
 // LISTENER DE BLOQUEO EN TIEMPO REAL
@@ -1471,8 +1404,6 @@ window.onclick = function(event) {
 // ============================================
 let selectedEspecialidad = '';
 let selectedCiclo        = '';
-let selectedImageDataUrl = '';
-let selectedImageFile    = null;
 let registroFotoFile = null;
 
 const CLOUDINARY_CONFIG = { CLOUD_NAME: "dwzwa3gp0", UPLOAD_PRESET: "hfqqxu13" };
@@ -1494,136 +1425,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initSupabase();
 });
 
-function openRegistroModal() {
-    const studentProfile = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
-    if (studentProfile && studentProfile.supabase_registered) { abrirPerfilEstudiante(); return; }
-    const modal = document.getElementById('registroModal');
-    modal.style.display = 'block';
-    const sinPerfilDiv      = document.getElementById('registro-sin-perfil');
-    const terminosContainer = document.querySelector('.terminos-container');
-    const formRegistro      = document.getElementById('form-registro');
-    if (studentProfile && !studentProfile.supabase_registered) {
-        if (sinPerfilDiv)      sinPerfilDiv.style.display      = 'none';
-        if (terminosContainer) { terminosContainer.style.display = 'block'; terminosContainer.style.opacity = '1'; terminosContainer.style.transform = 'translateY(0)'; }
-        if (formRegistro)      { formRegistro.style.display = 'none'; formRegistro.style.opacity = '0'; }
-        document.getElementById('aceptoTerminos').checked = false;
-        return;
-    }
-    if (sinPerfilDiv)      sinPerfilDiv.style.display      = 'block';
-    if (terminosContainer) terminosContainer.style.display = 'none';
-    if (formRegistro)      formRegistro.style.display      = 'none';
-}
-
-function closeRegistroModal() {
-    document.getElementById('registroModal').style.display = 'none';
-    registroFotoFile = null;
-}
-
-function previewImage(event) {
-    const file = event.target.files[0]; if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('⚠️ La imagen es muy grande. El tamaño máximo es 5MB.'); return; }
-    if (!file.type.startsWith('image/')) { alert('⚠️ Por favor selecciona un archivo de imagen válido.'); return; }
-    selectedImageFile = file;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        selectedImageDataUrl = e.target.result;
-        document.getElementById('previewImgPaso0').src = e.target.result;
-        document.getElementById('uploadPlaceholderPaso0').style.display = 'none';
-        document.getElementById('imagePreviewPaso0').style.display      = 'block';
-    };
-    reader.readAsDataURL(file);
-}
-
-function resetImagePreview() {
-    const ph = document.getElementById('uploadPlaceholderPaso0'), prev = document.getElementById('imagePreviewPaso0');
-    const img = document.getElementById('previewImgPaso0'), inp = document.getElementById('fotoInputPaso0');
-    if (ph) ph.style.display = 'block'; if (prev) prev.style.display = 'none';
-    if (img) img.src = ''; if (inp) inp.value = ''; selectedImageDataUrl = '';
-}
-
 function mostrarToast(mensaje, icono = 'fa-check-circle', duracion = 3000) {
     const toast = document.createElement('div'); toast.className = 'toast-notification';
     toast.innerHTML = `<i class="fa-solid ${icono}"></i><span>${mensaje}</span>`;
     document.body.appendChild(toast); setTimeout(() => toast.remove(), duracion);
-}
-
-
-// ============================================
-// REGISTRO DE ESTUDIANTE EN SUPABASE
-// ============================================
-async function registrarEstudiante() {
-    const nombreCompleto = document.getElementById('nombreCompleto').value.trim();
-    const btnRegistrar   = document.getElementById('btnRegistrar');
-    const errFotoEl      = document.getElementById('reg-foto-error');
-    const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
-
-    if (!perfil) { alert('❌ No se encontró tu perfil. Cierra sesión e inicia nuevamente.'); return; }
-    if (!nombreCompleto || nombreCompleto.length < 3) { alert('⚠️ El nombre es muy corto o está vacío.'); return; }
-
-    // Validar foto obligatoria
-    const tieneFotoActual = !!(perfil.foto_url && perfil.foto_url.trim() !== '');
-    if (!tieneFotoActual && !registroFotoFile) {
-        if (errFotoEl) errFotoEl.style.display = 'flex';
-        mostrarToast('⚠️ La foto es obligatoria para unirte', 'fa-exclamation-circle');
-        return;
-    }
-
-    if (!supabaseClient) { alert('❌ Error: No se pudo conectar con la base de datos.'); return; }
-    btnRegistrar.disabled = true; btnRegistrar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-
-    try {
-        let fotoUrl = perfil.foto_url || '';
-
-        // Subir nueva foto si se seleccionó en el modal
-        if (registroFotoFile) {
-            const formData = new FormData();
-            formData.append('file', registroFotoFile);
-            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-            formData.append('folder', 'estudiantes_clouddesk');
-            const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
-            if (uploadRes.ok) { const cloudData = await uploadRes.json(); fotoUrl = cloudData.secure_url; }
-        }
-
-        if (!fotoUrl) {
-            if (errFotoEl) errFotoEl.style.display = 'flex';
-            mostrarToast('⚠️ Error al subir la foto. Inténtalo de nuevo.', 'fa-exclamation-circle');
-            return;
-        }
-
-        const { data, error } = await supabaseClient
-            .from('estudiantes')
-            .insert([{ nombre_completo: nombreCompleto, foto_url: fotoUrl, especialidad: perfil.especialidad, ciclo: perfil.ciclo }])
-            .select();
-        if (error) throw new Error(`Error al guardar: ${error.message}`);
-
-        perfil.supabase_registered = true;
-        perfil.foto_url            = fotoUrl;
-        perfil.fecha_registro      = new Date().toLocaleDateString('es-ES');
-        localStorage.setItem('eduspace_student_profile', JSON.stringify(perfil));
-
-        const authDataReg = JSON.parse(localStorage.getItem('eduspace_auth') || '{}');
-        if (authDataReg.codigo) {
-            await database.ref(`codigos/${authDataReg.codigo}/perfil`).update({
-                supabase_registered: true,
-                fecha_registro:      perfil.fecha_registro,
-                foto_url:            fotoUrl
-            }).catch(console.error);
-        }
-
-        const btnRegistrarme = document.getElementById('btn-registrarme');
-        if (btnRegistrarme) btnRegistrarme.style.display = 'none';
-
-        registroFotoFile = null;
-        actualizarPerfilSidebar();
-        actualizarEncabezadoEstudiantes();
-        closeRegistroModal();
-        mostrarToast('🎉 ¡Registro exitoso! Bienvenido/a a la comunidad CloudDesk');
-        await cargarEstudiantes();
-    } catch(error) {
-        console.error('Error:', error); alert(`❌ Error: ${error.message}`);
-    } finally {
-        btnRegistrar.disabled = false; btnRegistrar.innerHTML = '<i class="fa-solid fa-check-circle"></i> Unirme Ahora';
-    }
 }
 
 // ============================================
@@ -1780,7 +1585,7 @@ function actualizarEncabezadoEstudiantes() {
     const miCardEl      = document.getElementById('mi-card-estudiante');
 
     if (!perfil || !perfil.supabase_registered) {
-        if (headerUnirse)  headerUnirse.style.display  = 'flex';
+        if (headerUnirse)  headerUnirse.style.display  = 'none';
         if (headerMiembro) headerMiembro.style.display = 'none';
         return;
     }
@@ -3134,3 +2939,6 @@ async function cerrarSesion() {
     try { await auth.signOut(); } catch (e) { console.error(e); }
     location.reload();
 }
+
+
+
