@@ -73,72 +73,6 @@
         <div id="authError" class="auth-error" style="display:none;"></div>
     </div>
 </div>
-            <!-- ══ PASO 2: Confirmar perfil + Foto ══ -->
-            <div id="auth-step-registro" style="display:none;">
-                <div class="auth-header">
-                    <i class="fa-solid fa-id-card auth-icon"></i>
-                    <h2>Tu perfil</h2>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin-top:.5rem;">
-                        Datos cargados desde el sistema. Solo la foto es opcional.
-                    </p>
-                </div>
-                <div class="auth-body">
-                    <!-- Nombre (solo lectura) -->
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Nombre Completo</label>
-                        <input type="text" id="reg-nombre" class="auth-input confirmacion-input" readonly placeholder="Cargando...">
-                    </div>
-                    <!-- Especialidad + Ciclo (solo lectura) -->
-                    <div class="paso0-campos-row">
-                        <div class="form-group paso0-campo-half">
-                            <label><i class="fa-solid fa-graduation-cap"></i> Especialidad</label>
-                            <input type="text" id="reg-especialidad" class="auth-input confirmacion-input" readonly placeholder="—">
-                        </div>
-                        <div class="form-group paso0-campo-half">
-                            <label><i class="fa-solid fa-layer-group"></i> Ciclo</label>
-                            <input type="text" id="reg-ciclo" class="auth-input confirmacion-input" readonly placeholder="—">
-                        </div>
-                    </div>
-                    <!-- Foto (opcional) -->
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-camera"></i> Foto de Perfil <small style="color:var(--text-muted);font-weight:400;">(opcional)</small></label>
-                        <div class="upload-area auth-upload-area" id="uploadAreaPaso0"
-                             onclick="document.getElementById('fotoInputPaso0').click()">
-                            <input type="file" id="fotoInputPaso0" accept="image/*"
-                                   style="display:none;" onchange="previewImage(event)">
-                            <div id="uploadPlaceholderPaso0" class="upload-placeholder">
-                                <i class="fa-solid fa-cloud-upload-alt"></i>
-                                <p>Haz clic para seleccionar una foto</p>
-                                <span>JPG, PNG o GIF · Máx. 5MB</span>
-                            </div>
-                            <div id="imagePreviewPaso0" class="image-preview" style="display:none;">
-                                <img id="previewImgPaso0" src="" alt="Vista previa">
-                                <span class="paso0-foto-ok">
-                                    <i class="fa-solid fa-check-circle"></i> Foto seleccionada
-                                    <button type="button" class="btn-change-photo"
-                                            onclick="event.stopPropagation();document.getElementById('fotoInputPaso0').click()">
-                                        <i class="fa-solid fa-exchange-alt"></i> Cambiar
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- API (solo si existe, solo en móvil) -->
-                    <div id="reg-api-wrapper" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:.9rem 1rem;text-align:center;">
-                        <p style="color:var(--text-muted);font-size:.8rem;margin-bottom:.4rem;">
-                            <i class="fa-solid fa-laptop"></i> Tu API para acceder desde laptop:
-                        </p>
-                        <div id="reg-api-number" style="font-size:1.8rem;font-weight:900;color:var(--success);letter-spacing:4px;font-family:monospace;"></div>
-                        <p style="color:var(--warning);font-size:.75rem;margin-top:.4rem;">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Guárdala, la necesitarás en tu laptop.
-                        </p>
-                    </div>
-                    <div id="authRegistroError" class="auth-error" style="display:none;"></div>
-                    <button class="auth-submit" onclick="continuarDesdeAuth()">
-                        <i class="fa-solid fa-check"></i> Entrar
-                    </button>
-                </div>
-            </div>
             <!-- ══ PASO LAPTOP: Solo aparece en desktop ══ -->
             <div id="auth-step-laptop" style="display: none;">
                 <div class="auth-header">
@@ -566,16 +500,6 @@
 </section>
             <!-- Sección de Estudiantes -->
 <section id="estudiantes" class="section-content" style="display: none;">
-    <!-- Header cuando NO está unido -->
-    <div id="estudiantes-header-unirse" class="header-section header-section-sticky header-with-button">
-        <div class="header-text-estudiantes">
-            <h2><i class="fa-solid fa-user-graduate"></i> Registro de Estudiantes</h2>
-            <p>Únete a la comunidad de estudiantes de Comunicación VII.</p>
-        </div>
-        <button id="btn-registrarme" class="btn-registrarme" onclick="openRegistroModal()">
-            <i class="fa-solid fa-user-plus"></i> Unirme
-        </button>
-    </div>
     <!-- Header cuando YA está unido (reemplaza al anterior) -->
     <div id="estudiantes-header-miembro" class="header-section header-section-sticky" style="display:none;">
         <div id="mi-card-estudiante"></div>
@@ -742,118 +666,6 @@
                 <button class="btn-modal btn-confirm" onclick="confirmCompleted()">
                     <i class="fa-solid fa-check"></i> Entendido
                 </button>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Registro Estudiante (sin PASO 0, empieza con Términos) -->
-    <div id="registroModal" class="modal">
-        <div class="modal-content-registro">
-            <span class="close-modal" onclick="closeRegistroModal()">×</span>
-            <div class="registro-modal-body">
-                <div class="registro-imagen-container">
-                    <img src="https://res.cloudinary.com/dwzwa3gp0/image/upload/v1771094272/BackgroundEraser_20260214_132959021_rfzi5a.png"
-                         alt="Registro Estudiante"
-                         class="registro-imagen-decorativa">
-                </div>
-                <div class="registro-form-container">
-                    <h2><i class="fa-solid fa-user-graduate"></i> Únete a CloudDesk</h2>
-                  
-                    <!-- Mensaje para usuarios sin perfil (fallback) -->
-                    <div id="registro-sin-perfil" style="display: none; text-align: center; padding: 1.5rem 0;">
-                        <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem; display: block;"></i>
-                        <h3 style="color: var(--text-light); margin-bottom: 1rem;">Perfil incompleto</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
-                            Para unirte a la comunidad primero debes completar tu perfil.<br>
-                            Cierra sesión e inicia nuevamente para hacerlo.
-                        </p>
-                        <button onclick="cerrarSesionYReingresar()" style="padding: 0.8rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión e ingresar de nuevo
-                        </button>
-                    </div>
-                    <!-- ══ TÉRMINOS Y CONDICIONES ══ -->
-                    <div class="terminos-container" style="display: none;">
-                        <div class="terminos-scroll">
-                            <h3>📋 Términos y Condiciones</h3>
-                            <p><strong>Al registrarte en CloudDesk, aceptas lo siguiente:</strong></p>
-                            <ul>
-                                <li>✓ Compartir tu <strong>nombre completo</strong> y <strong>fotografía de perfil</strong> con la comunidad educativa.</li>
-                                <li>✓ Tus datos serán <strong>visibles públicamente</strong> para todos los usuarios de la plataforma.</li>
-                                <li>✓ CloudDesk <strong>no se responsabiliza</strong> por el uso indebido de la información compartida por terceros.</li>
-                                <li>✓ Garantizamos el <strong>almacenamiento seguro</strong> de tus datos en servidores certificados (Supabase + Cloudinary).</li>
-                                <li>✓ Puedes solicitar la <strong>eliminación de tus datos</strong> contactando al administrador del sistema.</li>
-                                <li>✓ Tu foto será procesada y almacenada en <strong>Cloudinary</strong>, cumpliendo con estándares de privacidad internacionales.</li>
-                                <li>✓ No compartiremos tus datos con terceros sin tu consentimiento explícito.</li>
-                            </ul>
-                            <p class="terminos-footer">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <strong>Política de Privacidad:</strong> Tus datos están protegidos bajo encriptación SSL/TLS.
-                            </p>
-                        </div>
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="aceptoTerminos">
-                            <span class="checkmark"></span>
-                            <span class="checkbox-label">He leído y acepto los términos y condiciones</span>
-                        </label>
-                    </div>
-                    <!-- ══ CONFIRMACIÓN AUTORELLENADA (solo lectura) ══ -->
-                    <div id="form-registro" class="form-registro" style="display:none; opacity: 0;">
-                        <!-- Foto del perfil (obligatoria para unirse) -->
-<div class="confirmacion-foto-wrap">
-    <div class="confirmacion-foto-container" id="confirmacion-foto-container">
-        <!-- Imagen (visible cuando ya hay foto) -->
-        <img id="fotoConfirmacion" src=""
-             alt="Tu foto"
-             class="confirmacion-foto"
-             style="display:none;"
-             onerror="this.src='https://ui-avatars.com/api/?name=?&background=3b82f6&color=fff&size=200'">
-        <!-- Zona de subida (visible cuando NO hay foto) -->
-        <div id="reg-foto-upload-area" class="reg-foto-upload-area"
-             onclick="document.getElementById('fotoInputRegistro').click()">
-            <i class="fa-solid fa-camera"></i>
-            <p>Subir foto <strong style="color:var(--danger);">*</strong></p>
-            <span>Obligatorio</span>
-        </div>
-        <!-- Botón cambiar (overlay sobre la imagen cuando SÍ hay foto) -->
-        <button type="button" id="reg-foto-cambiar-btn"
-                class="reg-foto-cambiar-btn" style="display:none;"
-                onclick="document.getElementById('fotoInputRegistro').click()">
-            <i class="fa-solid fa-camera"></i>
-        </button>
-        <input type="file" id="fotoInputRegistro" accept="image/*"
-               style="display:none;" onchange="previewFotoRegistro(event)">
-    </div>
-    <p id="reg-foto-error" class="reg-foto-error" style="display:none;">
-        <i class="fa-solid fa-exclamation-circle"></i> La foto es obligatoria para unirte
-    </p>
-</div>
-                        <!-- Nombre (autorellenado, readonly) -->
-                        <div class="form-group">
-                            <label>
-                                <i class="fa-solid fa-user"></i> Nombre Completo
-                            </label>
-                            <input type="text" id="nombreCompleto" maxlength="100" readonly
-                                   class="confirmacion-input"
-                                   placeholder="Autocompletado desde tu cuenta">
-                        </div>
-                        <!-- Especialidad + Ciclo (badges) -->
-                        <div class="form-group">
-                            <label>
-                                <i class="fa-solid fa-graduation-cap"></i> Especialidad y Ciclo
-                            </label>
-                            <div class="form-autodata-row">
-                                <span class="form-autodata-badge" id="displayEspecialidad">—</span>
-                                <span class="form-autodata-badge form-autodata-ciclo" id="displayCiclo">—</span>
-                            </div>
-                        </div>
-                        <p class="confirmacion-hint">
-                            <i class="fa-solid fa-circle-info"></i>
-                            Para cambiar tu foto, usa la opción en el menú lateral (sidebar).
-                        </p>
-                        <button id="btnRegistrar" class="btn-registrar" onclick="registrarEstudiante()">
-                            <i class="fa-solid fa-check-circle"></i> Unirme Ahora
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
