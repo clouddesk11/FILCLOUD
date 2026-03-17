@@ -2333,7 +2333,7 @@ function renderMensaje(msg, miKey) {
     messagesEl.appendChild(wrap);
 }
 
-function abrirChatConAmigo(chatId, otroKey, otroNombre, otroFoto) {
+async function abrirChatConAmigo(chatId, otroKey, otroNombre, otroFoto) {
     _chatActivoId = chatId; _chatActivoOtroKey = otroKey;
     document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
     const item = document.getElementById(`chat-item-${otroKey}`);
