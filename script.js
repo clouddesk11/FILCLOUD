@@ -717,7 +717,7 @@ function iniciarListenerFotoPerfil() {
             localStorage.setItem('eduspace_student_profile', JSON.stringify(perfilLocal));
             actualizarPerfilSidebar();
             actualizarEncabezadoEstudiantes();
-            actualizarSeccionPerfil(); // ← sincroniza también la sección perfil
+            actualizarSeccionPerfil();
             if (currentTab === 'estudiantes') cargarEstudiantes();
         });
     } catch(e) { console.error('Error listener foto perfil:', e); }
@@ -1475,8 +1475,7 @@ function renderEstudiantes() {
 
 // ============================================
 // ENCABEZADO DINÁMICO DE ESTUDIANTES
-// ← MODIFICADO: ahora solo muestra foto circular
-//   + solicitudes + chat. Sin mi-card ni amigos.
+// CAMBIO: se agregó el botón "Amigos"
 // ============================================
 function actualizarEncabezadoEstudiantes() {
     const perfil        = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
@@ -1508,6 +1507,9 @@ function actualizarEncabezadoEstudiantes() {
                 <button class="btn-chat-comunidad" id="btn-chat-comunidad" onclick="abrirChatDesdeComunidad()">
                     <i class="fa-solid fa-comment"></i> Chat
                 </button>
+                <button class="btn-amigos" onclick="abrirAmigos()">
+                    <i class="fa-solid fa-user-friends"></i> Amigos
+                </button>
             </div>
         `;
         iniciarListenerSolicitudes();
@@ -1516,7 +1518,7 @@ function actualizarEncabezadoEstudiantes() {
 
 // ============================================
 // SECCIÓN PERFIL — CONTENIDO DINÁMICO
-// ← NUEVO: muestra mi-card completa + amigos
+// CAMBIO: reemplazado btn-amigos por facepile
 // ============================================
 function actualizarSeccionPerfil() {
     const perfil    = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
@@ -1582,13 +1584,94 @@ function actualizarSeccionPerfil() {
                     <i class="fa-solid fa-check-circle"></i> Miembro
                 </span>
             </div>
-            <div class="perfil-amigos-wrapper">
-                <button class="btn-amigos" onclick="abrirAmigos()">
+            <div class="perfil-amigos-seccion">
+                <p class="perfil-amigos-label">
                     <i class="fa-solid fa-user-friends"></i> Amigos
-                </button>
+                </p>
+                <div class="facepile-row" id="facepile-amigos">
+                    <span style="color:var(--text-muted);font-size:0.8rem;">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                    </span>
+                </div>
+                <p class="perfil-institucion">
+                    <i class="fa-solid fa-school"></i> I.E.S.P.P. Picota - San Martín
+                </p>
             </div>
         </div>
     `;
+    renderFacepileAmigos();
+}
+
+// ============================================
+// FACEPILE DE AMIGOS — SECCIÓN MI PERFIL
+// NUEVO: función que construye los círculos
+// ============================================
+async function renderFacepileAmigos() {
+    const miKey     = getMiKey();
+    const container = document.getElementById('facepile-amigos');
+    if (!container || !miKey) return;
+
+    // Cuántos círculos de foto mostrar según el dispositivo
+    const esMobile = window.innerWidth <= 768;
+    const maxVer   = esMobile ? 3 : 7;
+
+    try {
+        const snap   = await database.ref('amigos/' + miKey).once('value');
+        const amigos = snap.val();
+
+        // Si no tiene amigos aún
+        if (!amigos || !Object.keys(amigos).length) {
+            container.innerHTML = '<span style="color:var(--text-muted);font-size:0.82rem;">Aún no tienes amigos.</span>';
+            return;
+        }
+
+        const lista     = Object.entries(amigos); // [[key, {nombre, foto}], ...]
+        const total     = lista.length;
+        const aMostrar  = lista.slice(0, maxVer);  // solo los primeros N
+        const restantes = total - maxVer;           // los que NO se muestran en pantalla
+
+        container.innerHTML = '';
+
+        // Al hacer clic en cualquier círculo → ir a Comunidad y abrir panel de Amigos
+        function irAAmigos() {
+            switchTab('estudiantes');
+            setTimeout(function() { abrirAmigos(); }, 350);
+        }
+
+        // Crear un círculo con foto por cada amigo a mostrar
+        aMostrar.forEach(function(entrada) {
+            const amigoData = entrada[1];
+            const fallback  = 'https://ui-avatars.com/api/?name=' +
+                              encodeURIComponent(amigoData.nombre || '?') +
+                              '&background=3b82f6&color=fff&size=200';
+
+            const item      = document.createElement('div');
+            item.className  = 'facepile-item';
+            item.title      = amigoData.nombre || ''; // tooltip con nombre al pasar el cursor
+            item.onclick    = irAAmigos;
+            item.innerHTML  = '<img src="' + (amigoData.foto || fallback) + '" ' +
+                              'alt="' + (amigoData.nombre || '') + '" ' +
+                              'onerror="this.src=\'' + fallback + '\'">';
+            container.appendChild(item);
+        });
+
+        // Último círculo: "+N" si quedan amigos fuera del límite, o ícono de grupo si caben todos
+        const textoContador = restantes > 0
+            ? '+' + restantes
+            : '<i class="fa-solid fa-users"></i>';
+
+        const verTodosItem      = document.createElement('div');
+        verTodosItem.className  = 'facepile-item';
+        verTodosItem.onclick    = irAAmigos;
+        verTodosItem.innerHTML  =
+            '<div class="facepile-ver-todos-circulo">' + textoContador + '</div>' +
+            '<span class="facepile-ver-todos-label">Ver todos</span>';
+        container.appendChild(verTodosItem);
+
+    } catch(e) {
+        console.error('Error en renderFacepileAmigos:', e);
+        container.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem;">Error al cargar.</span>';
+    }
 }
 
 // ============================================
@@ -1623,18 +1706,15 @@ function actualizarPerfilSidebar() {
 
 // ============================================
 // ABRIR PERFIL ESTUDIANTE
-// ← MODIFICADO: ahora redirige a la sección perfil
 // ============================================
 function abrirPerfilEstudiante() {
     switchTab('perfil');
 }
 
-// Sin uso tras eliminar el modal, se mantiene como no-op
 function cerrarPerfilEstudiante() {
     // modal eliminado, ya no se usa
 }
 
-// Sin uso tras eliminar el modal, se mantiene como no-op
 function cambiarFotoSidebar() {
     // sidebar-foto-file-input ya no existe, la foto se cambia desde sección perfil
 }
@@ -1655,12 +1735,38 @@ function closeSidebar() {
 }
 
 // ============================================
+// FOOTER MÓVIL — BOTÓN ACTIVO
+// NUEVO: resalta el botón del tab activo
+// ============================================
+function actualizarFooterActivo(tab) {
+    // Mapa: nombre del tab → id del botón en el footer
+    const mapa = {
+        'repositorio': 'footer-btn-repositorio',
+        'trabajos':    'footer-btn-trabajos',
+        'estudiantes': 'footer-btn-comunidad',
+        'chat':        'footer-btn-comunidad',
+        'perfil':      'footer-btn-perfil'
+    };
+    // Quitar la clase activa de TODOS los botones del footer
+    document.querySelectorAll('.mobile-footer-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    // Poner la clase activa SOLO al botón que corresponde al tab actual
+    const idBtn = mapa[tab];
+    if (idBtn) {
+        const btn = document.getElementById(idBtn);
+        if (btn) btn.classList.add('active');
+    }
+}
+
+// ============================================
 // SWITCH TAB
-// ← MODIFICADO: añade sección perfil
+// CAMBIO: se llama a actualizarFooterActivo
 // ============================================
 function switchTab(tab) {
     currentTab = tab; showingFinalizados = false;
     if (window.innerWidth <= 768) closeSidebar();
+    actualizarFooterActivo(tab);
 
     // Ocultar todas las secciones
     sectionRepositorio.style.display = 'none';
@@ -2525,7 +2631,7 @@ async function eliminarFotoMiPerfil() {
     }
 
     actualizarEncabezadoEstudiantes();
-    actualizarSeccionPerfil(); // ← sincroniza la sección perfil
+    actualizarSeccionPerfil();
     ocultarSkeletonFoto();
     mostrarToast('✅ Foto eliminada con éxito', 'fa-check-circle');
 }
@@ -2542,7 +2648,7 @@ async function procesarNuevaFotoPerfil(event) {
 
     mostrarSkeletonFoto();
 
-    // Preview inmediato en la sección perfil
+    // Preview inmediato
     const reader = new FileReader();
     reader.onload = function(e) {
         const imgMiCard  = document.querySelector('.mi-card-foto');
@@ -2584,7 +2690,7 @@ async function procesarNuevaFotoPerfil(event) {
 
         actualizarPerfilSidebar();
         actualizarEncabezadoEstudiantes();
-        actualizarSeccionPerfil(); // ← sincroniza la sección perfil
+        actualizarSeccionPerfil();
         ocultarSkeletonFoto();
         mostrarToast('✅ Foto actualizada correctamente');
     } catch(err) {
