@@ -3162,106 +3162,7 @@ footer {
     }
 }
 
-/* ============================================
-   MODAL DE PERFIL DEL ESTUDIANTE (desde sidebar)
-   ============================================ */
 
-.modal-perfil-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.25s ease;
-}
-
-.modal-perfil-box {
-    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-darker) 100%);
-    border: 2px solid var(--primary-color);
-    border-radius: 20px;
-    padding: 2.5rem 2rem 2rem;
-    max-width: 340px;
-    width: 90%;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25);
-    animation: slideDown 0.3s ease;
-}
-
-.modal-perfil-close {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: color 0.2s;
-    padding: 4px;
-}
-
-.modal-perfil-close:hover {
-    color: var(--danger);
-}
-
-.modal-perfil-foto-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.2rem;
-}
-
-.modal-perfil-foto {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--primary-color);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
-}
-
-.modal-perfil-nombre {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-light);
-    margin-bottom: 1rem;
-}
-
-.modal-perfil-badges {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.modal-perfil-badge-esp {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0.4rem 1rem;
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.4);
-    border-radius: 20px;
-    color: var(--accent-color);
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.modal-perfil-badge-ciclo {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0.4rem 1rem;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    border-radius: 20px;
-    color: var(--success);
-    font-size: 0.85rem;
-    font-weight: 600;
-}
 
 /* ============================================
    PASO 0 - ROW DE CAMPOS (especialidad + ciclo lado a lado)
@@ -3978,7 +3879,8 @@ footer {
         align-items: stretch;
     }
     .mi-card-btns-col {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 }
 
@@ -5624,4 +5526,98 @@ body.tema-inicial .notification-dot {
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.2rem;
     white-space: pre-line;
+}
+
+/* ── Botón volver a Comunidad desde el Chat ── */
+.btn-volver-comunidad {
+    background: transparent;
+    border: none;
+    color: #aebac1;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.btn-volver-comunidad:hover {
+    color: #e9edef;
+    background: rgba(255,255,255,0.08);
+}
+
+/* ── Botón Chat dentro de Comunidad ── */
+.btn-chat-comunidad {
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1.5px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--primary-color);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+.btn-chat-comunidad:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* ── OCULTAR MI PERFIL DEL SIDEBAR EN MÓVIL ── */
+@media (max-width: 768px) {
+    #sidebar-mi-perfil,
+    #sidebar-second-divider {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   HEADER SIMPLIFICADO — ESTUDIANTES
+   ============================================ */
+.perfil-mini-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+}
+
+.perfil-mini-foto-wrap {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary-color);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: box-shadow 0.3s;
+}
+
+.perfil-mini-foto-wrap:hover {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+}
+
+.perfil-mini-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ============================================
+   SECCIÓN PERFIL
+   ============================================ */
+.perfil-seccion-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+}
+
+.perfil-amigos-wrapper {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
 }
