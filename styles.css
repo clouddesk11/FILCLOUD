@@ -5757,3 +5757,271 @@ body.tema-inicial .notification-dot {
         font-size: 0.85rem;
     }
 }
+
+/* ============================================
+   BIENVENIDA PRIMERA VEZ
+   ============================================ */
+
+.bienvenida-overlay-wrap {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(7px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: fadeIn 0.4s ease;
+}
+
+/* ── Tarjeta principal ── */
+.bienvenida-panel {
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-darker) 100%);
+    border: 2px solid rgba(59, 130, 246, 0.45);
+    border-radius: 22px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.18);
+    animation: slideDown 0.4s ease;
+    position: relative;
+}
+
+.bienvenida-logo-wrap {
+    margin-bottom: 1.1rem;
+}
+
+#bienvenida-logo-svg {
+    width: 90px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    color: #ffffff;
+    /* Sin filter para que esté estático */
+}
+
+.bienvenida-hola {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-light);
+    margin: 0 0 0.3rem;
+}
+
+.bienvenida-hola span {
+    color: var(--primary-color);
+}
+
+.bienvenida-main-text {
+    font-size: 1.15rem;
+    color: var(--text-light);
+    margin: 0 0 0.45rem;
+}
+
+.bienvenida-main-text strong {
+    color: var(--primary-color);
+}
+
+.bienvenida-pronunciacion {
+    font-size: 0.87rem;
+    color: var(--text-muted);
+    margin: 0 0 2rem;
+    font-style: italic;
+}
+
+/* ── Fila: enlace izq + botón der ── */
+.bienvenida-acciones-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bienvenida-link-mas {
+    color: var(--accent-color);
+    font-size: 0.87rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.bienvenida-link-mas:hover {
+    color: var(--primary-color);
+}
+
+.bienvenida-btn-continuar {
+    padding: 0.72rem 1.4rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.bienvenida-btn-continuar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.55);
+}
+
+/* ── Botón X genérico (steps 2 y 3) ── */
+.bienvenida-x-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(255, 255, 255, 0.07);
+    border: none;
+    color: var(--text-muted);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 5;
+}
+
+.bienvenida-x-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+/* ── Step 2: Etimología ── */
+.bienvenida-etimologia {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.2rem 1.2rem 1.2rem 1.4rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 10px 10px 0;
+    margin-top: 0.6rem;
+}
+
+.bienvenida-etimologia p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.75;
+    margin: 0;
+}
+
+.bienvenida-pron {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.87rem;
+}
+
+/* ── Step 3: Pregunta video ── */
+.bienvenida-pregunta-video {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    margin: 0.5rem 0 1.8rem;
+    line-height: 1.65;
+    padding: 0 0.5rem;
+}
+
+.bienvenida-btn-ver-video {
+    padding: 0.88rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    font-family: inherit;
+}
+
+.bienvenida-btn-ver-video:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+}
+
+/* ── Contenedor de video ── */
+.bienvenida-video-wrap {
+    max-width: 780px;
+    width: 96%;
+    position: relative;
+    animation: slideDown 0.35s ease;
+}
+
+.bienvenida-video-wrap iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    display: block;
+    box-shadow: 0 14px 50px rgba(0, 0, 0, 0.75);
+}
+
+/* X transparente sobre el video */
+.bienvenida-video-x {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.bienvenida-video-x:hover {
+    background: rgba(239, 68, 68, 0.65);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .bienvenida-panel {
+        padding: 2rem 1.4rem;
+    }
+    .bienvenida-hola {
+        font-size: 1.4rem;
+    }
+    .bienvenida-acciones-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .bienvenida-btn-continuar {
+        justify-content: center;
+    }
+    .bienvenida-video-wrap {
+        width: 100%;
+    }
+    .bienvenida-video-x {
+        top: -12px;
+        right: -4px;
+    }
+}
