@@ -265,7 +265,9 @@ async function completarRegistroLaptop(user) {
             _setTempValidacion(null); hideAuthModal();
             if (codigo === '6578hy') showSpecialUserMessage();
             iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered(); iniciarListenerFotoPerfil();
-            actualizarPerfilSidebar(); return;
+            actualizarPerfilSidebar();
+            verificarBienvenida();   // ← línea nueva
+            return;
         }
         const desktopCount = Object.values(dispositivos).filter(d => d.tipo === 'desktop').length;
         if (desktopCount >= 1) { await _cerrarSesionLaptopYMostrarError('💻 Este código ya tiene una laptop registrada. Solo se permite 1 laptop por código.', errEl, btn); return; }
@@ -276,8 +278,10 @@ async function completarRegistroLaptop(user) {
         _guardarSesionLocal(userName, codigo, googleUid, 'desktop');
         _setTempValidacion(null); hideAuthModal();
         if (codigo === '6578hy') showSpecialUserMessage();
+        // DESPUÉS
         iniciarListenerBloqueo(); iniciarListenerSupabaseRegistered(); iniciarListenerFotoPerfil();
         actualizarPerfilSidebar();
+        verificarBienvenida();   // ← línea nueva
     } catch (error) {
         console.error('Error en completarRegistroLaptop:', error);
         if (btn)   { btn.disabled = false; btn.innerHTML = googleBtnHTML(); }
@@ -454,6 +458,7 @@ async function procesarLoginGoogle(user) {
             iniciarListenerSupabaseRegistered();
             iniciarListenerFotoPerfil();
             actualizarPerfilSidebar();
+            verificarBienvenida();   // ← línea nueva
             return;
         }
 
@@ -2882,4 +2887,71 @@ async function cerrarSesion() {
     localStorage.removeItem('completedAssignments');
     try { await auth.signOut(); } catch (e) { console.error(e); }
     location.reload();
+}
+
+// ============================================
+// BIENVENIDA — PRIMERA VEZ
+// ============================================
+
+const BIENVENIDA_VIDEO_URL = '';
+
+const BIENVENIDA_STORAGE_KEY = 'clouddesk_bienvenida_v1';
+
+function _bienvenida_esPrimeraVez() {
+    return !localStorage.getItem(BIENVENIDA_STORAGE_KEY);
+}
+
+function _bienvenida_marcarVista() {
+    localStorage.setItem(BIENVENIDA_STORAGE_KEY, '1');
+}
+
+function verificarBienvenida() {
+     if (getDeviceType() !== 'mobile') return; 
+    if (!_bienvenida_esPrimeraVez()) return;
+    const perfil = getMiPerfil();
+    const nombre = (perfil && perfil.nombre) ? perfil.nombre : 'Usuario';
+    document.getElementById('bienvenida-nombre-span').textContent = nombre;
+    _bienvenida_irStep(1);
+    document.getElementById('modal-bienvenida').style.display = 'flex';
+}
+
+function _bienvenida_irStep(n) {
+    [1, 2, 3].forEach(function(i) {
+        var el = document.getElementById('bienvenida-s' + i);
+        if (el) el.style.display = (i === n) ? 'block' : 'none';
+    });
+    
+    var panel     = document.getElementById('bienvenida-panel');
+    var videoWrap = document.getElementById('bienvenida-video-wrap');
+    if (panel)     panel.style.display     = 'block';
+    if (videoWrap) videoWrap.style.display = 'none';
+}
+
+function bienvenida_verMas() {
+    _bienvenida_irStep(2);
+}
+
+function bienvenida_volverS1() {
+    _bienvenida_irStep(1);
+}
+
+function bienvenida_continuar() {
+    _bienvenida_irStep(3);
+}
+
+function bienvenida_abrirVideo() {
+    var panel     = document.getElementById('bienvenida-panel');
+    var videoWrap = document.getElementById('bienvenida-video-wrap');
+    var iframe    = document.getElementById('bienvenida-video-iframe');
+    if (panel)     panel.style.display     = 'none';
+    if (videoWrap) videoWrap.style.display = 'block';
+    if (iframe)    iframe.src              = BIENVENIDA_VIDEO_URL;
+}
+
+function bienvenida_cerrarTodo() {
+    var modal  = document.getElementById('modal-bienvenida');
+    var iframe = document.getElementById('bienvenida-video-iframe');
+    if (iframe) iframe.src = ''; // detiene el video
+    if (modal)  modal.style.display = 'none';
+    _bienvenida_marcarVista();
 }
