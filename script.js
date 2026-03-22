@@ -1783,8 +1783,13 @@ function switchTab(tab) {
     if (sectionChat) sectionChat.style.display = 'none';
     const sectionPerfil = document.getElementById('perfil');
     if (sectionPerfil) sectionPerfil.style.display = 'none';
+    const sectionIa = document.getElementById('ia-juegos');
+    if (sectionIa) sectionIa.style.display = 'none';
 
-    document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+    
+  document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector('.ai-btn')?.classList.remove('active');
+document.querySelector('.ai-btn-mobile')?.classList.remove('active');
 
     const searchInputRepo = document.getElementById('searchInputRepositorio');
     const searchInputRec  = document.getElementById('searchInputRecursos');
@@ -1847,9 +1852,15 @@ function switchTab(tab) {
         iniciarListenerChats();
 
     } else if (tab === 'perfil') {
-        if (sectionPerfil) sectionPerfil.style.display = 'block';
-        actualizarSeccionPerfil();
-    }
+    if (sectionPerfil) sectionPerfil.style.display = 'block';
+    actualizarSeccionPerfil();
+
+} else if (tab === 'ia-juegos') {
+    const sectionIa = document.getElementById('ia-juegos');
+    if (sectionIa) sectionIa.style.display = 'block';
+    document.querySelector('.ai-btn')?.classList.add('active');
+    document.querySelector('.ai-btn-mobile')?.classList.add('active');
+}
 }
 
 // ============================================
