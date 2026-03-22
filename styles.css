@@ -2828,10 +2828,6 @@ footer {
         border-top: 1px solid var(--border-color);
     }
     
-    /* Ocultar texto del footer en móvil */
-    .footer-text {
-        display: none;
-    }
     
     /* Botones del footer estilo Messenger */
     .mobile-footer-btn {
@@ -4980,7 +4976,8 @@ body.tema-inicial .notification-dot {
         background-color: var(--bg-darker);
         border-bottom: 1px solid var(--border-color);
         align-items: center;
-        justify-content: center;   
+        justify-content: flex-start;
+        gap: 12px;
         padding: 0 1.2rem;
         z-index: 1002;
         box-shadow: 0 2px 10px rgba(0,0,0,0.4);
@@ -6024,4 +6021,367 @@ body.tema-inicial .notification-dot {
         top: -12px;
         right: -4px;
     }
+}
+
+/* ============================================================
+   DESKTOP TOPBAR + LAYOUT FIJO — SOLO LAPTOP (≥ 769px)
+   ============================================================ */
+
+/* La barra está oculta en móvil por defecto */
+.desktop-topbar {
+    display: none;
+}
+
+@media (min-width: 769px) {
+
+    /* ── 1. LA BARRA SUPERIOR ── */
+   .desktop-topbar {
+    display: flex;
+    position: fixed;
+    top: 8px;
+    left: calc(80px + 12px);
+    right: 12px;
+    height: 46px;
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    align-items: center;
+    padding: 0 1rem;
+    z-index: 901;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    transition: left 0.3s ease;
+}
+
+.sidebar.open ~ .desktop-topbar {
+    left: calc(250px + 12px);
+}
+
+    /* ── 2. CONTENEDOR PRINCIPAL: fijo debajo de la barra ── */
+   .main-content {
+    position: fixed !important;
+    top: 56px !important;
+    left: 80px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    margin-left: 0 !important;   /* ← AGREGA ESTA LÍNEA */
+    padding: 0 !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    transition: left 0.3s ease !important;
+}
+
+    /* Cuando el sidebar se ABRE, el contenido también se mueve */
+    .sidebar.open ~ .main-content {
+        left: 250px !important;
+        margin-left: 0 !important;
+    }
+
+    /* ── 3. EL <main> INTERNO: llena todo el espacio disponible ── */
+   .main-content > .container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+    /* ── 4. FOOTER: se queda al fondo del contenedor ── */
+    .main-content footer {
+        flex-shrink: 0;
+    }
+
+    /* ── 5. CADA SECCIÓN: tiene su propio scroll interno ── */
+   .section-content {
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-height: 0;
+    padding: 0 2rem;
+}
+
+    /* ── 6. HEADERS STICKY: se pegan al tope de su sección ── */
+    /* Estos son los contenedores de "Archivos Académicos", "Gestión de Trabajos", etc. */
+    .header-section-sticky {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        background-color: var(--bg-dark) !important;
+        padding-left: 0 !important;   /* ya tiene el padding del section-content */
+        padding-right: 0 !important;
+    }
+
+    /* ── 7. SECCIÓN CHAT: maneja su propio scroll interno ── */
+    #chat.section-content {
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+
+    .chat-container {
+        height: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* ── 8. GRIDS Y LISTAS: espacio al final para no quedar pegados abajo ── */
+    .grid-container,
+    .assignments-container,
+    .recursos-grid,
+    .libros-grid-container {
+        margin-bottom: 2rem;
+    }
+}
+
+.ai-btn {
+    
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+.ai-btn:hover {
+    background-color: var(--card-hover);
+    border-color: var(--primary-color);
+}
+
+.ai-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.ai-sparkles {
+    color: white;
+    width: 35px;
+    height: 25px;
+    min-width: 18px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.ai-btn:hover .ai-sparkles {
+    transform: scale(1.1);
+}
+
+.ai-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+    transition: color 0.3s;
+}
+
+.ai-btn:hover .ai-label {
+    color: var(--text-light);
+}
+
+.ai-btn.active .ai-label {
+    color: var(--text-light);
+}
+
+.ai-btn-mobile {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+    footer {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   SECCIÓN IA JUEGOS — DISEÑO CLOUDDESK
+   ============================================ */
+
+.ia-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.ia-hero {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.ia-img-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 30px;
+}
+
+.ia-main-image {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    border-radius: 24px;
+    filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
+    animation: float 5s ease-in-out infinite;
+}
+
+.ia-img-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%; height: 80%;
+    background: var(--primary-color);
+    filter: blur(80px);
+    opacity: 0.25;
+    z-index: -1;
+}
+
+.ia-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+.ia-welcome-box {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.ia-welcome-box p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.ia-welcome-box strong {
+    color: var(--text-light);
+}
+
+.ia-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+.ia-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 35px;
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 25px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.ia-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    background: var(--card-hover);
+}
+
+.ia-card-icon {
+    font-size: 3rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.ia-card-body h2 {
+    font-size: 1.4rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.ia-tagline {
+    color: var(--accent-color);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.ia-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.ia-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.ia-step {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.ia-step strong {
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+}
+
+.ia-step p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+
+@media (max-width: 768px) {
+    .ia-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .ia-card-icon {
+        justify-content: center;
+    }
+    .ia-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ai-btn-mobile.active {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.ai-btn-mobile.active svg {
+    color: var(--primary-color);
 }
