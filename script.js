@@ -1862,11 +1862,11 @@ document.querySelector('.ai-btn-mobile')?.classList.remove('active');
         document.querySelector('.ai-btn')?.classList.add('active');
         document.querySelector('.ai-btn-mobile')?.classList.add('active');
 
-    } else if (tab === 'gramatica-pro-app') {   // ← ANTES de los 2 cierres
+    } else if (tab === 'gramatica-pro-app') {   
         const sectionGp = document.getElementById('gramatica-pro-app');
         if (sectionGp) sectionGp.style.display = 'block';
-        document.querySelector('.ai-btn')?.classList.add('active');       // ← añadir
-    document.querySelector('.ai-btn-mobile')?.classList.add('active'); // ← añadir
+        document.querySelector('.ai-btn')?.classList.add('active');      
+    document.querySelector('.ai-btn-mobile')?.classList.add('active'); 
     }
 }   
 // ============================================
@@ -2148,10 +2148,7 @@ async function abrirChatConAmigo(chatId, otroKey, otroNombre, otroFoto) {
             ${isMobile ? `<button class="chat-back-btn" onclick="volverListaChats()"><i class="fa-solid fa-arrow-left"></i></button>` : ''}
             <img src="${otroFoto}" alt="${otroNombre}" class="chat-header-foto"
                  onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(otroNombre)}&background=3b82f6&color=fff&size=200'">
-            <span class="chat-header-nombre">${otroNombre}</span>
-            <button class="btn-denunciar-chat" onclick="abrirDenuncia('${otroNombre.replace(/'/g,"\\'")}')">
-                <i class="fa-solid fa-flag"></i><span class="btn-den-txt"> Denunciar</span>
-            </button>`;
+            <span class="chat-header-nombre">${otroNombre}</span>`;
     }
 
     if (_mensajesListenerRef) {
@@ -2309,198 +2306,6 @@ function aplicarTemaEspecialidad(especialidad) {
     }
 }
 
-// ============================================
-// SISTEMA DE DENUNCIAS
-// ============================================
-let _denEvidFile    = null;
-let _denEvidTipo    = 'foto';
-let _denAudioBlob   = null;
-let _denMediaRec    = null;
-let _denAudioChunks = [];
-let _denGrabando    = false;
-let _denTimerIntvl  = null;
-let _denTimerSecs   = 0;
-
-function abrirDenuncia(nombrePrerellenado) {
-    _denEvidFile = null; _denAudioBlob = null; _denAudioChunks = [];
-    _denGrabando = false; _denEvidTipo = 'foto';
-    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
-    const ahora = new Date();
-    document.getElementById('denuncia-nombre').value      = nombrePrerellenado || '';
-    document.getElementById('denuncia-cargo').value       = '';
-    document.getElementById('denuncia-ciclo').value       = '';
-    const espEl = document.getElementById('denuncia-especialidad');
-    if (espEl) espEl.value = '';
-    const rowEst = document.getElementById('denuncia-estudiante-row');
-    if (rowEst) rowEst.style.display = 'none';
-    document.getElementById('denuncia-descripcion').value = '';
-    document.getElementById('denuncia-terminos-check').checked = false;
-    document.getElementById('denuncia-fecha').value = ahora.toISOString().split('T')[0];
-    document.getElementById('denuncia-hora').value  = ahora.toTimeString().substring(0,5);
-    document.getElementById('den-ev-preview').innerHTML  = '';
-    document.getElementById('den-ev-preview').style.display = 'none';
-    document.getElementById('den-audio-preview').innerHTML  = '';
-    document.getElementById('den-audio-preview').style.display = 'none';
-    ['ev-input-foto','ev-input-video','ev-input-audio'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-    });
-    const btnGrab = document.getElementById('btn-grabar-den');
-    const btnStop = document.getElementById('btn-detener-den');
-    const timer   = document.getElementById('den-timer');
-    if (btnGrab) btnGrab.style.display = 'flex';
-    if (btnStop) btnStop.style.display = 'none';
-    if (timer)   timer.style.display   = 'none';
-    selTabEv('foto');
-    _mostrarDenStep(1);
-    document.getElementById('denunciaModal').style.display = 'block';
-}
-
-function _mostrarDenStep(n) {
-    ['denuncia-step-terms','denuncia-step-form','denuncia-step-success'].forEach((id, i) => {
-        document.getElementById(id).style.display = (i + 1 === n) ? 'block' : 'none';
-    });
-}
-
-function continuarAFormulario() {
-    if (!document.getElementById('denuncia-terminos-check').checked) {
-        mostrarToast('⚠️ Debes aceptar los términos para continuar', 'fa-exclamation-circle'); return;
-    }
-    _mostrarDenStep(2);
-}
-
-function closeDenunciaModal() {
-    document.getElementById('denunciaModal').style.display = 'none';
-    if (_denMediaRec && _denMediaRec.state !== 'inactive') _denMediaRec.stop();
-    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
-}
-
-function onCargoCambio() {
-    const v = document.getElementById('denuncia-cargo').value;
-    const isEst = v === 'Estudiante';
-    const rowEst = document.getElementById('denuncia-estudiante-row');
-    if (rowEst) rowEst.style.display = isEst ? 'grid' : 'none';
-    if (!isEst) {
-        const espEl = document.getElementById('denuncia-especialidad');
-        const cicEl = document.getElementById('denuncia-ciclo');
-        if (espEl) espEl.value = ''; if (cicEl) cicEl.value = '';
-    }
-}
-
-function selTabEv(tipo) {
-    _denEvidTipo = tipo;
-    ['foto','video','audio'].forEach(t => {
-        document.getElementById(`tab-ev-${t}`).classList.toggle('active', t === tipo);
-        document.getElementById(`ev-panel-${t}`).style.display = t === tipo ? 'block' : 'none';
-    });
-}
-
-function onEvFile(event, tipo) {
-    const file = event.target.files[0]; if (!file) return;
-    _denEvidFile = file; _denEvidTipo = tipo;
-    const preview    = document.getElementById('den-ev-preview');
-    const audPreview = document.getElementById('den-audio-preview');
-    if (tipo === 'foto') {
-        const reader = new FileReader();
-        reader.onload = e => {
-            preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%;max-height:140px;border-radius:8px;margin-top:0.5rem;display:block;">
-            <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    } else if (tipo === 'video') {
-        const url = URL.createObjectURL(file);
-        preview.innerHTML = `<video src="${url}" controls style="max-width:100%;max-height:140px;border-radius:8px;margin-top:0.5rem;display:block;"></video>
-        <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
-        preview.style.display = 'block';
-    } else if (tipo === 'audio') {
-        const url = URL.createObjectURL(file);
-        audPreview.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:0.5rem;"></audio>
-        <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> ${file.name}</p>`;
-        audPreview.style.display = 'block';
-        _denAudioBlob = null;
-    }
-}
-
-async function iniciarGrabacion() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        _denAudioChunks = [];
-        _denMediaRec = new MediaRecorder(stream);
-        _denMediaRec.ondataavailable = e => _denAudioChunks.push(e.data);
-        _denMediaRec.onstop = () => {
-            _denAudioBlob = new Blob(_denAudioChunks, { type: 'audio/webm' });
-            const url = URL.createObjectURL(_denAudioBlob);
-            const prev = document.getElementById('den-audio-preview');
-            prev.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:0.5rem;"></audio>
-            <p style="color:var(--success);font-size:0.8rem;text-align:center;margin-top:4px;"><i class="fa-solid fa-check-circle"></i> Audio grabado</p>`;
-            prev.style.display = 'block';
-            stream.getTracks().forEach(t => t.stop());
-        };
-        _denMediaRec.start(); _denGrabando = true; _denTimerSecs = 0;
-        document.getElementById('btn-grabar-den').style.display  = 'none';
-        document.getElementById('btn-detener-den').style.display = 'flex';
-        document.getElementById('den-timer').style.display       = 'inline-block';
-        _denTimerIntvl = setInterval(() => {
-            _denTimerSecs++;
-            const m = String(Math.floor(_denTimerSecs/60)).padStart(2,'0');
-            const s = String(_denTimerSecs%60).padStart(2,'0');
-            document.getElementById('den-timer').textContent = `🔴 ${m}:${s}`;
-        }, 1000);
-    } catch(e) { mostrarToast('❌ No se pudo acceder al micrófono', 'fa-microphone-slash'); }
-}
-
-function detenerGrabacion() {
-    if (_denMediaRec && _denMediaRec.state !== 'inactive') _denMediaRec.stop();
-    _denGrabando = false;
-    if (_denTimerIntvl) { clearInterval(_denTimerIntvl); _denTimerIntvl = null; }
-    document.getElementById('btn-grabar-den').style.display  = 'flex';
-    document.getElementById('btn-detener-den').style.display = 'none';
-    document.getElementById('den-timer').style.display       = 'none';
-}
-
-async function enviarDenuncia() {
-    const nombre      = document.getElementById('denuncia-nombre').value.trim();
-    const cargo       = document.getElementById('denuncia-cargo').value;
-    const ciclo       = document.getElementById('denuncia-ciclo').value;
-    const especialidad = document.getElementById('denuncia-especialidad')?.value || '';
-    const descripcion = document.getElementById('denuncia-descripcion').value.trim();
-    const fecha       = document.getElementById('denuncia-fecha').value;
-    const hora        = document.getElementById('denuncia-hora').value;
-    const btn         = document.getElementById('btn-enviar-denuncia');
-    if (!nombre || !cargo || !descripcion) { mostrarToast('⚠️ Completa los campos obligatorios', 'fa-exclamation-circle'); return; }
-    if (descripcion.length < 20) { mostrarToast('⚠️ La descripción es muy corta (mín. 20 caracteres)', 'fa-exclamation-circle'); return; }
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';
-    try {
-        let evidenciaUrl = '', evidenciaTipo = '';
-        const archivoASubir = _denEvidFile || (_denAudioBlob ? new File([_denAudioBlob], 'audio_denuncia.webm', { type:'audio/webm' }) : null);
-        if (archivoASubir) {
-            evidenciaTipo = _denEvidFile
-                ? (_denEvidFile.type.startsWith('image/') ? 'foto' : _denEvidFile.type.startsWith('video/') ? 'video' : 'audio')
-                : 'audio';
-            const resourceType = evidenciaTipo === 'foto' ? 'image' : evidenciaTipo === 'video' ? 'video' : 'raw';
-            const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/${resourceType}/upload`;
-            const fd = new FormData();
-            fd.append('file', archivoASubir); fd.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET); fd.append('folder', 'denuncias_clouddesk');
-            const res = await fetch(endpoint, { method:'POST', body:fd });
-            if (res.ok) { const data = await res.json(); evidenciaUrl = data.secure_url; }
-        }
-        const idAnonimo = 'DEN-' + Math.random().toString(36).substring(2,8).toUpperCase();
-        await database.ref('denuncias').push({
-            denunciado_nombre: nombre,
-            denunciado_cargo: cargo === 'Estudiante'
-                ? `${cargo}${especialidad ? ' · ' + especialidad : ''}${ciclo ? ' · Ciclo ' + ciclo : ''}`
-                : cargo,
-            descripcion, evidencia_url: evidenciaUrl, evidencia_tipo: evidenciaTipo,
-            fecha, hora, timestamp: Date.now(), estado: 'pendiente', id_anonimo: idAnonimo
-        });
-        _mostrarDenStep(3);
-    } catch(e) {
-        console.error('Error enviando denuncia:', e);
-        mostrarToast('❌ Error al enviar la denuncia. Intenta de nuevo.', 'fa-times-circle');
-    } finally {
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Denuncia';
-    }
-}
 
 // ============================================
 // PASO "SABER MÁS" — CUENTA NO REGISTRADA
@@ -2998,8 +2803,15 @@ async function gp_guardarProgreso() {
         await database.ref(`codigos/${codigo}/gramatica_progress/attemptedCards`).set(attemptedCards);
     } catch(e) { console.error('Error guardando progreso gramática:', e); }
 }
+// DESPUÉS
 function abrirGramaticaPro() {
     if (typeof switchTab === 'function') switchTab('gramatica-pro-app');
+    // Fix bug: actualizar botón ANTES de que carguen los datos
+    const gpBackBtn = document.querySelector('.gp-back-btn');
+    if (gpBackBtn) {
+        gpBackBtn.onclick = () => switchTab('ia-juegos');
+        gpBackBtn.innerHTML = `<span class="gp-back-text-desktop"><i class="fa-solid fa-arrow-left"></i> Volver</span><span class="gp-back-text-mobile">&lt;</span>`;
+    }
     initGramaticaPro();
 }
 
@@ -3347,16 +3159,17 @@ function render() {
     const isNewView = currentView !== lastView;
     lastView = currentView;
   
-   const gpBackBtn = document.querySelector('.gp-back-btn');
-    if (gpBackBtn) {
-        if (currentView === 'menu') {
-            gpBackBtn.onclick = () => switchTab('ia-juegos');
-            gpBackBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Volver';
-        } else {
-            gpBackBtn.onclick = () => showView('menu');
-            gpBackBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Volver al temario';
-        }
+   // DESPUÉS
+const gpBackBtn = document.querySelector('.gp-back-btn');
+if (gpBackBtn) {
+    if (currentView === 'menu') {
+        gpBackBtn.onclick = () => switchTab('ia-juegos');
+        gpBackBtn.innerHTML = `<span class="gp-back-text-desktop"><i class="fa-solid fa-arrow-left"></i> Volver</span><span class="gp-back-text-mobile">&lt;</span>`;
+    } else {
+        gpBackBtn.onclick = () => showView('menu');
+        gpBackBtn.innerHTML = `<span class="gp-back-text-desktop"><i class="fa-solid fa-arrow-left"></i> Volver al temario</span><span class="gp-back-text-mobile">&lt;&lt;</span>`;
     }
+}
 
     if (currentView === 'menu') {
         container.innerHTML = `
@@ -3684,6 +3497,25 @@ function render() {
                         Volver al Temario
                     </button>
                 </div>
+                
+                 ${(() => {
+                    const todasLasCards = sectionsData.flatMap(s => s.cards);
+                    const todasCompletadas = todasLasCards.length > 0 &&
+                        todasLasCards.every(c => attemptedCards.includes(c.id));
+                    const btnDesafio = document.getElementById('btn-desafio-global');
+                    if (btnDesafio) btnDesafio.style.display = todasCompletadas ? 'flex' : 'none';
+                    return todasCompletadas ? `
+                        <div style="margin-top:2rem;background:linear-gradient(135deg,rgba(79,70,229,0.2),rgba(59,130,246,0.2));border:1px solid rgba(99,102,241,0.4);border-radius:1rem;padding:1.5rem;text-align:center;">
+                            <p style="color:#e2e8f0;font-weight:700;font-size:1rem;margin-bottom:1rem;">
+                                ¡Has completado todas las oraciones y has desbloqueado el Desafío Global! ✨
+                            </p>
+                            <button onclick="startLevel('global')"
+                                style="background:linear-gradient(135deg,#4f46e5,#3b82f6);color:white;border:none;padding:0.75rem 2rem;border-radius:0.75rem;font-weight:800;font-size:0.95rem;cursor:pointer;letter-spacing:1px;">
+                                [ IR AL DESAFÍO ]
+                            </button>
+                        </div>` : '';
+                })()}
+                
             </div>`;
     }
 }
