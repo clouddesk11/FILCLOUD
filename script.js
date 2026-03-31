@@ -1785,8 +1785,10 @@ function switchTab(tab) {
     if (sectionPerfil) sectionPerfil.style.display = 'none';
     const sectionIa = document.getElementById('ia-juegos');
     if (sectionIa) sectionIa.style.display = 'none';
-    const sectionGp = document.getElementById('gramatica-pro-app');
+   const sectionGp = document.getElementById('gramatica-pro-app');
 if (sectionGp) sectionGp.style.display = 'none';
+const sectionCcq = document.getElementById('cuacua-app');   
+if (sectionCcq) sectionCcq.style.display = 'none';           
     
   document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelector('.ai-btn')?.classList.remove('active');
@@ -1866,7 +1868,12 @@ document.querySelector('.ai-btn-mobile')?.classList.remove('active');
         const sectionGp = document.getElementById('gramatica-pro-app');
         if (sectionGp) sectionGp.style.display = 'block';
         document.querySelector('.ai-btn')?.classList.add('active');      
-    document.querySelector('.ai-btn-mobile')?.classList.add('active'); 
+        document.querySelector('.ai-btn-mobile')?.classList.add('active'); 
+    } else if (tab === 'cuacua-app') {                                      
+        const sectionCcq = document.getElementById('cuacua-app');
+        if (sectionCcq) sectionCcq.style.display = 'block';
+        document.querySelector('.ai-btn')?.classList.add('active');
+        document.querySelector('.ai-btn-mobile')?.classList.add('active');
     }
 }   
 // ============================================
@@ -3554,4 +3561,260 @@ async function initGramaticaPro() {
     await loadData();
     setupRealtime();
     render();
+}
+
+// ============================================
+// CUA CUA QUEST — LÓGICA COMPLETA
+// ============================================
+
+const CCQ_KEY = "AIzaSyDyqNtd8buo1sIXK7ey2YE-F5g1G3E6-jg";
+
+let ccqDocText        = "";
+let ccqVerifiedModel  = "";
+let ccqCurrentQuestions = [];
+let ccqCurrentMode    = '';
+let ccqCorrectCount   = 0;
+const CCQ_TOTAL       = 5;
+
+// ── Abrir la sección ──
+function abrirCuaCuaQuest() {
+    switchTab('cuacua-app');
+    ccq_initApp();
+}
+
+// ── Inicializar el input de archivo (solo una vez) ──
+function ccq_initApp() {
+    const input = document.getElementById('ccq-file-input');
+    if (input && !input._ccqReady) {
+        input._ccqReady = true;
+        input.addEventListener('change', ccq_onFileChange);
+    }
+    // Mostrar los botones de opciones en modo grid
+    const optBox = document.getElementById('ccq-options-box');
+    if (optBox) optBox.style.display = 'none';
+}
+
+// ── Volver al inicio desde el logo del topbar ──
+function ccq_resetApp() {
+    ['ccq-quiz-output','ccq-processing','ccq-results-panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    const optBox = document.getElementById('ccq-options-box');
+    if (optBox) { optBox.classList.add('hidden'); optBox.style.display = 'none'; }
+    document.getElementById('ccq-upload').classList.remove('hidden');
+    document.getElementById('ccq-file-ready').classList.add('hidden');
+    ccqDocText = '';
+    const fileInput = document.getElementById('ccq-file-input');
+    if (fileInput) fileInput.value = '';
+}
+
+// ── Leer el archivo subido ──
+async function ccq_onFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    document.getElementById('ccq-name-tag').innerText = file.name;
+    document.getElementById('ccq-file-ready').classList.remove('hidden');
+
+    // Mostrar opciones
+    const optBox = document.getElementById('ccq-options-box');
+    optBox.classList.remove('hidden');
+    optBox.style.display = 'grid';
+
+    document.getElementById('ccq-quiz-output').classList.add('hidden');
+    document.getElementById('ccq-results-panel').classList.add('hidden');
+
+    try {
+        if (file.name.endsWith('.docx')) {
+            const res = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+            ccqDocText = res.value;
+        } else if (file.name.endsWith('.pdf')) {
+            // Usamos el worker que coincide con la versión de tu página (3.11.174)
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+            let t = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page    = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                t += content.items.map(s => s.str).join(" ") + " ";
+            }
+            ccqDocText = t;
+        } else {
+            ccqDocText = await file.text();
+        }
+    } catch (err) {
+        alert("Error al leer el archivo: " + err.message);
+    }
+}
+
+// ── Obtener el modelo de Gemini disponible ──
+async function ccq_getWorkingModel() {
+    if (ccqVerifiedModel) return ccqVerifiedModel;
+    try {
+        const req  = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${CCQ_KEY}`);
+        const data = await req.json();
+        if (data.models) {
+            const valid = data.models.find(
+                m => m.name.includes("gemini") &&
+                     m.supportedGenerationMethods.includes("generateContent")
+            );
+            if (valid) { ccqVerifiedModel = valid.name; return ccqVerifiedModel; }
+        }
+    } catch (e) {}
+    return "models/gemini-1.5-flash";
+}
+
+// ── Generar preguntas con IA ──
+async function ccq_process(mode) {
+    if (!ccqDocText) { alert("Primero sube un documento."); return; }
+
+    document.getElementById('ccq-processing').classList.remove('hidden');
+    const optBox = document.getElementById('ccq-options-box');
+    optBox.classList.add('hidden'); optBox.style.display = 'none';
+
+    try {
+        const modelToUse = await ccq_getWorkingModel();
+        const queryType  = mode === 'multiple_choice'
+            ? "5 preguntas de opción múltiple con 4 alternativas"
+            : "5 afirmaciones de verdadero o falso con exactamente 2 alternativas: Verdadero y Falso";
+
+        const prompt = `IMPORTANTE: NO escribas saludos, NO digas "Aquí tienes", NO uses formato markdown. Responde ÚNICA Y EXCLUSIVAMENTE con el objeto JSON.
+Genera ${queryType} basadas en este texto.
+El JSON debe ser exactamente así: {"data":[{"q":"pregunta","o":["opcion1","opcion2","opcion3","opcion4"],"a":0}]}
+Texto: ${ccqDocText.substring(0, 6000)}`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/${modelToUse}:generateContent?key=${CCQ_KEY}`;
+        const r   = await fetch(url, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                contents:         [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.2 }
+            })
+        });
+
+        const j = await r.json();
+        if (!r.ok)          throw new Error(j.error?.message || "Error desconocido.");
+        if (!j.candidates)  throw new Error("Google no devolvió respuesta.");
+
+        const textResponse = j.candidates[0].content.parts[0].text;
+        const startIndex   = textResponse.indexOf('{');
+        const endIndex     = textResponse.lastIndexOf('}');
+        if (startIndex === -1 || endIndex === -1)
+            throw new Error("La IA no generó el formato correcto. Intenta de nuevo.");
+
+        const finalData       = JSON.parse(textResponse.substring(startIndex, endIndex + 1)).data;
+        ccqCurrentQuestions   = finalData;
+        ccqCurrentMode        = mode;
+        ccqCorrectCount       = 0;
+        ccq_render(finalData);
+
+    } catch (e) {
+        alert("Error al procesar las preguntas:\n\n" + e.message);
+        const optBox2 = document.getElementById('ccq-options-box');
+        optBox2.classList.remove('hidden'); optBox2.style.display = 'grid';
+    } finally {
+        document.getElementById('ccq-processing').classList.add('hidden');
+    }
+}
+
+// ── Mostrar las preguntas ──
+function ccq_render(data) {
+    const container = document.getElementById('ccq-container');
+    container.innerHTML = "";
+    document.getElementById('ccq-quiz-output').classList.remove('hidden');
+
+    data.forEach((item, i) => {
+        const div       = document.createElement('div');
+        div.className   = "ccq-glass-panel";
+        div.style.cssText = "padding:1.25rem; border-left:4px solid #2563eb; margin-bottom:1rem;";
+
+        const opts = ccqCurrentMode === 'true_false' ? item.o.slice(0, 2) : item.o;
+        const optionsHTML = opts.map((o, idx) => `
+            <button onclick="ccq_verify(this, ${idx}, ${item.a})" class="ccq-option-item">${o}</button>
+        `).join('');
+
+        div.innerHTML = `
+            <p style="font-size:0.875rem; font-weight:700; margin-bottom:1rem; color:var(--text-light);">
+                ${i + 1}. ${item.q}
+            </p>
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">${optionsHTML}</div>
+        `;
+        container.appendChild(div);
+    });
+
+    document.getElementById('ccq-quiz-output').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── Verificar respuesta al hacer clic ──
+function ccq_verify(btn, sel, ok) {
+    const btns = btn.parentElement.children;
+    for (let b of btns) {
+        b.disabled          = true;
+        b.style.opacity     = "0.5";
+        b.style.cursor      = "not-allowed";
+    }
+    btn.style.opacity = "1";
+
+    if (sel === ok) {
+        btn.style.backgroundColor = 'rgba(16,185,129,0.3)';
+        btn.style.borderColor     = '#10b981';
+        btn.style.color           = '#6ee7b7';
+        btn.innerHTML            += ' <span style="float:right;color:#10b981;font-weight:600;">✓ Bien</span>';
+        ccqCorrectCount++;
+    } else {
+        btn.style.backgroundColor = 'rgba(239,68,68,0.3)';
+        btn.style.borderColor     = '#ef4444';
+        btn.style.color           = '#fca5a5';
+        btn.innerHTML            += ' <span style="float:right;color:#ef4444;font-weight:600;">✕ Incorrecto</span>';
+        if (btns[ok]) {
+            setTimeout(() => {
+                btns[ok].style.backgroundColor = 'rgba(16,185,129,0.3)';
+                btns[ok].style.borderColor      = '#10b981';
+                btns[ok].style.color            = '#6ee7b7';
+                btns[ok].style.opacity          = "1";
+                btns[ok].innerHTML             += ' <span style="float:right;color:#10b981;font-weight:600;">✓ Respuesta</span>';
+            }, 2000);
+        }
+    }
+
+    // Si ya contestaste las 5 preguntas → mostrar resultados
+    const allQ        = document.getElementById('ccq-container').querySelectorAll('.ccq-glass-panel');
+    const answered    = Array.from(allQ).filter(q => q.querySelector('button[disabled]')).length;
+    if (answered === CCQ_TOTAL) {
+        setTimeout(() => { ccq_showResults(); }, 2000);
+    }
+}
+
+// ── Mostrar panel de resultados ──
+function ccq_showResults() {
+    document.getElementById('ccq-quiz-output').classList.add('hidden');
+    document.getElementById('ccq-results-panel').classList.remove('hidden');
+    const incorrect = CCQ_TOTAL - ccqCorrectCount;
+    const pct       = Math.round((ccqCorrectCount / CCQ_TOTAL) * 100);
+    document.getElementById('ccq-correct-count').textContent   = ccqCorrectCount;
+    document.getElementById('ccq-incorrect-count').textContent = incorrect;
+    document.getElementById('ccq-score-percentage').textContent = pct + '%';
+}
+
+// ── Reintentar el mismo cuestionario ──
+function ccq_retrySameQuiz() {
+    document.getElementById('ccq-results-panel').classList.add('hidden');
+    document.getElementById('ccq-quiz-output').classList.remove('hidden');
+    ccqCorrectCount = 0;
+    ccq_render(ccqCurrentQuestions);
+}
+
+// ── Generar un nuevo cuestionario con el mismo documento ──
+function ccq_generateNextQuiz() {
+    document.getElementById('ccq-results-panel').classList.add('hidden');
+    document.getElementById('ccq-quiz-output').classList.add('hidden');
+    document.getElementById('ccq-processing').classList.remove('hidden');
+    document.getElementById('ccq-loading-text').textContent = ccqCurrentMode === 'multiple_choice'
+        ? "Cargando nuevas preguntas de opción múltiple..."
+        : "Cargando nuevas afirmaciones de verdadero/falso...";
+    ccqCorrectCount = 0;
+    if (ccqCurrentMode) ccq_process(ccqCurrentMode);
 }
