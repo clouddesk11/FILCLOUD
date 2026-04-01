@@ -3658,7 +3658,6 @@ async function ccq_process(mode) {
     optBox.classList.add('hidden'); optBox.style.display = 'none';
 
     try {
-        const modelToUse = await ccq_getWorkingModel();
         const queryType  = mode === 'multiple_choice'
             ? "5 preguntas de opción múltiple con 4 alternativas"
             : "5 afirmaciones de verdadero o falso con exactamente 2 alternativas: Verdadero y Falso";
