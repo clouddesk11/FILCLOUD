@@ -270,6 +270,7 @@ async function completarRegistroLaptop(user) {
           iniciarListenerFotoPerfil();
           iniciarListenerCicloEsp();   // ← agregar esta línea
             actualizarPerfilSidebar();
+            await postLoginInit();
             verificarBienvenida();   // ← línea nueva
             return;
         }
@@ -288,6 +289,7 @@ async function completarRegistroLaptop(user) {
       iniciarListenerFotoPerfil();
       iniciarListenerCicloEsp();   // ← agregar esta línea
         actualizarPerfilSidebar();
+        await postLoginInit();
         verificarBienvenida();   // ← línea nueva
     } catch (error) {
         console.error('Error en completarRegistroLaptop:', error);
@@ -466,6 +468,7 @@ async function procesarLoginGoogle(user) {
             iniciarListenerFotoPerfil();
             iniciarListenerCicloEsp();   // ← agregar esta línea
             actualizarPerfilSidebar();
+            await postLoginInit();
             verificarBienvenida();   // ← línea nueva
             return;
         }
@@ -479,6 +482,7 @@ async function procesarLoginGoogle(user) {
         iniciarListenerFotoPerfil();
        iniciarListenerCicloEsp();   // ← agregar esta línea
         actualizarPerfilSidebar();
+        await postLoginInit();
 
     } catch (error) {
         console.error('Error en procesarLoginGoogle:', error);
@@ -618,6 +622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     iniciarListenerFotoPerfil();
                     iniciarListenerCicloEsp();   // ← agregar esta línea
                     actualizarPerfilSidebar();
+                    await postLoginInit();
                 } else {
                     showAuthModal(); getDeviceType() === 'mobile' ? mostrarPaso1() : mostrarPasoLaptop();
                 }
@@ -631,7 +636,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (!_appInicializada) {
-            _appInicializada = true; updatePendingBadge(); actualizarPerfilSidebar(); switchTab('repositorio');
+            _appInicializada = true;
+            updatePendingBadge();
+            actualizarPerfilSidebar();
+            if (!localStorage.getItem('eduspace_docente_perfil')) {
+                switchTab('repositorio');
+            }
         }
         setTimeout(() => { _authValidating = false; }, 4000);
     });
@@ -740,6 +750,73 @@ function iniciarListenerFotoPerfil() {
 }
 
 // ============================================
+// CARGAR ÁREAS SEGÚN ESPECIALIDAD/CICLO
+// ============================================
+async function cargarAreasDePerfil() {
+    const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    const contenedor = document.getElementById('filter-buttons-areas');
+    if (!contenedor) return;
+
+    // Siempre reiniciar con el botón "Todo"
+    contenedor.innerHTML = '<button class="filter-btn active" onclick="filterFiles(\'all\')">Todo</button>';
+
+    if (!perfil || !perfil.especialidad || !perfil.ciclo) return;
+    if (!supabaseClient) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('especialidades')
+            .select('area')
+            .eq('especialidad', perfil.especialidad)
+            .eq('ciclo', perfil.ciclo)
+            .order('area', { ascending: true });
+
+        if (error || !data || data.length === 0) return;
+
+        data.forEach(row => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = row.area;
+            btn.onclick = function() { filterFiles(row.area); };
+            contenedor.appendChild(btn);
+        });
+    } catch(e) {
+        console.error('Error cargando áreas:', e);
+    }
+}
+
+async function cargarArchivosDeSupabase() {
+    if (!supabaseClient) return;
+    const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    if (!perfil || !perfil.especialidad || !perfil.ciclo) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('archivos')
+            .select('*')
+            .eq('especialidad', perfil.especialidad)
+            .eq('ciclo', perfil.ciclo)
+            .order('fecha_subida', { ascending: false });
+        if (error) throw error;
+        filesDB = (data || []).map(f => ({
+            id:            f.id,
+            title:         f.titulo,
+            area:          f.area,
+            teacher:       f.docente_email,
+            date:          f.fecha_subida ? f.fecha_subida.slice(0,10) : '',
+            type:          f.file_type,
+            file_url:      f.file_url,
+            file_name:     f.file_name,
+            docente_nombre:f.docente_nombre,
+            docente_foto:  f.docente_foto
+        }));
+        renderFiles('all');
+        cargarAreasDePerfil();
+    } catch(e) {
+        console.error('Error cargando archivos:', e);
+    }
+}
+
+// ============================================
 // LISTENER CICLO/ESPECIALIDAD EN TIEMPO REAL
 // ============================================
 let cicloEspListener = null;
@@ -766,12 +843,12 @@ function iniciarListenerCicloEsp() {
             if (nuevaEsp   && nuevaEsp   !== perfilLocal.especialidad) { perfilLocal.especialidad = nuevaEsp;   cambio = true; }
             if (nuevoCiclo && nuevoCiclo !== perfilLocal.ciclo)        { perfilLocal.ciclo        = nuevoCiclo; cambio = true; }
 
-            if (cambio) {
-                localStorage.setItem('eduspace_student_profile', JSON.stringify(perfilLocal));
-                actualizarPerfilSidebar();
-                // Mostrar notificación de que el ciclo cambió
-                mostrarNotificacionCambio(`Tu ciclo fue actualizado a: Ciclo ${nuevoCiclo}`);
-            }
+          if (cambio) {
+    localStorage.setItem('eduspace_student_profile', JSON.stringify(perfilLocal));
+    actualizarPerfilSidebar();
+    cargarAreasDePerfil();   // ← AGREGAR ESTA LÍNEA
+    mostrarNotificacionCambio(`Tu ciclo fue actualizado a: Ciclo ${nuevoCiclo}`);
+}
         });
     } catch(e) { console.error('Error listener ciclo/esp:', e); }
 }
@@ -809,26 +886,11 @@ if (cicloEspListener)   database.ref(`codigos/${parsed.codigo}`).off('value', ci
 // ============================================
 // BASE DE DATOS
 // ============================================
-const teachersDB = {
-    "Prof. Alejandro Ruiz": { name:"Prof. Alejandro Ruiz", title:"Profesor de Matemáticas",    photo:"https://i.pravatar.cc/150?img=12", email:"alejandro.ruiz@eduspace.com",  phone:"+51 987 654 321" },
-    "Dra. María González":  { name:"Dra. María González",  title:"Doctora en Biológicas",       photo:"https://i.pravatar.cc/150?img=12", email:"maria.gonzalez@eduspace.com",  phone:"+51 987 654 322" },
-    "Lic. Carlos Fuentes":  { name:"Lic. Carlos Fuentes",  title:"Licenciado en Literatura",    photo:"https://i.pravatar.cc/150?img=12", email:"carlos.fuentes@eduspace.com",  phone:"+51 987 654 323" },
-    "Prof. Diana Prince":   { name:"Prof. Diana Prince",   title:"Profesora de Historia",       photo:"https://i.pravatar.cc/150?img=12", email:"diana.prince@eduspace.com",    phone:"+51 987 654 324" }
-};
+let teachersDB = {}; // Se llenará dinámicamente desde Supabase
 
-const filesDB = [
-    { id:1, title:"Guía de Álgebra Avanzada",       area:"Matemáticas", teacher:"Prof. Alejandro Ruiz", date:"2025-05-10", type:"PDF",  urlView:"https://docs.google.com/document/d/1u223FM_asu6nkbkHdYPc48QyOMow7sDH/edit?usp=drive_link&ouid=110125860748103327612&rtpof=true&sd=true", urlDownload:"https://res.cloudinary.com/dwzwa3gp0/raw/upload/v1766695102/D%C3%89FICIT_DE_PROYECTO_DE_INVESTIGACI%C3%93N_mxcrj4.docx" },
-    { id:2, title:"La Célula y sus partes",          area:"Ciencias",    teacher:"Dra. María González",  date:"2025-05-12", type:"PPTX", urlView:"https://docs.google.com/presentation/d/1234567890/preview", urlDownload:"https://docs.google.com/presentation/d/1234567890/export/pptx" },
-    { id:3, title:"Ensayo: Realismo Mágico",         area:"Literatura",  teacher:"Lic. Carlos Fuentes",  date:"2025-05-14", type:"DOCX", urlView:"https://docs.google.com/document/d/1234567890/preview",     urlDownload:"https://docs.google.com/document/d/1234567890/export?format=docx" },
-    { id:4, title:"Revolución Industrial",           area:"Historia",    teacher:"Prof. Diana Prince",    date:"2025-05-15", type:"PDF",  urlView:"https://drive.google.com/file/d/1234567890/preview",         urlDownload:"https://drive.google.com/uc?export=download&id=1234567890" },
-    { id:5, title:"Ejercicios de Trigonometría",     area:"Matemáticas", teacher:"Prof. Alejandro Ruiz", date:"2025-05-18", type:"PDF",  urlView:"https://drive.google.com/file/d/0987654321/preview",         urlDownload:"https://drive.google.com/uc?export=download&id=0987654321" }
-];
+let filesDB = []; // Se carga desde Supabase
 
-const assignmentsDB = [
-    { id:101, task:"Informe de Laboratorio #3", teacher:"Dra. María González", deadline:"2025-05-25", status:"Pendiente", description:"Realizar un informe completo sobre el experimento de fotosíntesis realizado en clase. El informe debe incluir introducción, metodología, resultados, análisis y conclusiones.", requirements:["Mínimo 5 páginas, máximo 8 páginas","Incluir gráficos y tablas de los datos obtenidos","Referencias bibliográficas en formato APA","Análisis crítico de los resultados","Conclusiones basadas en evidencia científica"], attachments:[{ name:"Guía del Informe.pdf", size:"245 KB", type:"PDF", downloadUrl:"enlace de google drive" },{ name:"Datos del Experimento.xlsx", size:"128 KB", type:"Excel", downloadUrl:"enlace desde google drive" }] },
-    { id:102, task:"Análisis de 'Cien Años de Soledad'", teacher:"Lic. Carlos Fuentes", deadline:"2025-05-20", status:"Pendiente", description:"Realizar un análisis literario profundo de la obra 'Cien Años de Soledad' de Gabriel García Márquez.", requirements:["Ensayo de 6-8 páginas","Análisis de al menos 3 personajes principales","Identificación de elementos del realismo mágico","Contexto histórico y social de la obra","Citas textuales debidamente referenciadas"], attachments:[{ name:"Rúbrica de Evaluación.pdf", size:"156 KB", type:"PDF", downloadUrl:"enlace de google drive" },{ name:"Ejemplos de Análisis.docx", size:"89 KB", type:"Word", downloadUrl:"enlace desde github" }] },
-    { id:103, task:"Línea de tiempo S.XIX", teacher:"Prof. Diana Prince", deadline:"2025-05-10", status:"Pendiente", description:"Crear una línea de tiempo interactiva que muestre los eventos más importantes del siglo XIX a nivel mundial.", requirements:["Mínimo 20 eventos históricos relevantes","Incluir imágenes representativas de cada evento","Descripción de 50-100 palabras por evento","Formato digital (PowerPoint, Prezi o similar)","Presentación visual atractiva y organizada"], attachments:[{ name:"Plantilla Línea de Tiempo.pptx", size:"512 KB", type:"PowerPoint", downloadUrl:"enlace de google drive" },{ name:"Lista de Eventos Sugeridos.pdf", size:"198 KB", type:"PDF", downloadUrl:"enlace desde github" }] }
-];
+let assignmentsDB = []; // ahora se carga desde Supabase
 
 // ============================================
 // RECURSOS DB
@@ -1204,7 +1266,7 @@ function renderFilesArray(files) {
         if (file.type === 'DOCX' || file.type === 'DOC')      iconClass = 'fa-file-word';
         else if (file.type === 'PPTX' || file.type === 'PPT') iconClass = 'fa-file-powerpoint';
         else if (file.type === 'XLSX' || file.type === 'XLS') iconClass = 'fa-file-excel';
-        card.innerHTML = `<div class="file-cover"><i class="fa-solid ${iconClass} file-cover-icon"></i><span class="file-cover-badge">${file.area}</span></div><div class="file-card-body"><h3 class="file-title">${file.title}</h3><div class="file-details"><p><i class="fa-regular fa-calendar"></i> ${file.date}</p><div class="teacher-profile"><img src="${teacher.photo}" alt="${teacher.name}" class="teacher-avatar" onclick="openProfileModal('${file.teacher}')"><span class="teacher-name">${teacher.name}</span></div></div><div class="card-actions"><button onclick="viewFile('${file.urlView}')" class="btn btn-view"><i class="fa-regular fa-eye"></i> Ver</button><a href="${file.urlDownload}" download class="btn btn-download"><i class="fa-solid fa-download"></i> Descargar</a></div></div>`;
+        card.innerHTML = `<div class="file-cover"><i class="fa-solid ${iconClass} file-cover-icon"></i><span class="file-cover-badge">${file.area}</span></div><div class="file-card-body"><h3 class="file-title">${file.title}</h3><div class="file-details"><p><i class="fa-regular fa-calendar"></i> ${file.date}</p><div class="teacher-profile"><img src="${teacher ? teacher.photo : 'https://i.pravatar.cc/150?img=3'}" alt="${teacher ? teacher.name : file.docente_nombre || ''}" class="teacher-avatar" onclick="openProfileModal('${file.teacher}')"><span class="teacher-name">${teacher ? teacher.name : file.docente_nombre || file.teacher}</span></div></div><div class="card-actions"><button onclick="viewFile('${file.file_url}')" class="btn btn-view"><i class="fa-regular fa-eye"></i> Ver</button><a href="${file.file_url}" target="_blank" download="${file.file_name || ''}" class="btn btn-download"><i class="fa-solid fa-download"></i> Descargar</a></div></div>`;
         filesGrid.appendChild(card);
     });
 }
@@ -1262,34 +1324,114 @@ function toggleTrabajosFinalizados() {
     }
 }
 
+async function cargarTrabajosDesdeSupabase() {
+    if (!supabaseClient) return;
+    const perfil = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    if (!perfil || !perfil.especialidad || !perfil.ciclo) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('trabajos')
+            .select('*')
+            .eq('especialidad', perfil.especialidad)
+            .eq('ciclo', perfil.ciclo)
+            .order('fecha_creacion', { ascending: false });
+        if (error) throw error;
+        assignmentsDB = (data || []).map(t => ({
+            id: t.id,
+            task: t.titulo,
+            teacher: t.docente_email,
+            teacherName: t.docente_nombre,
+            teacherPhoto: t.docente_foto || '',
+            deadline: t.fecha_limite || '—',
+            description: t.descripcion || '',
+            requirements: Array.isArray(t.requisitos) ? t.requisitos : [],
+            status: 'Pendiente'
+        }));
+    } catch(e) { console.error('Error cargando trabajos:', e); }
+}
+
 function renderAssignments() {
     assignmentsContainer.innerHTML = '';
-    const pendingAssignments = getPendingAssignments();
-    if (pendingAssignments.length === 0) { assignmentsContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No hay trabajos pendientes. ¡Excelente trabajo!</p>'; return; }
-    pendingAssignments.forEach(work => {
-        const teacher = teachersDB[work.teacher];
-        let statusClass = '';
-        switch(work.status) { case 'Pendiente': statusClass = 'status-pending'; break; case 'Entregado': statusClass = 'status-submitted'; break; case 'Atrasado': statusClass = 'status-late'; break; }
-        const card = document.createElement('div'); card.classList.add('assignment-card');
-        card.innerHTML = `<div class="assignment-header"><h3 class="assignment-title">${work.task}</h3><span class="status-badge ${statusClass}">${work.status}</span></div><div class="assignment-teacher"><img src="${teacher.photo}" alt="${teacher.name}" class="teacher-avatar-card" onclick="openProfileModal('${work.teacher}')"><div class="teacher-info"><span class="teacher-info-name">${teacher.name}</span><span class="teacher-info-title">${teacher.title}</span></div></div><div class="assignment-meta"><div class="meta-item"><i class="fa-regular fa-calendar"></i><span>Fecha límite: ${work.deadline}</span></div></div><div class="assignment-actions"><button class="btn btn-view" onclick="openDetailsModal(${work.id})"><i class="fa-solid fa-info-circle"></i> Ver Detalles</button><button class="btn btn-completed" onclick="openCompletedModal(${work.id})"><i class="fa-solid fa-check-circle"></i> Cumplido</button></div>`;
+    const completed = getCompletedAssignments();
+    const pending = assignmentsDB.filter(a => !completed.includes(a.id));
+    if (pending.length === 0) {
+        assignmentsContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No hay trabajos pendientes.</p>';
+        return;
+    }
+    pending.forEach(work => {
+        const card = document.createElement('div');
+        card.classList.add('assignment-card');
+        card.innerHTML = `
+            <div class="assignment-header">
+                <h3 class="assignment-title">${work.task}</h3>
+                <span class="status-badge status-pending">Pendiente</span>
+            </div>
+            <div class="assignment-teacher">
+                <img src="${work.teacherPhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(work.teacherName || 'Docente') + '&background=3b82f6&color=fff'}"
+                     alt="${work.teacherName || ''}" class="teacher-avatar-card"
+                     onerror="this.src='https://ui-avatars.com/api/?name=D&background=3b82f6&color=fff'">
+                <div class="teacher-info">
+                    <span class="teacher-info-name">${work.teacherName || work.teacher || ''}</span>
+                    <span class="teacher-info-title">Docente</span>
+                </div>
+            </div>
+            <div class="assignment-meta">
+                <div class="meta-item">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Fecha límite: ${work.deadline}</span>
+                </div>
+            </div>
+            <div class="assignment-actions">
+                <button class="btn btn-view" onclick="openDetailsModal('${work.id}')">
+                    <i class="fa-solid fa-info-circle"></i> Ver Detalles
+                </button>
+                <button class="btn btn-completed" onclick="openCompletedModal('${work.id}')">
+                    <i class="fa-solid fa-check-circle"></i> Cumplido
+                </button>
+            </div>`;
         assignmentsContainer.appendChild(card);
     });
 }
 
 function renderFinalizados() {
     finalizadosContainer.innerHTML = '';
-    const finishedAssignments = getFinishedAssignments();
-    if (finishedAssignments.length === 0) { finalizadosContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No hay trabajos finalizados aún.</p>'; return; }
-    finishedAssignments.forEach(work => {
-        const teacher = teachersDB[work.teacher];
-        const card = document.createElement('div'); card.classList.add('assignment-card');
-        card.innerHTML = `<div class="assignment-header"><h3 class="assignment-title">${work.task}</h3><span class="status-badge status-submitted">Finalizado</span></div><div class="assignment-teacher"><img src="${teacher.photo}" alt="${teacher.name}" class="teacher-avatar-card" onclick="openProfileModal('${work.teacher}')"><div class="teacher-info"><span class="teacher-info-name">${teacher.name}</span><span class="teacher-info-title">${teacher.title}</span></div></div><div class="assignment-meta"><div class="meta-item"><i class="fa-regular fa-calendar"></i><span>Fecha límite: ${work.deadline}</span></div><div class="meta-item"><i class="fa-solid fa-check"></i><span>Completado</span></div></div><div class="assignment-actions"><button class="btn btn-view" onclick="openDetailsModal(${work.id})"><i class="fa-solid fa-info-circle"></i> Ver Detalles</button></div>`;
+    const completed = getCompletedAssignments();
+    const finished = assignmentsDB.filter(a => completed.includes(a.id));
+    if (finished.length === 0) {
+        finalizadosContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No hay trabajos finalizados aún.</p>';
+        return;
+    }
+    finished.forEach(work => {
+        const card = document.createElement('div');
+        card.classList.add('assignment-card');
+        card.innerHTML = `
+            <div class="assignment-header">
+                <h3 class="assignment-title">${work.task}</h3>
+                <span class="status-badge status-submitted">Finalizado</span>
+            </div>
+            <div class="assignment-teacher">
+                <img src="${work.teacherPhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(work.teacherName || 'D') + '&background=3b82f6&color=fff'}"
+                     alt="${work.teacherName || ''}" class="teacher-avatar-card"
+                     onerror="this.src='https://ui-avatars.com/api/?name=D&background=3b82f6&color=fff'">
+                <div class="teacher-info">
+                    <span class="teacher-info-name">${work.teacherName || work.teacher || ''}</span>
+                    <span class="teacher-info-title">Docente</span>
+                </div>
+            </div>
+            <div class="assignment-meta">
+                <div class="meta-item"><i class="fa-regular fa-calendar"></i><span>Fecha límite: ${work.deadline}</span></div>
+            </div>
+            <div class="assignment-actions">
+                <button class="btn btn-view" onclick="openDetailsModal('${work.id}')">
+                    <i class="fa-solid fa-info-circle"></i> Ver Detalles
+                </button>
+            </div>`;
         finalizadosContainer.appendChild(card);
     });
 }
 
 function openCompletedModal(assignmentId) {
-    const assignment = assignmentsDB.find(a => a.id === assignmentId);
+    const assignment = assignmentsDB.find(a => String(a.id) === String(assignmentId));
     if (!assignment) return;
     currentAssignmentToComplete = assignmentId;
     const teacher = teachersDB[assignment.teacher];
@@ -1303,13 +1445,36 @@ function confirmCompleted() { if (currentAssignmentToComplete) { saveCompletedAs
 // ============================================
 // DOCENTES
 // ============================================
-function renderDocentes() {
-    docentesGrid.innerHTML = '';
-    Object.values(teachersDB).forEach(teacher => {
-        const card = document.createElement('div'); card.classList.add('docente-card');
-        card.innerHTML = `<img src="${teacher.photo}" alt="${teacher.name}" class="docente-avatar-large"><h3 class="docente-name">${teacher.name}</h3><p class="docente-title">${teacher.title}</p><div class="docente-info"><p><i class="fa-solid fa-envelope"></i> ${teacher.email}</p><p><i class="fa-solid fa-phone"></i> ${teacher.phone}</p></div>`;
-        docentesGrid.appendChild(card);
-    });
+async function renderDocentes() {
+    docentesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando docentes...</p>';
+    if (!supabaseClient) { docentesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--danger);">Error de conexión.</p>'; return; }
+    try {
+        const { data, error } = await supabaseClient.from('docentes').select('*').order('nombre', { ascending: true });
+        if (error) throw error;
+        docentesGrid.innerHTML = '';
+        if (!data || data.length === 0) { docentesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">No hay docentes registrados aún.</p>'; return; }
+        teachersDB = {};
+        data.forEach(doc => {
+            teachersDB[doc.email] = { name: doc.nombre, email: doc.email, phone: doc.telefono || '', photo: doc.foto_url || 'https://i.pravatar.cc/150?img=3', especialidades: doc.especialidades || [] };
+            const card = document.createElement('div'); card.classList.add('docente-card');
+           const iniciales = (doc.nombre || 'D').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+const avatarUrl = doc.foto_url && doc.foto_url.trim() !== ''
+    ? doc.foto_url
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.nombre)}&background=3b82f6&color=fff&size=200`;
+
+card.innerHTML = `
+    <img src="${avatarUrl}" alt="${doc.nombre}" class="docente-avatar-large"
+         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(doc.nombre)}&background=3b82f6&color=fff&size=200'">
+    <h3 class="docente-name">${doc.nombre}</h3>
+    <div class="docente-info" style="margin-top:.5rem;">
+        <p><i class="fa-solid fa-envelope"></i> ${doc.email}</p>
+        ${doc.telefono ? `<p><i class="fa-solid fa-phone"></i> ${doc.telefono}</p>` : ''}
+    </div>`;
+            docentesGrid.appendChild(card);
+        });
+    } catch(e) {
+        docentesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--danger);">Error al cargar docentes.</p>';
+    }
 }
 
 // ============================================
@@ -1326,7 +1491,7 @@ function openProfileModal(teacherName) {
 function closeProfileModal() { profileModal.style.display = 'none'; }
 
 function openDetailsModal(assignmentId) {
-    const assignment = assignmentsDB.find(a => a.id === assignmentId);
+    const assignment = assignmentsDB.find(a => String(a.id) === String(assignmentId));
     if (!assignment) return;
     document.getElementById('detailsTaskName').textContent = assignment.task;
     document.getElementById('detailsTeacher').textContent  = assignment.teacher;
@@ -1584,9 +1749,54 @@ function actualizarEncabezadoEstudiantes() {
 // CAMBIO: reemplazado btn-amigos por facepile
 // ============================================
 function actualizarSeccionPerfil() {
-    const perfil    = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
     const contenido = document.getElementById('perfil-seccion-contenido');
     if (!contenido) return;
+
+    // ── Si es docente, mostrar su perfil ──
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    if (docenteRaw) {
+        const docente = JSON.parse(docenteRaw);
+        const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(docente.nombre || 'D')}&background=8b5cf6&color=fff&size=200`;
+        contenido.innerHTML = `
+            <div class="perfil-seccion-inner">
+                <div class="mi-card-wrapper">
+                    <div class="mi-card-foto-wrap" style="position:relative;display:inline-block;">
+                        <img src="${docente.foto_url || fallback}" alt="${docente.nombre || ''}"
+                             class="mi-card-foto"
+                             onerror="this.src='${fallback}'"
+                             style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #8b5cf6;">
+                        <button class="mi-card-lapiz" style="background:#8b5cf6;"
+                                title="Cambiar foto"
+                                onclick="document.getElementById('docente-foto-input').click()">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <input type="file" id="docente-foto-input" accept="image/*" style="display:none;"
+                               onchange="procesarFotoDocente(event)">
+                    </div>
+                    <div class="mi-card-info">
+                        <span class="mi-card-nombre">${docente.nombre || '—'}</span>
+                        <div class="mi-card-badges">
+                            <span class="mi-card-badge-esp" style="border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.12);color:#a78bfa;">
+                                <i class="fa-solid fa-chalkboard-user"></i> Docente
+                            </span>
+                        </div>
+                        <span class="mi-card-fecha" style="color:var(--text-muted);font-size:.75rem;">
+                            <i class="fa-solid fa-envelope"></i> ${docente.email || '—'}
+                        </span>
+                    </div>
+                    <span class="mi-card-tag" style="background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.35);color:#a78bfa;">
+                        <i class="fa-solid fa-check-circle"></i> Activo
+                    </span>
+                </div>
+                <p class="perfil-institucion">
+                    <i class="fa-solid fa-school"></i> I.E.S.P.P. Picota - San Martín
+                </p>
+            </div>`;
+        return; // ← no sigue al perfil de estudiante
+    }
+
+    const perfil    = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    const contenido2 = contenido; // alias for clarity, same element
 
     if (!perfil || !perfil.supabase_registered) {
         contenido.innerHTML = `
@@ -1741,7 +1951,12 @@ async function renderFacepileAmigos() {
 // PERFIL EN SIDEBAR
 // ============================================
 function actualizarPerfilSidebar() {
-    const perfil  = JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+    // Si es docente, usar su perfil
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    const perfil = docenteRaw
+        ? JSON.parse(docenteRaw)
+        : JSON.parse(localStorage.getItem('eduspace_student_profile') || 'null');
+
     const wrapper = document.getElementById('sidebar-profile-wrapper');
     if (!wrapper) return;
     if (!perfil) { wrapper.style.display = 'none'; return; }
@@ -1823,6 +2038,340 @@ function actualizarFooterActivo(tab) {
 }
 
 // ============================================
+// ═══════ PANEL DOCENTE ═══════
+async function verificarSiEsDocente(emailUsuario) {
+    if (!supabaseClient || !emailUsuario) return null;
+    try {
+        const { data } = await supabaseClient
+            .from('docentes')
+            .select('*')
+            .eq('email', emailUsuario.toLowerCase())
+            .single();
+        return data || null;
+    } catch { return null; }
+}
+
+async function postLoginInit() {
+    const user = auth.currentUser;
+    const emailUsuario = user?.email || '';
+
+    if (emailUsuario && supabaseClient) {
+        const esDocente = await verificarSiEsDocente(emailUsuario);
+        if (esDocente) {
+            localStorage.setItem('eduspace_docente_perfil', JSON.stringify(esDocente));
+            activarModoDocente(esDocente);
+            return;
+        }
+    }
+    // Si no es docente (o no hay email), flujo normal de estudiante
+    localStorage.removeItem('eduspace_docente_perfil');
+    await renderDocentes(); // primero carga teachersDB
+    cargarArchivosDeSupabase();
+    renderEstudiantes();
+    cargarAreasDePerfil();
+}
+
+function activarModoDocente(docenteData) {
+    const ocultarTabs = ['tab-docentes'];
+    ocultarTabs.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.style.display = 'none';
+    });
+    mostrarPanelDocente(docenteData);
+}
+
+function toggleToolCard(id) {
+    const body  = document.getElementById('body-' + id);
+    const arrow = document.getElementById('arrow-' + id);
+    const isOpen = body.style.display !== 'none';
+    body.style.display    = isOpen ? 'none' : 'block';
+    arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+    if (id === 'repo' && !isOpen) cargarRepoDocente();
+    if (id === 'trabajos' && !isOpen) {
+        renderTrabajoEspSelector();
+        const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+        const docente = docenteRaw ? JSON.parse(docenteRaw) : {};
+        if (docente.email) cargarHistorialTrabajosDocente(docente.email);
+    }
+}
+
+function mostrarPanelDocente(docente) {
+    const saludo = document.getElementById('gestion-saludo');
+    if (saludo) saludo.textContent = `¡Hola, ${docente.nombre}! Esperamos que tengas una excelente jornada educativa. Aquí tienes tus herramientas principales.`;
+    document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
+    const sec = document.getElementById('gestion-docente');
+    if (sec) sec.style.display = 'block';
+    const bodyManual = document.getElementById('body-manual');
+    if (bodyManual) bodyManual.style.display = 'block';
+}
+
+// ── Renderizar selector de especialidad/ciclo para el formulario de trabajos ──
+function renderTrabajoEspSelector() {
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    if (!docenteRaw) return;
+    const docente = JSON.parse(docenteRaw);
+    const cont = document.getElementById('trabajo-esp-selector');
+    if (!cont) return;
+    const areas = docente.especialidades || [];
+    if (areas.length === 0) { cont.innerHTML = '<p style="color:var(--text-muted);font-size:.83rem;">Sin especialidades asignadas.</p>'; return; }
+
+    const grupos = {};
+    areas.forEach(a => {
+        const k = `${a.especialidad}||${a.ciclo}`;
+        if (!grupos[k]) grupos[k] = { especialidad: a.especialidad, ciclo: a.ciclo };
+    });
+
+    let html = '<label style="color:var(--text-muted);font-size:.85rem;">Especialidad y Ciclo destino</label><select id="trabajo-esp-ciclo" style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;margin-top:.3rem;">';
+    Object.values(grupos).forEach(g => {
+        html += `<option value="${g.especialidad}||${g.ciclo}">${g.especialidad} — Ciclo ${g.ciclo}</option>`;
+    });
+    html += '</select>';
+    cont.innerHTML = html;
+}
+
+// ── Publicar trabajo desde el panel docente ──
+async function publicarTrabajoDocente() {
+    const titulo      = document.getElementById('trabajo-titulo')?.value.trim();
+    const descripcion = document.getElementById('trabajo-descripcion')?.value.trim();
+    const reqRaw      = document.getElementById('trabajo-requisitos')?.value.trim();
+    const fecha       = document.getElementById('trabajo-fecha')?.value;
+    const espCiclo    = document.getElementById('trabajo-esp-ciclo')?.value;
+    const errEl       = document.getElementById('trabajo-error');
+
+    if (errEl) errEl.style.display = 'none';
+
+    if (!titulo) { if (errEl) { errEl.textContent = '⚠️ El título es obligatorio.'; errEl.style.display = 'block'; } return; }
+    if (!espCiclo) { if (errEl) { errEl.textContent = '⚠️ Selecciona especialidad y ciclo.'; errEl.style.display = 'block'; } return; }
+
+    const [especialidad, ciclo] = espCiclo.split('||');
+    const requisitos = reqRaw ? reqRaw.split('\n').map(r => r.trim()).filter(r => r) : [];
+
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    const docente    = docenteRaw ? JSON.parse(docenteRaw) : {};
+
+    try {
+        const { error } = await supabaseClient.from('trabajos').insert([{
+            titulo,
+            descripcion,
+            requisitos,
+            fecha_limite: fecha || null,
+            especialidad,
+            ciclo,
+            docente_email:  docente.email  || '',
+            docente_nombre: docente.nombre || '',
+            docente_foto:   docente.foto_url || ''
+        }]);
+        if (error) throw error;
+        mostrarToast('✅ Trabajo publicado correctamente');
+        document.getElementById('trabajo-titulo').value       = '';
+        document.getElementById('trabajo-descripcion').value  = '';
+        document.getElementById('trabajo-requisitos').value   = '';
+        document.getElementById('trabajo-fecha').value        = '';
+        cargarHistorialTrabajosDocente(docente.email);
+    } catch(e) {
+        if (errEl) { errEl.textContent = '❌ Error: ' + e.message; errEl.style.display = 'block'; }
+    }
+}
+
+// ── Historial de trabajos del docente ──
+async function cargarHistorialTrabajosDocente(docEmail) {
+    if (!supabaseClient || !docEmail) return;
+    const hist = document.getElementById('historial-trabajos-docente');
+    if (!hist) return;
+    hist.innerHTML = '<p style="color:var(--text-muted);font-size:.83rem;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</p>';
+    try {
+        const { data } = await supabaseClient
+            .from('trabajos')
+            .select('*')
+            .eq('docente_email', docEmail)
+            .order('fecha_creacion', { ascending: false })
+            .limit(10);
+        hist.innerHTML = '';
+        if (!data || !data.length) { hist.innerHTML = '<p style="color:var(--text-muted);font-size:.83rem;">Sin trabajos publicados.</p>'; return; }
+        data.forEach(t => {
+            const row = document.createElement('div');
+            row.style = 'display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;background:rgba(255,255,255,.03);border:1px solid var(--border-color);border-radius:8px;';
+            const fecha = t.fecha_limite ? new Date(t.fecha_limite + 'T12:00:00').toLocaleDateString('es-PE') : '—';
+            row.innerHTML = `
+                <i class="fa-solid fa-clipboard-list" style="color:var(--primary-color);flex-shrink:0;"></i>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;color:var(--text-light);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.titulo}</div>
+                    <div style="color:var(--text-muted);font-size:.75rem;">${t.especialidad} / Ciclo ${t.ciclo} · Límite: ${fecha}</div>
+                </div>
+                <button onclick="eliminarTrabajoDocente('${t.id}')" style="background:transparent;border:1px solid var(--danger);color:var(--danger);border-radius:6px;padding:3px 8px;font-size:.75rem;cursor:pointer;flex-shrink:0;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>`;
+            hist.appendChild(row);
+        });
+    } catch(e) { hist.innerHTML = '<p style="color:var(--danger);font-size:.83rem;">Error al cargar.</p>'; }
+}
+
+async function eliminarTrabajoDocente(trabajoId) {
+    if (!confirm('¿Eliminar este trabajo?')) return;
+    const { error } = await supabaseClient.from('trabajos').delete().eq('id', trabajoId);
+    if (error) { alert('Error: ' + error.message); return; }
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    const docente = docenteRaw ? JSON.parse(docenteRaw) : {};
+    cargarHistorialTrabajosDocente(docente.email);
+    mostrarToast('✅ Trabajo eliminado');
+}
+
+async function procesarFotoDocente(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert('⚠️ Imagen muy grande. Máximo 5MB.'); return; }
+    if (!file.type.startsWith('image/')) { alert('⚠️ Selecciona una imagen válida.'); return; }
+
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    if (!docenteRaw) return;
+    const docente = JSON.parse(docenteRaw);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.querySelector('#perfil-seccion-contenido .mi-card-foto');
+        if (img) img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+        formData.append('folder', 'docentes_clouddesk');
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Error al subir imagen');
+        const data = await res.json();
+        const nuevaUrl = data.secure_url;
+
+        const { error } = await supabaseClient
+            .from('docentes')
+            .update({ foto_url: nuevaUrl })
+            .eq('email', docente.email);
+        if (error) throw error;
+
+        docente.foto_url = nuevaUrl;
+        localStorage.setItem('eduspace_docente_perfil', JSON.stringify(docente));
+
+        actualizarPerfilSidebar();
+        mostrarToast('✅ Foto actualizada correctamente');
+    } catch(e) {
+        console.error(e);
+        alert('❌ Error al actualizar foto: ' + e.message);
+    } finally {
+        event.target.value = '';
+    }
+}
+
+async function cargarRepoDocente() {
+    const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+    if (!docenteRaw) return;
+    const docente = JSON.parse(docenteRaw);
+    const cont = document.getElementById('repo-areas-docente');
+    cont.innerHTML = '';
+    const areas = docente.especialidades || [];
+    if (areas.length === 0) { cont.innerHTML = '<p style="color:var(--text-muted);">No tienes áreas asignadas aún.</p>'; return; }
+
+    const grupos = {};
+    areas.forEach(a => {
+        const gKey = `${a.especialidad} — Ciclo ${a.ciclo}`;
+        if (!grupos[gKey]) grupos[gKey] = [];
+        grupos[gKey].push(a);
+    });
+
+    Object.entries(grupos).forEach(([grupo, areasG]) => {
+        const grupoDiv = document.createElement('div');
+        grupoDiv.style = 'margin-bottom:1rem;';
+        grupoDiv.innerHTML = `<h5 style="color:var(--primary-color);margin-bottom:.6rem;">${grupo}</h5>`;
+        areasG.forEach(areaObj => {
+            const area = areaObj.area;
+            const block = document.createElement('div');
+            block.className = 'area-upload-block';
+            const safeId = area.replace(/\s/g, '_');
+            block.innerHTML = `
+                <h5><i class="fa-solid fa-folder-open"></i> ${area}</h5>
+                <input type="file" id="file-input-${safeId}" style="display:none;" accept=".pdf,.docx,.pptx,.xlsx,.jpg,.png,.mp4"
+                    onchange="subirArchivoDocente(this, '${docente.email}', '${docente.nombre}', '${docente.foto_url || ''}', '${areaObj.especialidad}', '${areaObj.ciclo}', '${area}')">
+                <div class="upload-zone" onclick="document.getElementById('file-input-${safeId}').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Haz clic para subir un archivo
+                </div>
+                <div id="progress-${safeId}" style="display:none;margin-top:.5rem;font-size:.8rem;color:var(--text-muted);"></div>`;
+            grupoDiv.appendChild(block);
+        });
+        cont.appendChild(grupoDiv);
+    });
+    cargarHistorialDocente(docente.email);
+}
+
+async function subirArchivoDocente(input, docEmail, docNombre, docFoto, especialidad, ciclo, area) {
+    const file = input.files[0];
+    if (!file) return;
+    const safeId = area.replace(/\s/g, '_');
+    const prog = document.getElementById('progress-' + safeId);
+    if (prog) { prog.style.display = 'block'; prog.textContent = '⏳ Subiendo archivo...'; }
+    try {
+        const ext      = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${file.name}`;
+        const { data: storageData, error: storageError } = await supabaseClient.storage
+            .from('archivos-docentes')
+            .upload(fileName, file, { contentType: file.type, upsert: false });
+        if (storageError) throw storageError;
+        const { data: urlData } = supabaseClient.storage.from('archivos-docentes').getPublicUrl(fileName);
+        const fileUrl = urlData.publicUrl;
+        const tipoMap = { pdf:'PDF', docx:'DOCX', pptx:'PPTX', xlsx:'XLSX', jpg:'Imagen', png:'Imagen', mp4:'Video' };
+        const fileType = tipoMap[ext.toLowerCase()] || ext.toUpperCase();
+        const { error: dbError } = await supabaseClient.from('archivos').insert([{
+            titulo:         file.name.replace(/\.[^.]+$/, ''),
+            area,
+            especialidad,
+            ciclo,
+            docente_email:  docEmail,
+            docente_nombre: docNombre,
+            docente_foto:   docFoto,
+            file_url:       fileUrl,
+            file_name:      file.name,
+            file_type:      fileType
+        }]);
+        if (dbError) throw dbError;
+        if (prog) prog.textContent = '✅ Archivo subido correctamente.';
+        setTimeout(() => { if (prog) prog.style.display = 'none'; }, 3000);
+        cargarHistorialDocente(docEmail);
+    } catch(e) {
+        if (prog) prog.textContent = '❌ Error: ' + e.message;
+    }
+    input.value = '';
+}
+
+async function cargarHistorialDocente(docEmail) {
+    if (!supabaseClient) return;
+    const hist = document.getElementById('repo-historial');
+    if (!hist) return;
+    hist.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</p>';
+    try {
+        const { data } = await supabaseClient
+            .from('archivos')
+            .select('*')
+            .eq('docente_email', docEmail)
+            .order('fecha_subida', { ascending: false })
+            .limit(15);
+        hist.innerHTML = '';
+        if (!data || data.length === 0) { hist.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;">Sin envíos aún.</p>'; return; }
+        data.forEach(f => {
+            const row = document.createElement('div');
+            row.style = 'display:flex;align-items:center;gap:.8rem;padding:.6rem .8rem;background:rgba(255,255,255,.03);border:1px solid var(--border-color);border-radius:8px;font-size:.85rem;';
+            const fecha = f.fecha_subida ? new Date(f.fecha_subida).toLocaleDateString('es-PE') : '';
+            row.innerHTML = `
+                <i class="fa-solid fa-file" style="color:var(--primary-color);flex-shrink:0;"></i>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:500;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.titulo}</div>
+                    <div style="color:var(--text-muted);font-size:.75rem;">${f.area} · ${f.especialidad} / ${f.ciclo} · ${fecha}</div>
+                </div>
+                <a href="${f.file_url}" target="_blank" style="color:var(--primary-color);font-size:.8rem;white-space:nowrap;">Ver <i class="fa-solid fa-external-link"></i></a>`;
+            hist.appendChild(row);
+        });
+    } catch(e) { hist.innerHTML = '<p style="color:var(--danger);">Error al cargar historial.</p>'; }
+}
+// ═══════════════════════════════
+
 // SWITCH TAB
 // CAMBIO: se llama a actualizarFooterActivo
 // ============================================
@@ -1841,6 +2390,8 @@ function switchTab(tab) {
     if (sectionChat) sectionChat.style.display = 'none';
     const sectionPerfil = document.getElementById('perfil');
     if (sectionPerfil) sectionPerfil.style.display = 'none';
+    const sectionGestionDocente = document.getElementById('gestion-docente');
+    if (sectionGestionDocente) sectionGestionDocente.style.display = 'none';
     const sectionIa = document.getElementById('ia-juegos');
     if (sectionIa) sectionIa.style.display = 'none';
    const sectionGp = document.getElementById('gramatica-pro-app');
@@ -1874,7 +2425,7 @@ document.querySelector('.ai-btn-mobile')?.classList.remove('active');
             if (btnIcon)     btnIcon.className        = 'fa-solid fa-check-circle';
             btn.classList.remove('showing-finalizados');
         }
-        renderAssignments();
+        cargarTrabajosDesdeSupabase().then(() => renderAssignments());
 
     } else if (tab === 'recursos') {
         sectionRecursos.style.display = 'block';
