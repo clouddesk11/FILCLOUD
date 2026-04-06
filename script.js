@@ -1266,7 +1266,7 @@ function renderFilesArray(files) {
         if (file.type === 'DOCX' || file.type === 'DOC')      iconClass = 'fa-file-word';
         else if (file.type === 'PPTX' || file.type === 'PPT') iconClass = 'fa-file-powerpoint';
         else if (file.type === 'XLSX' || file.type === 'XLS') iconClass = 'fa-file-excel';
-        card.innerHTML = `<div class="file-cover"><i class="fa-solid ${iconClass} file-cover-icon"></i><span class="file-cover-badge">${file.area}</span></div><div class="file-card-body"><h3 class="file-title">${file.title}</h3><div class="file-details"><p><i class="fa-regular fa-calendar"></i> ${file.date}</p><div class="teacher-profile"><img src="${teacher ? teacher.photo : 'https://i.pravatar.cc/150?img=3'}" alt="${teacher ? teacher.name : file.docente_nombre || ''}" class="teacher-avatar" onclick="openProfileModal('${file.teacher}')"><span class="teacher-name">${teacher ? teacher.name : file.docente_nombre || file.teacher}</span></div></div><div class="card-actions"><button onclick="viewFile('${file.file_url}')" class="btn btn-view"><i class="fa-regular fa-eye"></i> Ver</button><a href="${file.file_url}" target="_blank" download="${file.file_name || ''}" class="btn btn-download"><i class="fa-solid fa-download"></i> Descargar</a></div></div>`;
+        card.innerHTML = `<div class="file-cover"><i class="fa-solid ${iconClass} file-cover-icon"></i><span class="file-cover-badge">${file.area}</span></div><div class="file-card-body"><h3 class="file-title">${file.title}</h3><div class="file-details"><p><i class="fa-regular fa-calendar"></i> ${file.date}</p><div class="teacher-profile"><img src="${teacher ? teacher.photo : 'https://i.pravatar.cc/150?img=3'}" alt="${teacher ? teacher.name : file.docente_nombre || ''}" class="teacher-avatar" onclick="openProfileModal('${file.teacher}')"><span class="teacher-name">${teacher ? teacher.name : file.docente_nombre || file.teacher}</span></div></div><div class="card-actions"><button onclick="viewFile('${file.file_url}')" class="btn btn-view"><i class="fa-regular fa-eye"></i> Ver</button><button onclick=\"downloadFile('${file.file_url}', '${(file.file_name || 'archivo').replace(/'/g, '')}')\" class=\"btn btn-download\"><i class=\"fa-solid fa-download\"></i> Descargar</button></div></div>`;
         filesGrid.appendChild(card);
     });
 }
@@ -1280,12 +1280,38 @@ function filterFiles(area) {
 function viewFile(url) {
     fileViewerContent.innerHTML = `<div class="skeleton-loader"><div class="skeleton-header"><div class="skeleton-avatar"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line medium"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>`;
     fileViewerModal.style.display = 'block';
-    let previewUrl = url;
-    if (!previewUrl.includes('/preview')) {
-        if (previewUrl.includes('/edit')) previewUrl = previewUrl.replace('/edit', '/preview');
-        else if (previewUrl.includes('drive.google.com/file/d/')) previewUrl = previewUrl.replace('/view', '/preview');
+    let previewUrl;
+    if (url.includes('drive.google.com')) {
+        // URL de Google Drive: convertir a /preview
+        previewUrl = url;
+        if (!previewUrl.includes('/preview')) {
+            if (previewUrl.includes('/edit')) previewUrl = previewUrl.replace('/edit', '/preview');
+            else previewUrl = previewUrl.replace('/view', '/preview');
+        }
+    } else {
+        // URL de Supabase u otro origen: usar Google Docs Viewer para evitar bloqueo de Chrome
+        previewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
     }
     setTimeout(() => { fileViewerContent.innerHTML = `<iframe id="googleDriveFrame" src="${previewUrl}" frameborder="0" class="google-drive-iframe"></iframe>`; }, 800);
+}
+
+async function downloadFile(url, filename) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('No se pudo descargar');
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename || 'archivo';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+    } catch(e) {
+        // Fallback: abrir en nueva pestaña
+        window.open(url, '_blank');
+    }
 }
 
 function openFullscreen() {
@@ -1494,7 +1520,7 @@ function openDetailsModal(assignmentId) {
     const assignment = assignmentsDB.find(a => String(a.id) === String(assignmentId));
     if (!assignment) return;
     document.getElementById('detailsTaskName').textContent = assignment.task;
-    document.getElementById('detailsTeacher').textContent  = assignment.teacher;
+  document.getElementById('detailsTeacher').textContent  = assignment.teacherName || assignment.teacher;
     document.getElementById('detailsDeadline').textContent = assignment.deadline;
     const completed   = getCompletedAssignments();
     const isCompleted = completed.includes(assignment.id);
@@ -2072,14 +2098,20 @@ async function postLoginInit() {
 }
 
 function activarModoDocente(docenteData) {
-    const ocultarTabs = ['tab-docentes'];
+    // ── Ocultar tabs del sidebar que el docente no debe ver ──
+    const ocultarTabs = ['tab-docentes', 'tab-trabajos', 'tab-estudiantes'];
     ocultarTabs.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.style.display = 'none';
+    });
+    // ── Ocultar botones del footer móvil que el docente no debe ver ──
+    const ocultarFooter = ['footer-btn-comunidad', 'footer-btn-trabajos'];
+    ocultarFooter.forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.style.display = 'none';
     });
     mostrarPanelDocente(docenteData);
 }
-
 function toggleToolCard(id) {
     const body  = document.getElementById('body-' + id);
     const arrow = document.getElementById('arrow-' + id);
@@ -2103,6 +2135,10 @@ function mostrarPanelDocente(docente) {
     if (sec) sec.style.display = 'block';
     const bodyManual = document.getElementById('body-manual');
     if (bodyManual) bodyManual.style.display = 'block';
+    // ── Marcar el botón "Inicio" como activo en el sidebar ──
+    document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active'));
+    const tabInicio = document.getElementById('tab-repositorio');
+    if (tabInicio) tabInicio.classList.add('active');
 }
 
 // ── Renderizar selector de especialidad/ciclo para el formulario de trabajos ──
@@ -2408,10 +2444,18 @@ document.querySelector('.ai-btn-mobile')?.classList.remove('active');
     if (searchInputRepo) searchInputRepo.value = '';
     if (searchInputRec)  searchInputRec.value  = '';
 
-    if (tab === 'repositorio') {
-        sectionRepositorio.style.display = 'block';
-        document.getElementById('tab-repositorio').classList.add('active');
-        renderFiles();
+   if (tab === 'repositorio') {
+        const docenteRaw = localStorage.getItem('eduspace_docente_perfil');
+        if (docenteRaw) {
+            // ── Docente: mostrar panel de gestión, NO el repositorio de estudiante ──
+            const sectionGD = document.getElementById('gestion-docente');
+            if (sectionGD) sectionGD.style.display = 'block';
+            document.getElementById('tab-repositorio').classList.add('active');
+        } else {
+            sectionRepositorio.style.display = 'block';
+            document.getElementById('tab-repositorio').classList.add('active');
+            renderFiles();
+        }
 
     } else if (tab === 'trabajos') {
         sectionTrabajos.style.display = 'block';
