@@ -376,6 +376,32 @@
                                     <!-- Se llena con JS -->
                                 </div>
                                 <div id="trabajo-error" style="display:none;color:var(--danger);font-size:.83rem;margin-bottom:.6rem;"></div>
+
+                                <!-- ══ Recursos Adjuntos ══ -->
+                                <div class="form-group" style="margin-bottom:.8rem;">
+                                    <label style="color:var(--text-muted);font-size:.85rem;">
+                                        <i class="fa-solid fa-paperclip"></i> Recursos Adjuntos
+                                    </label>
+                                    <div id="trabajo-recursos-lista" style="margin-bottom:.6rem;">
+                                        <p style="color:var(--text-muted);font-size:.82rem;font-style:italic;">No hay archivos adjuntos</p>
+                                    </div>
+                                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                                        <button type="button" onclick="agregarEnlaceDocente()"
+                                                style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#60a5fa;border-radius:8px;padding:.5rem .9rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                                            <i class="fa-solid fa-link"></i> Enlace
+                                        </button>
+                                        <button type="button" id="btn-adjuntar-archivo-trabajo"
+                                                onclick="document.getElementById('input-adjuntar-archivo-trabajo').click()"
+                                                style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#60a5fa;border-radius:8px;padding:.5rem .9rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                                            <i class="fa-solid fa-paperclip"></i> Archivo
+                                        </button>
+                                        <input type="file" id="input-adjuntar-archivo-trabajo"
+                                               accept=".pdf,.docx,.pptx,.xlsx,.jpg,.jpeg,.png,.mp4,.mov"
+                                               style="display:none;"
+                                               onchange="agregarArchivoRecursoDocente(this)">
+                                    </div>
+                                </div>
+
                                 <button onclick="publicarTrabajoDocente()" style="background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;border:none;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;width:100%;">
                                     <i class="fa-solid fa-paper-plane"></i> Publicar Trabajo
                                 </button>
