@@ -635,14 +635,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             showAuthModal(); getDeviceType() === 'mobile' ? mostrarPaso1() : mostrarPasoLaptop();
         }
 
-        if (!_appInicializada) {
-            _appInicializada = true;
-            updatePendingBadge();
-            actualizarPerfilSidebar();
-            if (!localStorage.getItem('eduspace_docente_perfil')) {
-                switchTab('repositorio');
-            }
-        }
+       // DESPUÉS ✅
+if (!_appInicializada) {
+    _appInicializada = true;
+    updatePendingBadge();
+    actualizarPerfilSidebar();
+    const esDocente = localStorage.getItem('eduspace_docente_perfil');
+    const hayUsuario = auth.currentUser;
+    if (!esDocente && !hayUsuario) {
+        
+    } else if (!esDocente) {
+        switchTab('repositorio');
+    }
+}
         setTimeout(() => { _authValidating = false; }, 4000);
     });
 });
@@ -4517,6 +4522,7 @@ async function initGramaticaPro() {
 // CUA CUA QUEST — LÓGICA COMPLETA
 // ============================================
 
+// Línea 4520: cambia hyper-service → super-service
 const EDGE_URL = "https://dowoncayanvhrbrpvdms.supabase.co/functions/v1/hyper-service";
 
 let ccqDocText        = "";
@@ -4613,22 +4619,26 @@ async function ccq_process(mode) {
             ? "5 preguntas de opción múltiple con 4 alternativas"
             : "5 afirmaciones de verdadero o falso con exactamente 2 alternativas: Verdadero y Falso";
 
-        const prompt = `IMPORTANTE: NO escribas saludos, NO digas "Aquí tienes", NO uses formato markdown. Responde ÚNICA Y EXCLUSIVAMENTE con el objeto JSON.
-Genera ${queryType} basadas en este texto.
-El JSON debe ser exactamente así: {"data":[{"q":"pregunta","o":["opcion1","opcion2","opcion3","opcion4"],"a":0}]}
-Texto: ${ccqDocText.substring(0, 6000)}`;
+    const systemPrompt = "Eres un generador de cuestionarios. Responde ÚNICAMENTE con un objeto JSON válido, sin markdown, sin texto adicional, sin explicaciones.";
 
-        // ✅ DESPUÉS (reemplaza todo lo de arriba por esto)
+const prompt = `IMPORTANTE: NO uses markdown. Responde SOLO con JSON.
+Genera ${queryType} basadas en este texto.
+JSON exactamente así: {"data":[{"q":"pregunta","o":["op1","op2","op3","op4"],"a":0}]}
+Texto: ${ccqDocText.substring(0, 3000)}`;
+
 const r = await fetch(EDGE_URL, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${SUPABASE_KEY}`
     },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ prompt, system: systemPrompt })
 });
 
+
+// DESPUÉS ✅
 const j = await r.json();
+if (j.error) throw new Error("Error del servidor: " + (j.error.message || j.error));
 const textResponse = j.choices?.[0]?.message?.content;
 if (!textResponse) throw new Error("La IA no devolvió respuesta. Intenta de nuevo.");
         const startIndex   = textResponse.indexOf('{');
