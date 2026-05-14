@@ -3,1240 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QilCloud</title>
-<link rel="icon" type="image/png" sizes="16x16"
-  href="https://res.cloudinary.com/dvrr4swky/image/upload/q_auto/f_auto/e_trim/ar_1:1,c_lpad,b_transparent/w_16,h_16/v1775057183/BackgroundEraser_20260401_102516406_mr34fs.png">
-<link rel="icon" type="image/png" sizes="32x32"
-  href="https://res.cloudinary.com/dvrr4swky/image/upload/q_auto/f_auto/e_trim/ar_1:1,c_lpad,b_transparent/w_32,h_32/v1775057183/BackgroundEraser_20260401_102516406_mr34fs.png">
-<link rel="icon" type="image/png" sizes="48x48"
-  href="https://res.cloudinary.com/dvrr4swky/image/upload/q_auto/f_auto/e_trim/ar_1:1,c_lpad,b_transparent/w_48,h_48/v1775057183/BackgroundEraser_20260401_102516406_mr34fs.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-  <!-- Necesario para Gramática Pro -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config = { corePlugins: { preflight: false } }</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   
-  
-  <body>
+    <title>Nexus Repo | Gestión Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
 
-<!-- ══ TOPBAR FIJA MÓVIL ══ -->
-<div class="mobile-topbar" id="mobileTopbar">
-    <span class="mobile-topbar-title">QilCloud</span>
-   <button class="ai-btn-mobile" onclick="switchTab('ia-juegos')">
-        <svg width="24" height="24" viewBox="0 0 200 200">
-    <use href="#ghost-icon"/>
-</svg>
-    </button>
-</div>
-  
-<svg style="position:absolute;width:0;height:0;overflow:hidden;" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <filter id="tentacle-distort" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="1" seed="1" result="noise">
-                <animate attributeName="seed" from="1" to="100" dur="10s" repeatCount="indefinite"/>
-            </feTurbulence>
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G" id="displacement-map"/>
-        </filter>
-      
-     <symbol id="ghost-icon" viewBox="0 0 200 200">
-    <path class="ghost-body" d="M 20 80 L 20 140 C 20 150,23 155,26 155 C 34 155,38 130,46 130 C 57 130,62 170,73 170 C 84 170,89 130,100 130 C 111 130,116 170,127 170 C 138 170,143 130,154 130 C 162 130,166 155,174 155 C 177 155,180 150,180 140 L 180 80 A 80 80 0 0 0 20 80 Z"/>
-    <ellipse class="ghost-eye" cx="68" cy="80" rx="18" ry="18"/>
-    <ellipse class="ghost-eye" cx="132" cy="80" rx="18" ry="18"/>
-</symbol>
-        <symbol id="filred-logo" viewBox="0 0 600 586">
-            <path d="M241,135h11v1h-11z M357,135h9v1h-9z M238,136h17v1h-17z M355,136h13v1h-13z M236,137h21v1h-21z M354,137h15v1h-15z M234,138h25v1h-25z M352,138h19v1h-19z M233,139h28v1h-28z M351,139h21v1h-21z M231,140h31v1h-31z M351,140h21v1h-21z M230,141h33v1h-33z M350,141h23v1h-23z M229,142h35v1h-35z M349,142h25v1h-25z M228,143h37v1h-37z M349,143h25v1h-25z M228,144h37v1h-37z M349,144h25v1h-25z M227,145h39v1h-39z M348,145h27v1h-27z M227,146h40v1h-40z M348,146h27v1h-27z M226,147h41v1h-41z M348,147h27v1h-27z M226,148h42v1h-42z M347,148h28v1h-28z M225,149h43v1h-43z M346,149h29v1h-29z M225,150h43v1h-43z M346,150h29v1h-29z M225,151h44v1h-44z M345,151h29v1h-29z M225,152h44v1h-44z M344,152h30v1h-30z M224,153h45v1h-45z M343,153h30v1h-30z M224,154h45v1h-45z M341,154h32v1h-32z M224,155h46v1h-46z M340,155h32v1h-32z M224,156h46v1h-46z M304,156h12v1h-12z M339,156h33v1h-33z M224,157h46v1h-46z M302,157h17v1h-17z M337,157h33v1h-33z M224,158h46v1h-46z M300,158h21v1h-21z M335,158h34v1h-34z M224,159h45v1h-45z M298,159h25v1h-25z M332,159h15v1h-15z M354,159h14v1h-14z M224,160h45v1h-45z M297,160h45v1h-45z M358,160h7v1h-7z M225,161h44v1h-44z M296,161h44v1h-44z M225,162h44v1h-44z M295,162h42v1h-42z M225,163h44v1h-44z M295,163h41v1h-41z M225,164h43v1h-43z M294,164h40v1h-40z M226,165h42v1h-42z M293,165h40v1h-40z M226,166h42v1h-42z M293,166h39v1h-39z M227,167h41v1h-41z M292,167h40v1h-40z M228,168h39v1h-39z M292,168h39v1h-39z M228,169h39v1h-39z M292,169h39v1h-39z M229,170h38v1h-38z M291,170h39v1h-39z M230,171h37v1h-37z M291,171h39v1h-39z M231,172h36v1h-36z M291,172h39v1h-39z M232,173h35v1h-35z M291,173h39v1h-39z M475,173h10v1h-10z M233,174h34v1h-34z M291,174h39v1h-39z M472,174h16v1h-16z M234,175h33v1h-33z M291,175h39v1h-39z M470,175h20v1h-20z M236,176h31v1h-31z M291,176h39v1h-39z M469,176h22v1h-22z M238,177h30v1h-30z M291,177h39v1h-39z M468,177h24v1h-24z M239,178h29v1h-29z M291,178h39v1h-39z M467,178h26v1h-26z M240,179h28v1h-28z M292,179h37v1h-37z M466,179h28v1h-28z M241,180h27v1h-27z M292,180h37v1h-37z M465,180h30v1h-30z M243,181h25v1h-25z M292,181h37v1h-37z M464,181h32v1h-32z M244,182h24v1h-24z M293,182h35v1h-35z M464,182h32v1h-32z M245,183h24v1h-24z M293,183h35v1h-35z M363,183h6v1h-6z M463,183h34v1h-34z M246,184h23v1h-23z M294,184h33v1h-33z M360,184h12v1h-12z M463,184h34v1h-34z M247,185h22v1h-22z M294,185h33v1h-33z M358,185h16v1h-16z M463,185h34v1h-34z M248,186h21v1h-21z M295,186h31v1h-31z M357,186h18v1h-18z M462,186h36v1h-36z M249,187h21v1h-21z M296,187h29v1h-29z M356,187h20v1h-20z M462,187h36v1h-36z M249,188h21v1h-21z M296,188h28v1h-28z M355,188h22v1h-22z M462,188h36v1h-36z M250,189h20v1h-20z M297,189h26v1h-26z M354,189h24v1h-24z M461,189h37v1h-37z M251,190h19v1h-19z M298,190h25v1h-25z M354,190h24v1h-24z M461,190h37v1h-37z M252,191h19v1h-19z M298,191h24v1h-24z M353,191h26v1h-26z M460,191h38v1h-38z M253,192h18v1h-18z M299,192h22v1h-22z M353,192h26v1h-26z M460,192h38v1h-38z M254,193h17v1h-17z M300,193h21v1h-21z M353,193h27v1h-27z M459,193h39v1h-39z M254,194h18v1h-18z M300,194h20v1h-20z M353,194h27v1h-27z M458,194h40v1h-40z M255,195h17v1h-17z M301,195h19v1h-19z M352,195h28v1h-28z M457,195h40v1h-40z M256,196h16v1h-16z M301,196h18v1h-18z M352,196h28v1h-28z M456,196h41v1h-41z M257,197h16v1h-16z M301,197h18v1h-18z M352,197h28v1h-28z M455,197h42v1h-42z M257,198h16v1h-16z M302,198h17v1h-17z M352,198h28v1h-28z M453,198h43v1h-43z M258,199h15v1h-15z M302,199h16v1h-16z M351,199h29v1h-29z M451,199h45v1h-45z M259,200h15v1h-15z M302,200h16v1h-16z M351,200h28v1h-28z M450,200h45v1h-45z M259,201h15v1h-15z M303,201h14v1h-14z M351,201h28v1h-28z M448,201h46v1h-46z M260,202h15v1h-15z M303,202h14v1h-14z M350,202h29v1h-29z M446,202h47v1h-47z M261,203h14v1h-14z M303,203h14v1h-14z M350,203h28v1h-28z M444,203h48v1h-48z M261,204h15v1h-15z M303,204h14v1h-14z M349,204h28v1h-28z M442,204h12v1h-12z M466,204h25v1h-25z M262,205h14v1h-14z M303,205h13v1h-13z M349,205h28v1h-28z M441,205h10v1h-10z M469,205h21v1h-21z M263,206h14v1h-14z M303,206h13v1h-13z M348,206h28v1h-28z M439,206h9v1h-9z M471,206h17v1h-17z M263,207h14v1h-14z M304,207h12v1h-12z M347,207h27v1h-27z M438,207h8v1h-8z M474,207h12v1h-12z M264,208h14v1h-14z M304,208h12v1h-12z M347,208h26v1h-26z M437,208h7v1h-7z M478,208h4v1h-4z M265,209h13v1h-13z M304,209h12v1h-12z M346,209h25v1h-25z M435,209h7v1h-7z M265,210h14v1h-14z M304,210h12v1h-12z M345,210h19v1h-19z M434,210h7v1h-7z M266,211h13v1h-13z M304,211h11v1h-11z M344,211h16v1h-16z M433,211h6v1h-6z M266,212h14v1h-14z M304,212h11v1h-11z M344,212h13v1h-13z M432,212h6v1h-6z M267,213h14v1h-14z M304,213h11v1h-11z M343,213h13v1h-13z M431,213h6v1h-6z M268,214h13v1h-13z M304,214h11v1h-11z M342,214h12v1h-12z M430,214h6v1h-6z M268,215h14v1h-14z M304,215h11v1h-11z M341,215h12v1h-12z M430,215h5v1h-5z M269,216h13v1h-13z M304,216h11v1h-11z M340,216h11v1h-11z M429,216h5v1h-5z M269,217h14v1h-14z M304,217h11v1h-11z M339,217h11v1h-11z M428,217h5v1h-5z M270,218h14v1h-14z M304,218h11v1h-11z M338,218h11v1h-11z M428,218h5v1h-5z M270,219h14v1h-14z M304,219h11v1h-11z M337,219h11v1h-11z M427,219h5v1h-5z M271,220h14v1h-14z M304,220h11v1h-11z M336,220h11v1h-11z M427,220h4v1h-4z M271,221h15v1h-15z M304,221h11v1h-11z M335,221h11v1h-11z M426,221h5v1h-5z M272,222h15v1h-15z M304,222h11v1h-11z M334,222h11v1h-11z M426,222h4v1h-4z M272,223h15v1h-15z M304,223h11v1h-11z M334,223h10v1h-10z M425,223h5v1h-5z M273,224h15v1h-15z M303,224h12v1h-12z M333,224h10v1h-10z M425,224h4v1h-4z M273,225h16v1h-16z M303,225h12v1h-12z M331,225h11v1h-11z M425,225h4v1h-4z M274,226h16v1h-16z M303,226h13v1h-13z M330,226h11v1h-11z M424,226h5v1h-5z M274,227h17v1h-17z M303,227h13v1h-13z M329,227h12v1h-12z M424,227h4v1h-4z M275,228h17v1h-17z M303,228h13v1h-13z M328,228h12v1h-12z M424,228h4v1h-4z M275,229h18v1h-18z M302,229h14v1h-14z M327,229h12v1h-12z M424,229h4v1h-4z M275,230h19v1h-19z M302,230h15v1h-15z M325,230h13v1h-13z M424,230h4v1h-4z M276,231h19v1h-19z M301,231h16v1h-16z M324,231h14v1h-14z M424,231h4v1h-4z M276,232h21v1h-21z M300,232h18v1h-18z M322,232h15v1h-15z M423,232h5v1h-5z M277,233h59v1h-59z M423,233h5v1h-5z M277,234h59v1h-59z M423,234h5v1h-5z M277,235h58v1h-58z M423,235h5v1h-5z M278,236h57v1h-57z M423,236h5v1h-5z M278,237h56v1h-56z M423,237h5v1h-5z M113,238h6v1h-6z M278,238h56v1h-56z M423,238h5v1h-5z M107,239h19v1h-19z M278,239h55v1h-55z M424,239h4v1h-4z M103,240h26v1h-26z M278,240h55v1h-55z M424,240h4v1h-4z M101,241h31v1h-31z M279,241h54v1h-54z M424,241h4v1h-4z M99,242h35v1h-35z M279,242h53v1h-53z M424,242h5v1h-5z M97,243h39v1h-39z M276,243h56v1h-56z M424,243h5v1h-5z M95,244h43v1h-43z M272,244h60v1h-60z M424,244h5v1h-5z M93,245h47v1h-47z M269,245h63v1h-63z M425,245h4v1h-4z M92,246h50v1h-50z M265,246h67v1h-67z M425,246h5v1h-5z M91,247h53v1h-53z M260,247h73v1h-73z M425,247h5v1h-5z M89,248h57v1h-57z M255,248h78v1h-78z M426,248h4v1h-4z M88,249h61v1h-61z M250,249h83v1h-83z M426,249h5v1h-5z M87,250h65v1h-65z M244,250h90v1h-90z M426,250h5v1h-5z M86,251h69v1h-69z M239,251h95v1h-95z M427,251h4v1h-4z M85,252h73v1h-73z M232,252h103v1h-103z M427,252h5v1h-5z M84,253h79v1h-79z M225,253h110v1h-110z M427,253h5v1h-5z M84,254h85v1h-85z M216,254h120v1h-120z M428,254h4v1h-4z M83,255h97v1h-97z M204,255h133v1h-133z M428,255h5v1h-5z M82,256h256v1h-256z M428,256h5v1h-5z M82,257h257v1h-257z M429,257h5v1h-5z M81,258h260v1h-260z M429,258h5v1h-5z M80,259h263v1h-263z M429,259h5v1h-5z M80,260h266v1h-266z M430,260h5v1h-5z M79,261h189v1h-189z M272,261h78v1h-78z M430,261h5v1h-5z M79,262h182v1h-182z M274,262h80v1h-80z M430,262h5v1h-5z M78,263h176v1h-176z M275,263h84v1h-84z M431,263h5v1h-5z M78,264h170v1h-170z M276,264h87v1h-87z M431,264h5v1h-5z M77,265h165v1h-165z M277,265h89v1h-89z M431,265h5v1h-5z M77,266h159v1h-159z M278,266h90v1h-90z M432,266h5v1h-5z M77,267h154v1h-154z M278,267h92v1h-92z M432,267h5v1h-5z M76,268h150v1h-150z M279,268h93v1h-93z M432,268h5v1h-5z M76,269h146v1h-146z M279,269h94v1h-94z M433,269h5v1h-5z M76,270h141v1h-141z M280,270h95v1h-95z M433,270h5v1h-5z M75,271h138v1h-138z M280,271h96v1h-96z M433,271h5v1h-5z M75,272h133v1h-133z M281,272h60v1h-60z M357,272h20v1h-20z M433,272h5v1h-5z M75,273h130v1h-130z M281,273h58v1h-58z M361,273h18v1h-18z M433,273h5v1h-5z M75,274h126v1h-126z M282,274h56v1h-56z M364,274h16v1h-16z M433,274h6v1h-6z M75,275h123v1h-123z M282,275h56v1h-56z M366,275h15v1h-15z M434,275h5v1h-5z M75,276h120v1h-120z M282,276h56v1h-56z M368,276h14v1h-14z M434,276h5v1h-5z M74,277h118v1h-118z M282,277h56v1h-56z M370,277h12v1h-12z M434,277h5v1h-5z M74,278h115v1h-115z M282,278h56v1h-56z M372,278h11v1h-11z M434,278h5v1h-5z M74,279h113v1h-113z M282,279h56v1h-56z M373,279h11v1h-11z M434,279h5v1h-5z M74,280h110v1h-110z M282,280h57v1h-57z M374,280h11v1h-11z M434,280h5v1h-5z M74,281h108v1h-108z M282,281h57v1h-57z M375,281h11v1h-11z M434,281h5v1h-5z M74,282h105v1h-105z M282,282h58v1h-58z M377,282h10v1h-10z M434,282h5v1h-5z M75,283h102v1h-102z M282,283h58v1h-58z M378,283h9v1h-9z M434,283h5v1h-5z M75,284h100v1h-100z M281,284h60v1h-60z M378,284h10v1h-10z M434,284h5v1h-5z M75,285h98v1h-98z M281,285h61v1h-61z M379,285h10v1h-10z M434,285h5v1h-5z M75,286h96v1h-96z M281,286h61v1h-61z M380,286h10v1h-10z M433,286h6v1h-6z M75,287h94v1h-94z M280,287h63v1h-63z M381,287h9v1h-9z M433,287h6v1h-6z M75,288h93v1h-93z M280,288h63v1h-63z M382,288h9v1h-9z M433,288h6v1h-6z M75,289h91v1h-91z M279,289h65v1h-65z M383,289h9v1h-9z M433,289h5v1h-5z M76,290h89v1h-89z M279,290h66v1h-66z M384,290h9v1h-9z M432,290h6v1h-6z M76,291h87v1h-87z M278,291h68v1h-68z M384,291h9v1h-9z M432,291h6v1h-6z M76,292h85v1h-85z M278,292h21v1h-21z M310,292h36v1h-36z M385,292h9v1h-9z M431,292h6v1h-6z M77,293h83v1h-83z M277,293h19v1h-19z M316,293h31v1h-31z M386,293h9v1h-9z M431,293h6v1h-6z M77,294h82v1h-82z M277,294h17v1h-17z M319,294h29v1h-29z M387,294h9v1h-9z M430,294h7v1h-7z M77,295h81v1h-81z M276,295h16v1h-16z M321,295h28v1h-28z M388,295h8v1h-8z M430,295h6v1h-6z M78,296h78v1h-78z M276,296h15v1h-15z M323,296h27v1h-27z M388,296h9v1h-9z M429,296h7v1h-7z M78,297h77v1h-77z M275,297h14v1h-14z M325,297h25v1h-25z M389,297h9v1h-9z M428,297h7v1h-7z M79,298h75v1h-75z M274,298h14v1h-14z M327,298h24v1h-24z M390,298h9v1h-9z M428,298h7v1h-7z M79,299h74v1h-74z M274,299h13v1h-13z M328,299h24v1h-24z M391,299h9v1h-9z M427,299h7v1h-7z M80,300h72v1h-72z M273,300h13v1h-13z M330,300h23v1h-23z M392,300h9v1h-9z M426,300h7v1h-7z M80,301h71v1h-71z M273,301h11v1h-11z M331,301h23v1h-23z M393,301h10v1h-10z M424,301h8v1h-8z M81,302h69v1h-69z M272,302h11v1h-11z M333,302h22v1h-22z M394,302h10v1h-10z M423,302h9v1h-9z M82,303h67v1h-67z M271,303h11v1h-11z M334,303h22v1h-22z M395,303h11v1h-11z M421,303h10v1h-10z M82,304h66v1h-66z M271,304h10v1h-10z M335,304h21v1h-21z M396,304h13v1h-13z M419,304h11v1h-11z M83,305h65v1h-65z M270,305h10v1h-10z M337,305h20v1h-20z M398,305h31v1h-31z M84,306h63v1h-63z M269,306h10v1h-10z M338,306h20v1h-20z M399,306h28v1h-28z M85,307h61v1h-61z M269,307h9v1h-9z M339,307h20v1h-20z M401,307h25v1h-25z M86,308h59v1h-59z M268,308h9v1h-9z M340,308h20v1h-20z M402,308h22v1h-22z M87,309h57v1h-57z M267,309h9v1h-9z M341,309h20v1h-20z M404,309h18v1h-18z M88,310h55v1h-55z M266,310h10v1h-10z M342,310h20v1h-20z M407,310h12v1h-12z M90,311h51v1h-51z M266,311h9v1h-9z M343,311h20v1h-20z M91,312h49v1h-49z M265,312h9v1h-9z M345,312h19v1h-19z M93,313h45v1h-45z M264,313h9v1h-9z M346,313h19v1h-19z M94,314h43v1h-43z M263,314h9v1h-9z M347,314h19v1h-19z M96,315h39v1h-39z M263,315h8v1h-8z M348,315h19v1h-19z M97,316h36v1h-36z M262,316h8v1h-8z M349,316h18v1h-18z M99,317h32v1h-32z M261,317h9v1h-9z M350,317h18v1h-18z M102,318h26v1h-26z M260,318h9v1h-9z M351,318h18v1h-18z M105,319h19v1h-19z M259,319h9v1h-9z M352,319h18v1h-18z M112,320h6v1h-6z M259,320h8v1h-8z M353,320h18v1h-18z M258,321h8v1h-8z M354,321h18v1h-18z M257,322h9v1h-9z M355,322h18v1h-18z M256,323h9v1h-9z M356,323h18v1h-18z M255,324h9v1h-9z M357,324h18v1h-18z M254,325h9v1h-9z M358,325h18v1h-18z M253,326h10v1h-10z M359,326h18v1h-18z M252,327h10v1h-10z M360,327h18v1h-18z M251,328h10v1h-10z M361,328h18v1h-18z M250,329h11v1h-11z M362,329h18v1h-18z M249,330h11v1h-11z M363,330h18v1h-18z M248,331h11v1h-11z M364,331h18v1h-18z M247,332h11v1h-11z M365,332h18v1h-18z M246,333h12v1h-12z M365,333h19v1h-19z M182,334h6v1h-6z M244,334h13v1h-13z M366,334h20v1h-20z M180,335h10v1h-10z M243,335h13v1h-13z M367,335h20v1h-20z M178,336h14v1h-14z M241,336h15v1h-15z M368,336h20v1h-20z M177,337h16v1h-16z M240,337h15v1h-15z M369,337h20v1h-20z M176,338h19v1h-19z M238,338h16v1h-16z M370,338h20v1h-20z M175,339h21v1h-21z M236,339h18v1h-18z M371,339h20v1h-20z M175,340h22v1h-22z M234,340h19v1h-19z M372,340h20v1h-20z M174,341h25v1h-25z M232,341h21v1h-21z M373,341h20v1h-20z M174,342h27v1h-27z M229,342h23v1h-23z M374,342h20v1h-20z M173,343h32v1h-32z M225,343h27v1h-27z M374,343h21v1h-21z M173,344h78v1h-78z M375,344h22v1h-22z M173,345h78v1h-78z M376,345h22v1h-22z M173,346h78v1h-78z M377,346h22v1h-22z M173,347h77v1h-77z M378,347h22v1h-22z M173,348h34v1h-34z M219,348h31v1h-31z M379,348h23v1h-23z M174,349h28v1h-28z M225,349h25v1h-25z M379,349h24v1h-24z M174,350h25v1h-25z M227,350h22v1h-22z M380,350h24v1h-24z M175,351h22v1h-22z M229,351h20v1h-20z M381,351h24v1h-24z M175,352h21v1h-21z M229,352h20v1h-20z M382,352h25v1h-25z M176,353h18v1h-18z M229,353h19v1h-19z M383,353h25v1h-25z M177,354h16v1h-16z M229,354h19v1h-19z M383,354h27v1h-27z M178,355h14v1h-14z M229,355h19v1h-19z M384,355h27v1h-27z M180,356h10v1h-10z M229,356h18v1h-18z M385,356h28v1h-28z M183,357h4v1h-4z M228,357h19v1h-19z M385,357h29v1h-29z M228,358h19v1h-19z M386,358h30v1h-30z M227,359h20v1h-20z M387,359h31v1h-31z M227,360h9v1h-9z M239,360h8v1h-8z M388,360h31v1h-31z M226,361h8v1h-8z M240,361h6v1h-6z M388,361h33v1h-33z M225,362h8v1h-8z M241,362h5v1h-5z M389,362h34v1h-34z M225,363h7v1h-7z M241,363h5v1h-5z M390,363h35v1h-35z M224,364h7v1h-7z M241,364h5v1h-5z M390,364h37v1h-37z M224,365h6v1h-6z M242,365h4v1h-4z M391,365h39v1h-39z M223,366h6v1h-6z M242,366h4v1h-4z M392,366h40v1h-40z M222,367h6v1h-6z M242,367h4v1h-4z M392,367h43v1h-43z M222,368h5v1h-5z M242,368h5v1h-5z M393,368h45v1h-45z M221,369h5v1h-5z M242,369h5v1h-5z M394,369h49v1h-49z M220,370h6v1h-6z M243,370h4v1h-4z M394,370h56v1h-56z M219,371h6v1h-6z M243,371h4v1h-4z M395,371h60v1h-60z M219,372h5v1h-5z M243,372h4v1h-4z M395,372h63v1h-63z M218,373h5v1h-5z M243,373h4v1h-4z M396,373h64v1h-64z M217,374h5v1h-5z M243,374h4v1h-4z M397,374h65v1h-65z M216,375h6v1h-6z M243,375h5v1h-5z M397,375h67v1h-67z M215,376h6v1h-6z M243,376h5v1h-5z M398,376h68v1h-68z M214,377h6v1h-6z M243,377h5v1h-5z M398,377h69v1h-69z M213,378h6v1h-6z M243,378h6v1h-6z M399,378h69v1h-69z M212,379h7v1h-7z M243,379h6v1h-6z M399,379h71v1h-71z M211,380h7v1h-7z M243,380h7v1h-7z M400,380h71v1h-71z M210,381h7v1h-7z M243,381h7v1h-7z M400,381h72v1h-72z M209,382h8v1h-8z M243,382h8v1h-8z M401,382h72v1h-72z M208,383h8v1h-8z M243,383h8v1h-8z M401,383h73v1h-73z M207,384h9v1h-9z M242,384h10v1h-10z M402,384h73v1h-73z M205,385h10v1h-10z M242,385h10v1h-10z M402,385h73v1h-73z M204,386h10v1h-10z M242,386h11v1h-11z M403,386h73v1h-73z M201,387h13v1h-13z M241,387h13v1h-13z M403,387h74v1h-74z M198,388h16v1h-16z M241,388h14v1h-14z M403,388h74v1h-74z M194,389h19v1h-19z M240,389h16v1h-16z M404,389h74v1h-74z M191,390h22v1h-22z M240,390h17v1h-17z M404,390h75v1h-75z M190,391h22v1h-22z M239,391h19v1h-19z M404,391h75v1h-75z M189,392h23v1h-23z M239,392h20v1h-20z M405,392h75v1h-75z M188,393h24v1h-24z M238,393h21v1h-21z M405,393h75v1h-75z M187,394h25v1h-25z M238,394h22v1h-22z M405,394h76v1h-76z M186,395h26v1h-26z M237,395h23v1h-23z M406,395h75v1h-75z M185,396h27v1h-27z M237,396h23v1h-23z M406,396h75v1h-75z M185,397h27v1h-27z M237,397h23v1h-23z M406,397h75v1h-75z M185,398h27v1h-27z M237,398h23v1h-23z M406,398h76v1h-76z M184,399h28v1h-28z M237,399h23v1h-23z M407,399h75v1h-75z M184,400h28v1h-28z M237,400h23v1h-23z M407,400h75v1h-75z M184,401h28v1h-28z M238,401h22v1h-22z M407,401h75v1h-75z M184,402h28v1h-28z M238,402h22v1h-22z M407,402h76v1h-76z M184,403h28v1h-28z M238,403h21v1h-21z M407,403h76v1h-76z M184,404h28v1h-28z M239,404h20v1h-20z M408,404h75v1h-75z M184,405h27v1h-27z M239,405h19v1h-19z M408,405h75v1h-75z M185,406h26v1h-26z M240,406h17v1h-17z M408,406h75v1h-75z M185,407h26v1h-26z M241,407h15v1h-15z M408,407h75v1h-75z M185,408h25v1h-25z M243,408h12v1h-12z M408,408h75v1h-75z M186,409h24v1h-24z M245,409h8v1h-8z M408,409h75v1h-75z M187,410h22v1h-22z M408,410h75v1h-75z M187,411h22v1h-22z M408,411h75v1h-75z M188,412h20v1h-20z M408,412h75v1h-75z M189,413h18v1h-18z M409,413h74v1h-74z M191,414h14v1h-14z M409,414h73v1h-73z M193,415h10v1h-10z M409,415h73v1h-73z M409,416h73v1h-73z M409,417h73v1h-73z M410,418h71v1h-71z M410,419h71v1h-71z M411,420h70v1h-70z M411,421h70v1h-70z M411,422h69v1h-69z M412,423h68v1h-68z M412,424h67v1h-67z M413,425h66v1h-66z M413,426h65v1h-65z M414,427h63v1h-63z M415,428h62v1h-62z M416,429h60v1h-60z M416,430h59v1h-59z M417,431h57v1h-57z M418,432h55v1h-55z M419,433h53v1h-53z M420,434h51v1h-51z M421,435h49v1h-49z M423,436h46v1h-46z M424,437h44v1h-44z M426,438h40v1h-40z M427,439h38v1h-38z M429,440h34v1h-34z M431,441h30v1h-30z M434,442h23v1h-23z M438,443h16v1h-16z " fill="currentColor" />
-        </symbol>
-    </defs>
-</svg>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-    <!-- Estado de Conexión -->
-    <div id="connectionLoader" class="connection-loader" style="display: flex;">
-    <div class="connection-loader-content">
-        <div class="logo-wrapper-loader">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 586">
-                <use href="#filred-logo"/>
-            </svg>
-        </div>
-        <p>Conectando...</p>
-    </div>
-</div>
+</head>
+<body class="overflow-hidden">
 
-    <!-- Modal de Autenticación -->
-    <div id="authModal" class="auth-modal" style="display: none;">
-        <div class="auth-modal-content">
-           <!-- ══ PASO 1: Solo Google ══ -->
-<div id="auth-step-code">
-    <div class="auth-header">
-        <i class="fa-solid fa-graduation-cap auth-icon"></i>
-        <h2>Bienvenido a EduSpace</h2>
-        <p style="color:var(--text-muted);font-size:.85rem;margin-top:.5rem;">
-            Inicia sesión con tu cuenta institucional de Google
-        </p>
-    </div>
-    <div class="auth-body">
-        <button id="googleSignInBtn" class="google-signin-btn" onclick="signInWithGoogle()">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-            </svg>
-            Continuar con Google
-        </button>
-        <div id="authError" class="auth-error" style="display:none;"></div>
-    </div>
-</div>
-            <!-- ══ PASO LAPTOP ══ -->
-            <div id="auth-step-laptop" style="display: none;">
-                <div class="auth-header">
-                    <i class="fa-solid fa-laptop auth-icon"></i>
-                    <h2>Acceso desde Laptop</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-                        Ingresa tu API numérica para vincular este dispositivo.
-                    </p>
+    <!-- ============================================================
+         PANTALLA DE LOGIN (tapa todo hasta autenticarse)
+    ============================================================ -->
+    <div id="login-overlay" class="fixed inset-0 z-[110] flex items-center justify-center login-bg">
+        <div class="login-card bg-white rounded-[2rem] shadow-2xl p-10 flex flex-col items-center gap-8 max-w-sm w-full mx-6">
+
+            <!-- Logo -->
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-200">
+                    <i data-lucide="database" class="w-8 h-8 text-white"></i>
                 </div>
-                <div class="auth-body">
-                    <div class="auth-section">
-                        <p class="auth-text">Tu API fue asignada al registrarte desde tu móvil.</p>
-                        <input type="number" id="laptopApiInput" class="auth-input"
-                               placeholder="Ingresa tu API numérica" autocomplete="off"
-                               style="text-align:center; font-size:1.3rem; letter-spacing:3px; font-weight:700;">
-                    </div>
-                    <div id="laptopApiError" class="auth-error" style="display: none;"></div>
-                    <button id="laptopApiSubmit" class="auth-submit" onclick="validarAPI()">
-                        <i class="fa-solid fa-arrow-right"></i> Continuar
-                    </button>
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">NexusRepo</h1>
+                    <p class="text-sm text-gray-500 mt-1">Gestión Digital Universitaria</p>
                 </div>
             </div>
-            <!-- ══ PASO GOOGLE LAPTOP ══ -->
-            <div id="auth-step-google-laptop" style="display: none;">
-                <div class="auth-header">
-                    <i class="fa-solid fa-shield-halved auth-icon"></i>
-                    <h2>Vincula tu cuenta de Google</h2>
-                    <p id="auth-api-validado" style="color: #10b981; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 500;"></p>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.85rem;">
-                        Usa la misma cuenta de Google con la que te registraste en el móvil.
-                    </p>
-                </div>
-                <div class="auth-body">
-                    <button id="googleSignInBtnLaptop" class="google-signin-btn" onclick="signInWithGoogleLaptop()">
-                        <svg width="20" height="20" viewBox="0 0 48 48">
-                            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                            <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-                            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-                        </svg>
-                        Continuar con Google
-                    </button>
-                    <div id="googleErrorLaptop" class="auth-error" style="display: none;"></div>
+
+            <div class="w-full h-px bg-gray-100"></div>
+
+            <div class="flex flex-col items-center gap-4 w-full">
+                <p class="text-sm text-gray-500 font-medium">Ingresa con tu cuenta institucional</p>
+
+                <button id="google-signin-btn" onclick="signInWithGoogle()"
+                    class="google-btn w-full flex items-center justify-center gap-3 py-4 px-6 bg-white border-2 border-gray-200 rounded-2xl text-gray-700 font-semibold text-sm hover:border-blue-300 hover:bg-blue-50 transition-all active:scale-95 shadow-sm">
+                    <!-- Icono Google oficial -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-5 h-5 shrink-0">
+                        <path fill="#EA4335" d="M24 9.5c3.1 0 5.6 1.1 7.6 2.9l5.6-5.6C33.6 3.5 29.1 1.5 24 1.5 14.8 1.5 7 7.4 3.8 15.6l6.6 5.1C12 14.1 17.5 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.5 24c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7C43.4 37 46.5 31 46.5 24z"/>
+                        <path fill="#FBBC05" d="M10.4 28.3c-.5-1.5-.8-3-.8-4.3s.3-2.8.8-4.2l-6.6-5.1C2.1 17.5 1.5 20.7 1.5 24s.6 6.5 2.3 9.3l6.6-5z"/>
+                        <path fill="#34A853" d="M24 46.5c5.1 0 9.4-1.7 12.5-4.6l-7.4-5.7c-1.7 1.1-3.9 1.8-5.1 1.8-6.5 0-12-4.6-13.6-10.7l-6.6 5C7 39.6 14.8 46.5 24 46.5z"/>
+                    </svg>
+                    Continuar con Google
+                </button>
+
+                <!-- Spinner de carga -->
+                <div id="login-loading" class="hidden flex items-center gap-2 text-sm text-gray-400">
+                    <svg class="animate-spin w-4 h-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                    Conectando...
                 </div>
             </div>
-          
-          <!-- ══ PASO NO REGISTRADO ══ -->
-<div id="auth-step-no-registrado" style="display: none;">
-    <div class="no-reg-layout">
-        <div class="no-reg-imagen-col">
-            <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1772986102/Humaaans_-_Standing_t9jpmk.png"
-                 alt="Soporte QilCloud"
-                 class="no-reg-img">
+
+            <p class="text-[11px] text-gray-400 text-center">Al ingresar aceptas los términos de uso de NexusRepo</p>
         </div>
-        <div class="no-reg-content-col">
-            <div class="no-reg-scroll-box">
-                <h3 class="no-reg-titulo">
-                    <i class="fa-solid fa-circle-info"></i> ¿Por qué no puedo acceder?
-                </h3>
-                <p class="no-reg-texto">
-                    Lamentablemente, tu cuenta de Google no se encuentra registrada en nuestra
-                    base de datos actual. Esto puede deberse a dos razones principales:
+    </div>
+
+
+    <!-- ============================================================
+         MODAL BIENVENIDA — pide nombre al primer ingreso
+    ============================================================ -->
+    <div id="welcome-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0"></div>
+        <div class="welcome-card relative z-10 bg-white w-full max-w-sm rounded-[2rem] shadow-2xl p-8 flex flex-col gap-6">
+
+            <!-- Botón X -->
+            <button onclick="closeWelcomeModal()"
+                class="absolute top-4 right-4 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
+                <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+            </button>
+
+            <!-- Icono + título -->
+            <div class="flex flex-col items-center gap-3 pt-2">
+                <div class="welcome-icon w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-200">
+                    <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-gray-900">¡Bienvenido! 🎉</h2>
+                    <p class="text-sm text-gray-500 mt-1">Completa tu perfil para continuar</p>
+                </div>
+            </div>
+
+            <!-- Datos de Google del usuario -->
+            <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-3">
+                <img id="welcome-photo" src="" alt="foto"
+                    class="w-11 h-11 rounded-full border-2 border-blue-200 object-cover shrink-0"/>
+                <div class="min-w-0">
+                    <p id="welcome-email" class="text-xs font-semibold text-blue-700 truncate"></p>
+                    <p class="text-[11px] text-blue-500 mt-0.5">Cuenta Google verificada ✓</p>
+                </div>
+            </div>
+
+            <!-- Input nombre -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-semibold text-gray-700">
+                    Nombre completo <span class="text-red-500">*</span>
+                </label>
+                <input id="welcome-name-input" type="text"
+                    placeholder="Ej: Juan Pérez García"
+                    maxlength="60"
+                    class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                <p id="name-error" class="hidden text-xs text-red-500 font-medium">
+                    ⚠️ Debes ingresar tu nombre para continuar
                 </p>
-                <div class="no-reg-razon">
-                    <div class="no-reg-razon-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="no-reg-razon-texto">
-                        <strong>Confirmación de correo</strong>
-                        <p>Asegúrate de que el correo de Google con el que intentas acceder sea exactamente el mismo que proporcionaste a tu delegado.</p>
-                    </div>
-                </div>
-                <div class="no-reg-razon">
-                    <div class="no-reg-razon-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                    <div class="no-reg-razon-texto">
-                        <strong>Especialidad no vinculada</strong>
-                        <p>Actualmente, FILRED solo está habilitado para las siguientes especialidades:</p>
-                        <div id="no-reg-especialidades" class="no-reg-esp-list">
-                            <div class="no-reg-loading">
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                                Cargando especialidades…
-                            </div>
-                        </div>
-                        <p class="no-reg-esp-footer">
-                            Si tu especialidad aún no está conectada, puedes solicitar a tu delegado de aula que gestione la incorporación.
-                        </p>
-                    </div>
-                </div>
-                <div class="no-reg-soporte-box">
-                    <div class="no-reg-advertencia">
-                        <i class="fa-solid fa-triangle-exclamation no-reg-adv-icon"></i>
-                        <div>
-                            <strong>Gestión de Soporte</strong>
-                            <p>Las incidencias son procesadas solo a través del delegado de tu sección.</p>
-                        </div>
-                    </div>
-                    <a href="https://wa.me/message/O2LIKF7OKLECG1" target="_blank" rel="noopener noreferrer" class="no-reg-wa-btn">
-                        <i class="fa-brands fa-whatsapp"></i>
-                        Contactar Soporte vía WhatsApp
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button class="no-reg-volver-btn" onclick="volverAlLogin()">
-        <i class="fa-solid fa-arrow-left"></i> Volver al inicio de sesión
-    </button>
-</div>
-
-          <!-- ══ PASO API REVEAL ══ -->
-<div id="auth-step-api-reveal" style="display: none; position: relative;">
-    <button class="api-reveal-close-btn" onclick="finalizarRegistroMobile()">
-        <i class="fa-solid fa-times"></i>
-    </button>
-    <div class="auth-header">
-        <i class="fa-solid fa-check-circle auth-icon" style="color: var(--success);"></i>
-        <h2>¡Registro Completo!</h2>
-    </div>
-    <div class="auth-body">
-        <div class="api-reveal-container">
-            <p class="api-reveal-saludo" id="apiRevealSaludo">Hola</p>
-            <p class="api-reveal-desc">
-                <i class="fa-solid fa-laptop"></i>
-                Este es tu API para ingresar desde tu laptop:
-            </p>
-            <div class="api-reveal-number" id="apiRevealNumber">000000000</div>
-            <p class="api-reveal-warning">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Guarda este número. Lo necesitarás para acceder desde tu laptop.
-            </p>
-        </div>
-        <button class="auth-submit" style="background: linear-gradient(135deg, #10b981, #0d9668);" onclick="finalizarRegistroMobile()">
-            <i class="fa-solid fa-check"></i> Entendido, Continuar
-        </button>
-    </div>
-</div>
-        </div>
-    </div>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-logo">
-            <span class="sidebar-logo-text">QilCloud</span>
-        </div>
-        <button class="sidebar-profile-avatar" id="sidebarToggle" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-    <button id="tab-repositorio" class="sidebar-btn active" onclick="switchTab('repositorio')">
-    <i class="fa-solid fa-home"></i>
-    <span class="sidebar-btn-text">Inicio</span>
-</button>
-    <button id="tab-trabajos" class="sidebar-btn" onclick="switchTab('trabajos')">
-        <div style="position: relative; display: inline-block;">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <span id="pending-badge" class="notification-dot" style="display: none;"></span>
-        </div>
-        <span class="sidebar-btn-text">Trabajos</span>
-    </button>
-    <button id="tab-recursos" class="sidebar-btn" onclick="switchTab('recursos')">
-        <i class="fa-solid fa-book"></i>
-        <span class="sidebar-btn-text">Recursos</span>
-    </button>
-    <button id="tab-libros" class="sidebar-btn" onclick="switchTab('libros')">
-        <i class="fa-solid fa-book-open"></i>
-        <span class="sidebar-btn-text">Libros</span>
-    </button>
-    <button id="tab-docentes" class="sidebar-btn" onclick="switchTab('docentes')">
-        <i class="fa-solid fa-chalkboard-user"></i>
-        <span class="sidebar-btn-text">Docentes</span>
-    </button>
-    <button id="tab-estudiantes" class="sidebar-btn" onclick="switchTab('estudiantes')">
-    <i class="fa-solid fa-user-group"></i>
-    <span class="sidebar-btn-text">Comunidad</span>
-</button>
-    <div id="sidebar-profile-wrapper" class="sidebar-profile-wrapper" style="display:none;">
-        <div class="sidebar-profile-divider"></div>
-        <div id="sidebar-ajustes-wrapper" style="display:none; width:100%;">
-            <div class="sidebar-profile" onclick="abrirModalAjustes()">
-                <div class="sidebar-profile-avatar"><i class="fa-solid fa-gear"></i></div>
-                <span class="sidebar-profile-name">Ajustes</span>
-            </div>
-        </div>
-        <div class="sidebar-profile-divider" id="sidebar-second-divider"></div>
-        <div id="sidebar-mi-perfil" class="sidebar-profile" onclick="abrirPerfilEstudiante()">
-            <div class="sidebar-profile-avatar">
-                <img id="sidebar-profile-img" src="" alt="Perfil" style="display:none;">
-                <span id="sidebar-profile-initial" style="display:flex;">?</span>
-            </div>
-            <span class="sidebar-profile-name" id="sidebar-profile-name">Mi Perfil</span>
-        </div>
-    </div>    
-</aside>
-  
-  <!-- ══ TOPBAR FIJA DESKTOP ══ -->
-<div class="desktop-topbar" id="desktopTopbar">
-    <button class="ai-btn" onclick="switchTab('ia-juegos')">
-        <svg width="28" height="28" viewBox="0 0 200 200" style="flex-shrink:0;">
-    <use href="#ghost-icon"/>
-</svg>
-        
-    </button>
-</div>
-
-    <button class="mobile-menu-btn" id="mobileSidebarToggle" onclick="toggleSidebar()">
-        <i class="fa-solid fa-bars"></i>
-    </button>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content" id="mainContent">
-        <main class="container">
-
-           <!-- ══ Sección Gestión de Contenido (solo docentes) ══ -->
-<section id="gestion-docente" class="section-content" style="display: none;">
-    <div class="header-section header-section-sticky">
-        <h2><i class="fa-solid fa-layer-group"></i> Gestión de Contenido</h2>
-        <p id="gestion-saludo">¡Hola, Docente! Esperamos que tengas una excelente jornada educativa.</p>
-    </div>
-
-    <!-- ── Tabs horizontales ── -->
-    <div class="docente-tabs">
-        <button class="docente-tab-btn active" id="dtab-manual" onclick="switchDocenteTab('manual')">
-            <i class="fa-solid fa-book-open"></i> Manual
-        </button>
-        <button class="docente-tab-btn" id="dtab-repo" onclick="switchDocenteTab('repo')">
-            <i class="fa-solid fa-folder-open"></i> Tu repositorio
-        </button>
-        <button class="docente-tab-btn" id="dtab-trabajos" onclick="switchDocenteTab('trabajos')">
-            <i class="fa-solid fa-upload"></i> Subir trabajos
-        </button>
-    </div>
-
-    <!-- ── Panel: Manual ── -->
-    <div class="docente-tab-panel" id="dpanel-manual">
-        <h4 style="margin-bottom:.8rem;">📘 ¿Cómo usar QilCloud como docente?</h4>
-        <p style="color:var(--text-muted);line-height:1.7;margin-bottom:.8rem;">
-            <strong>Subir archivos al repositorio:</strong><br>
-            Ve a <em>"Tu repositorio"</em>, selecciona la especialidad/ciclo y luego el área. El archivo quedará disponible automáticamente para todos los estudiantes de esa área.
-        </p>
-        <p style="color:var(--text-muted);line-height:1.7;">
-            <strong>Subir trabajos a las especialidades:</strong><br>
-            Ve a <em>"Subir trabajos"</em>, completa el formulario con título, descripción, requisitos y fecha límite.
-        </p>
-    </div>
-
-    <!-- ── Panel: Tu Repositorio ── -->
-    <div class="docente-tab-panel" id="dpanel-repo" style="display:none;">
-        <div class="docente-repo-layout">
-            <div class="docente-esp-sidebar" id="docente-esp-sidebar">
-                <p style="color:var(--text-muted);font-size:.83rem;padding:.5rem;">Cargando...</p>
             </div>
 
-            <!-- UNA SOLA docente-repo-content con el historial DEBAJO de las áreas -->
-            <div class="docente-repo-content">
-                <div id="repo-areas-docente">
-                    <!-- Sin texto placeholder: la función JS lo llena automáticamente -->
-                </div>
-
-                <div style="margin-top:1.2rem;padding:0 .2rem;border-top:1px solid var(--border-color);padding-top:1rem;">
-                    <h4 style="margin-bottom:.8rem;color:var(--text-muted);font-size:.85rem;">
-                        <i class="fa-solid fa-history"></i> Historial de envíos
-                    </h4>
-                    <div id="repo-historial" style="display:flex;flex-direction:column;gap:.6rem;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Botón sticky de subir -->
-        <div class="docente-upload-sticky">
-            <input type="file" id="input-subir-repo-sticky"
-                   accept=".pdf,.docx,.pptx,.xlsx,.jpg,.jpeg,.png,.mp4,.mov"
-                   style="display:none;"
-                   onchange="subirDesdeBotonSticky(this)">
-            <button class="docente-upload-sticky-btn" onclick="document.getElementById('input-subir-repo-sticky').click()">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Subir archivo
+            <!-- Botón guardar -->
+            <button onclick="saveUserName()"
+                class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
+                <span>Guardar y continuar</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
         </div>
     </div>
 
-    <!-- ── Panel: Subir Trabajos ── -->
-    <div class="docente-tab-panel" id="dpanel-trabajos" style="display:none;">
 
-        <!-- ── Selector tipo ── -->
-        <div style="display:flex; gap:.6rem; margin-bottom:1.2rem;">
-            <button id="btn-tipo-individual" onclick="switchTipoTrabajo('individual')"
-                style="flex:1; padding:.7rem; border-radius:8px; border:2px solid var(--primary-color);
-                       background:var(--primary-color); color:white; font-weight:700; cursor:pointer; font-size:.88rem;">
-                <i class="fa-solid fa-user"></i> Individual
-            </button>
-            <button id="btn-tipo-grupal" onclick="switchTipoTrabajo('grupal')"
-                style="flex:1; padding:.7rem; border-radius:8px; border:2px solid var(--border-color);
-                       background:transparent; color:var(--text-muted); font-weight:700; cursor:pointer; font-size:.88rem;">
-                <i class="fa-solid fa-users"></i> Grupal
-            </button>
-        </div>
+    <!-- ============================================================
+         MODAL MI PERFIL — solo móvil (bottom sheet)
+    ============================================================ -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-[90] flex items-end justify-center md:hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeProfileModal()"></div>
+        <div class="profile-sheet relative z-10 bg-white w-full rounded-t-[2rem] shadow-2xl px-6 pt-4 pb-10 flex flex-col gap-5">
 
-        <!-- ── Panel Individual ── -->
-        <div id="panel-tipo-individual">
-            <div style="display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap;">
-                <div id="form-trabajo-docente" style="flex:1; min-width:280px;">
+            <!-- Manija -->
+            <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-2"></div>
 
-                    <!-- Etiqueta tipo -->
-                    <div style="margin-bottom:.8rem; padding:.45rem .8rem;
-                         background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.35);
-                         border-radius:8px; color:#60a5fa; font-size:.82rem; font-weight:600;">
-                        <i class="fa-solid fa-user"></i> Trabajo Individual
-                    </div>
-
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Título del trabajo</label>
-                        <input type="text" id="trabajo-titulo" placeholder="Ej: Informe de laboratorio #1"
-                               style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Descripción</label>
-                        <textarea id="trabajo-descripcion" rows="3" placeholder="Describe el trabajo..."
-                                  style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;resize:vertical;"></textarea>
-                    </div>
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Requisitos (uno por línea)</label>
-                        <textarea id="trabajo-requisitos" rows="3" placeholder="Mínimo 5 páginas&#10;Incluir gráficos&#10;Referencias APA"
-                                  style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;resize:vertical;"></textarea>
-                    </div>
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Fecha límite</label>
-                        <input type="date" id="trabajo-fecha"
-                               style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-                    <!-- NUEVO: Curso / Materia -->
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Curso / Materia</label>
-                        <input type="text" id="trabajo-curso" placeholder="Ej: Matemáticas, Comunicación..."
-                               style="width:100%;padding:.7rem;background:var(--bg-darker);border:1px solid var(--border-color);border-radius:8px;color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-                    <!-- FIN NUEVO -->
-                    <div id="trabajo-esp-selector" style="margin-bottom:.8rem;"></div>
-                    <div id="trabajo-error" style="display:none;color:var(--danger);font-size:.83rem;margin-bottom:.6rem;"></div>
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">
-                            <i class="fa-solid fa-paperclip"></i> Recursos Adjuntos
-                        </label>
-                        <div id="trabajo-recursos-lista" style="margin-bottom:.6rem;">
-                            <p style="color:var(--text-muted);font-size:.82rem;font-style:italic;">No hay archivos adjuntos</p>
-                        </div>
-                        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                            <button type="button" onclick="agregarEnlaceDocente()"
-                                    style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#60a5fa;border-radius:8px;padding:.5rem .9rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
-                                <i class="fa-solid fa-link"></i> Enlace
-                            </button>
-                            <button type="button"
-                                    onclick="document.getElementById('input-adjuntar-archivo-trabajo').click()"
-                                    style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);color:#60a5fa;border-radius:8px;padding:.5rem .9rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
-                                <i class="fa-solid fa-paperclip"></i> Archivo
-                            </button>
-                            <input type="file" id="input-adjuntar-archivo-trabajo"
-                                   accept=".pdf,.docx,.pptx,.xlsx,.jpg,.jpeg,.png,.mp4,.mov"
-                                   style="display:none;"
-                                   onchange="agregarArchivoRecursoDocente(this)">
-                        </div>
-                    </div>
-                    <button onclick="publicarTrabajoDocente()" style="background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;border:none;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;width:100%;">
-                        <i class="fa-solid fa-paper-plane"></i> Publicar Trabajo
-                    </button>
-                </div>
-
-                <!-- Columna historial individual -->
-                <div style="flex:1; min-width:260px;">
-                    <h4 style="color:var(--text-muted);font-size:.85rem;margin-bottom:.6rem;">
-                        <i class="fa-solid fa-history"></i> Trabajos publicados
-                    </h4>
-                    <div id="historial-trabajos-docente" style="display:flex;flex-direction:column;gap:.5rem;"></div>
-                </div>
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-900 text-lg">Mi Perfil</h3>
+                <button onclick="closeProfileModal()"
+                    class="p-1.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                </button>
             </div>
-        </div>
 
-        <!-- ── Panel Grupal (nuevo) ── -->
-        <div id="panel-tipo-grupal" style="display:none;">
-            <div style="display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap;">
-
-                <!-- Columna principal: formulario multi-grupo -->
-                <div style="flex:1; min-width:300px;">
-
-                    <!-- Etiqueta tipo -->
-                    <div style="margin-bottom:.8rem;padding:.45rem .8rem;
-                         background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);
-                         border-radius:8px;color:#34d399;font-size:.82rem;font-weight:600;">
-                        <i class="fa-solid fa-users"></i> Trabajo Grupal
-                    </div>
-
-                    <!-- Título general del trabajo (compartido por todos los grupos) -->
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">
-                            Título general del trabajo
-                        </label>
-                        <input type="text" id="grupo-titulo"
-                               placeholder="Ej: Proyecto Final de Ciclo"
-                               style="width:100%;padding:.7rem;background:var(--bg-darker);
-                                      border:1px solid var(--border-color);border-radius:8px;
-                                      color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-
-                    <!-- Curso / Materia -->
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Curso / Materia</label>
-                        <input type="text" id="grupo-curso"
-                               placeholder="Ej: Matemáticas, Comunicación..."
-                               style="width:100%;padding:.7rem;background:var(--bg-darker);
-                                      border:1px solid var(--border-color);border-radius:8px;
-                                      color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-
-                    <!-- Especialidad/Ciclo destino -->
-                    <div id="grupo-esp-selector" style="margin-bottom:.8rem;"></div>
-
-                    <!-- Fecha límite -->
-                    <div class="form-group" style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;">Fecha límite</label>
-                        <input type="date" id="grupo-fecha"
-                            style="width:100%;padding:.7rem;background:var(--bg-darker);
-                                   border:1px solid var(--border-color);border-radius:8px;
-                                   color:var(--text-light);font-size:.9rem;outline:none;">
-                    </div>
-
-                    <!-- ── LISTA DINÁMICA DE GRUPOS ── -->
-                    <div style="margin-bottom:.8rem;">
-                        <label style="color:var(--text-muted);font-size:.85rem;
-                                      display:block;margin-bottom:.6rem;font-weight:600;">
-                            <i class="fa-solid fa-layer-group"></i> Grupos
-                        </label>
-                        <div id="grupos-lista-container"></div>
-                        <button type="button" onclick="agregarNuevoGrupo()"
-                                style="width:100%;padding:.65rem;margin-top:.3rem;
-                                       background:rgba(16,185,129,.06);
-                                       border:1.5px dashed rgba(16,185,129,.4);border-radius:8px;
-                                       color:#34d399;font-size:.85rem;font-weight:700;cursor:pointer;
-                                       display:flex;align-items:center;justify-content:center;gap:7px;">
-                            <i class="fa-solid fa-plus"></i> Agregar otro grupo
-                        </button>
-                    </div>
-
-                    <!-- Archivo de referencia opcional -->
-                    <div style="margin-bottom:.8rem;padding:.8rem;background:rgba(255,255,255,.02);
-                         border:1px solid var(--border-color);border-radius:10px;">
-                        <label style="color:var(--text-muted);font-size:.85rem;
-                                      display:block;margin-bottom:.5rem;">
-                            <i class="fa-solid fa-paperclip"></i> Archivo de referencia
-                            <span style="font-size:.78rem;opacity:.6;">(opcional, para todos los grupos)</span>
-                        </label>
-                        <textarea id="grupo-archivo-desc" rows="2"
-                            placeholder="Describe para qué sirve este archivo..."
-                            style="width:100%;padding:.6rem;background:var(--bg-darker);
-                                   border:1px solid var(--border-color);border-radius:8px;
-                                   color:var(--text-light);font-size:.85rem;outline:none;
-                                   resize:vertical;margin-bottom:.5rem;"></textarea>
-                        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
-                            <button type="button"
-                                    onclick="document.getElementById('input-grupo-archivo').click()"
-                                    style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.4);
-                                           color:#60a5fa;border-radius:8px;padding:.5rem .9rem;
-                                           font-size:.8rem;cursor:pointer;display:flex;
-                                           align-items:center;gap:5px;">
-                                <i class="fa-solid fa-paperclip"></i> Adjuntar archivo
-                            </button>
-                            <input type="file" id="input-grupo-archivo"
-                                   accept=".pdf,.docx,.pptx,.xlsx,.jpg,.jpeg,.png"
-                                   style="display:none;" onchange="adjuntarArchivoGrupo(this)">
-                            <span id="grupo-archivo-nombre"
-                                  style="color:var(--text-muted);font-size:.8rem;font-style:italic;"></span>
-                        </div>
-                    </div>
-
-                    <div id="grupo-error" style="display:none;color:var(--danger);
-                         font-size:.83rem;margin-bottom:.6rem;"></div>
-
-                    <button onclick="publicarTrabajoGrupal()"
-                        style="background:linear-gradient(135deg,#10b981,#0d9668);color:white;
-                               border:none;padding:.75rem 1.5rem;border-radius:8px;
-                               font-weight:700;cursor:pointer;font-size:.9rem;width:100%;">
-                        <i class="fa-solid fa-paper-plane"></i> Publicar Trabajo Grupal
-                    </button>
-                </div>
-
-                <!-- Historial grupales -->
-                <div style="flex:1; min-width:260px;">
-                    <h4 style="color:var(--text-muted);font-size:.85rem;margin-bottom:.6rem;">
-                        <i class="fa-solid fa-history"></i> Trabajos grupales publicados
-                    </h4>
-                    <div id="historial-trabajos-grupales"
-                         style="display:flex;flex-direction:column;gap:.5rem;"></div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</section>
-
-            <!-- ══ Sección Repositorio ══ -->
-            <section id="repositorio" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <div class="header-with-search">
-                        <div class="header-text">
-                            <h2><i class="fa-solid fa-folder-open"></i> Archivos Académicos</h2>
-                            <p>Selecciona un área para filtrar los recursos.</p>
-                        </div>
-                        <div class="search-container-inline">
-                            <button class="search-toggle" onclick="toggleSearch('repositorio')">
-                                <i class="fa-solid fa-search"></i>
-                            </button>
-                            <div class="search-bar-expandable" id="searchBarRepositorio">
-                                <input type="text" id="searchInputRepositorio" placeholder="Buscar archivos..." onkeyup="searchFiles()">
-                                <button class="search-close" onclick="toggleSearch('repositorio')">
-                                    <i class="fa-solid fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="filter-buttons" id="filter-buttons-areas">
-    <button class="filter-btn active" onclick="filterFiles('all')">Todo</button>
-    <!-- Las áreas se cargan dinámicamente según la especialidad/ciclo del usuario -->
-</div>
-                </div>
-                <div id="files-grid" class="grid-container"></div>
-            </section>
-
-            <!-- ══ Sección Trabajos ══ -->
-            <section id="trabajos" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <div class="trabajos-header-flex">
-                        <div>
-                            <h2><i class="fa-solid fa-clipboard-list"></i> Gestión de Trabajos</h2>
-                            <p>Estado de entregas y tareas pendientes por docente.</p>
-                        </div>
-                        <button id="btn-trabajos-finalizados" class="btn-trabajos-finalizados" onclick="toggleTrabajosFinalizados()">
-                            <i class="fa-solid fa-clock"></i> <span id="btn-trabajos-text">Ver trabajos finalizados</span>
-                        </button>
-                    </div>
-                    <div id="trabajos-pendientes-title" style="display: block;">
-                        <h3 class="subsection-title"><i class="fa-solid fa-hourglass-half"></i> Trabajos Pendientes</h3>
-                    </div>
-                    <div id="trabajos-finalizados-title" style="display: none;">
-                        <h3 class="subsection-title"><i class="fa-solid fa-check-double"></i> Trabajos Finalizados</h3>
+            <!-- Avatar + datos -->
+            <div class="flex flex-col items-center gap-4 py-4">
+                <div class="relative">
+                    <img id="profile-photo" src="" alt="foto"
+                        class="w-24 h-24 rounded-full border-4 border-blue-100 object-cover shadow-xl"/>
+                    <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
                 </div>
-                <div id="trabajos-pendientes-section" style="display: block;">
-                    <div class="assignments-container" id="assignments-container"></div>
+                <div class="text-center">
+                    <p id="profile-name" class="text-xl font-bold text-gray-900"></p>
+                    <p id="profile-email" class="text-sm text-gray-500 mt-1"></p>
                 </div>
-                <div id="trabajos-finalizados-section" style="display: none;">
-                    <div class="assignments-container" id="finalizados-container"></div>
-                </div>
-            </section>
-
-            <!-- ══ Sección Recursos ══ -->
-            <section id="recursos" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <div class="header-with-search">
-                        <div class="header-text">
-                            <h2><i class="fa-solid fa-book"></i> Recursos Académicos</h2>
-                        </div>
-                        <div class="search-container-inline">
-                            <button class="search-toggle" onclick="toggleSearch('recursos')">
-                                <i class="fa-solid fa-search"></i>
-                            </button>
-                            <div class="search-bar-expandable" id="searchBarRecursos">
-                                <input type="text" id="searchInputRecursos" placeholder="Buscar recursos..." onkeyup="searchRecursos()">
-                                <button class="search-close" onclick="toggleSearch('recursos')">
-                                    <i class="fa-solid fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="recursos-tipo-buttons">
-                        <button class="recursos-tipo-btn active" id="rtbtn-Documentos" onclick="filterRecursosTipo('Documentos')">
-                            <i class="fa-solid fa-file-lines"></i> Documentos
-                        </button>
-                        <button class="recursos-tipo-btn" id="rtbtn-Videos" onclick="filterRecursosTipo('Videos')">
-                            <i class="fa-solid fa-video"></i> Videos
-                        </button>
-                        <button class="recursos-tipo-btn" id="rtbtn-Imágenes" onclick="filterRecursosTipo('Imágenes')">
-                            <i class="fa-solid fa-image"></i> Imágenes
-                        </button>
-                    </div>
-                </div>
-                <div class="recursos-list">
-                    <div id="recursos-container" class="recursos-grid"></div>
-                </div>
-            </section>
-          
-            <!-- ══ Sección Libros ══ -->
-            <section id="libros" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <div class="header-text">
-                        <h2><i class="fa-solid fa-book-open"></i> Biblioteca</h2>
-                        <p>Explora nuestra colección de textos y lecturas.</p>
-                    </div>
-                    <div class="libros-filter-buttons">
-                        <button class="libros-filter-btn active" id="lbtn-Todo" onclick="filterLibros('Todo')"><i class="fa-solid fa-border-all"></i> Todo</button>
-                        <button class="libros-filter-btn" id="lbtn-Cuentos" onclick="filterLibros('Cuentos')"><i class="fa-solid fa-book-open"></i> Cuentos</button>
-                        <button class="libros-filter-btn" id="lbtn-Historias" onclick="filterLibros('Historias')"><i class="fa-solid fa-scroll"></i> Historias</button>
-                        <button class="libros-filter-btn" id="lbtn-Leyendas" onclick="filterLibros('Leyendas')"><i class="fa-solid fa-dragon"></i> Leyendas</button>
-                        <button class="libros-filter-btn" id="lbtn-Poemas" onclick="filterLibros('Poemas')"><i class="fa-solid fa-feather"></i> Poemas</button>
-                    </div>
-                </div>
-                <div id="libros-grid" class="libros-grid-container"></div>
-            </section>
-
-            <!-- Modal Contexto Libro -->
-            <div id="modalContextoLibro" class="modal">
-                <div class="modal-content-contexto">
-                    <button class="contexto-close-btn" onclick="cerrarContextoLibro()"><i class="fa-solid fa-times"></i></button>
-                    <div class="contexto-portada-wrap"><img id="contexto-portada-img" src="" alt=""></div>
-                    <div class="contexto-info">
-                        <h3 id="contexto-titulo"></h3>
-                        <span id="contexto-categoria-badge" class="contexto-categoria"></span>
-                        <div class="contexto-texto" id="contexto-texto"></div>
-                    </div>
-                </div>
-            </div>
-          
-            <!-- ══ Sección Docentes ══ -->
-            <section id="docentes" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <h2><i class="fa-solid fa-chalkboard-user"></i> Directorio de Docentes</h2>
-                    <p>Información de contacto y perfil de los profesores.</p>
-                </div>
-                <div id="docentes-grid" class="grid-container"></div>
-            </section>
-
-            <!-- ══ Sección Estudiantes ══ -->
-            <section id="estudiantes" class="section-content" style="display: none;">
-                <div id="estudiantes-header-miembro" class="header-section header-section-sticky" style="display:none;">
-                    <div id="mi-card-estudiante"></div>
-                </div>
-                <div id="estudiantes-grid" class="grid-container">
-                    <div class="loading-estudiantes" id="loading-estudiantes">
-                        <div class="loading-icon-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 586" style="width:100%;height:auto;display:block;">
-                                <use href="#filred-logo"/>
-                            </svg>
-                        </div>
-                        <p>Cargando estudiantes...</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══ Sección Chat ══ -->
-            <section id="chat" class="section-content" style="display: none;">
-                <div class="chat-container">
-                    <div class="chat-sidebar-panel" id="chat-sidebar-panel">
-                        <div class="chat-panel-topbar">
-                            <button class="btn-volver-comunidad" onclick="switchTab('estudiantes')" title="Volver a Comunidad">
-                                <i class="fa-solid fa-arrow-left"></i>
-                            </button>
-                            <span class="chat-panel-title"><i class="fa-solid fa-comment"></i> Chats</span>
- 
-                            </button>
-                        </div>
-                        <div class="chat-list" id="chat-list">
-                            <p class="chat-empty">
-                                <i class="fa-solid fa-comment-slash"></i><br>
-                                No tienes chats aún.<br>Acepta solicitudes en Comunidad.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="chat-main" id="chat-main">
-                        <div class="chat-placeholder" id="chat-placeholder">
-                            <i class="fa-solid fa-comment-dots"></i>
-                            <p>Selecciona un chat para comenzar</p>
-                        </div>
-                        <div class="chat-window" id="chat-window" style="display:none;">
-                            <div class="chat-win-header" id="chat-win-header"></div>
-                            <div class="chat-messages" id="chat-messages"></div>
-                            <div class="chat-input-area">
-                                <input type="text" id="chat-input" placeholder="Escribe un mensaje..."
-                                       onkeypress="if(event.key==='Enter')enviarMensaje()">
-                                <button onclick="enviarMensaje()" class="chat-send-btn">
-                                    <i class="fa-solid fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══ Sección Mi Perfil ══ -->
-            <section id="perfil" class="section-content" style="display: none;">
-                <div class="header-section header-section-sticky">
-                    <h2><i class="fa-solid fa-user-circle"></i> Mi Perfil</h2>
-                </div>
-                <div id="perfil-seccion-contenido" style="padding: 1.5rem;"></div>
-            </section>
-
-            <!-- ══ Sección IA Juegos ══ CORRECTAMENTE FUERA DE TODAS LAS DEMÁS -->
-            <section id="ia-juegos" class="section-content" style="display: none;">
-                <div class="ia-container">
-                    <div class="ia-hero">
-                        <div class="ia-img-wrapper">
-<svg class="ia-ghost-svg" viewBox="0 0 200 200">
-    <use href="#ghost-icon"/>
-</svg>
-                        </div>
-                        <h1 class="ia-title">Aprende con QilCloud Ai</h1>
-                        <div class="ia-welcome-box">
-                            <p><strong>Bienvenido:</strong> Este es un espacio diseñado para fortalecer el proceso de enseñanza y aprendizaje mediante la integración de modelos avanzados de lenguaje (Gemini). Herramientas tecnológicas que actúan como soporte estratégico para estudiantes y docentes.</p>
-                        </div>
-                    </div>
-                    <div class="ia-grid">
-                        <div class="ia-card">
-                            <div class="ia-card-icon">
-    <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1774229904/BackgroundEraser_20260322_200752242_hzt8ht.png" alt="Cua Cua Quest" style="width:150px; height:150px; object-fit:contain;">
-</div>
-                            <div class="ia-card-body">
-                                <span class="ia-tagline">Análisis y Autoevaluación</span>
-                                <h2>CUA CUA QUEST AI</h2>
-                                <p class="ia-desc">Optimiza el estudio de materiales complejos. Extrae lo más importante y lo convierte en un juego de preguntas interactivo.</p>
-                                <div class="ia-steps">
-                                    <div class="ia-step"><strong>01. Carga</strong><p>Sube tu PDF, Word o TXT.</p></div>
-                                    <div class="ia-step"><strong>02. Tipo</strong><p>Elige opción múltiple o V/F.</p></div>
-                                    <div class="ia-step"><strong>03. Juega</strong><p>La IA genera tu cuestionario.</p></div>
-                                </div>
-                              
-                              <button onclick="abrirCuaCuaQuest()" class="ia-ingresar-btn">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar
-        </button>               
-                            </div>
-                        </div>
-                        <div class="ia-card">
-                            <div class="ia-card-icon">
-    <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1774229935/BackgroundEraser_20260322_203543343_trsdzd.png" alt="Gramática Pro" style="width:150px; height:150px; object-fit:contain;">
-                          </div>
-                            <div class="ia-card-body">
-                                <span class="ia-tagline">Tutoría Personalizada</span>
-                                <h2>GRAMÁTICA PRO</h2>
-                                <p class="ia-desc">Entorno de práctica adaptativa donde la IA guía el perfeccionamiento de habilidades gramaticales y ortográficas.</p>
-                             <div class="ia-steps">
-                                    <div class="ia-step"><strong>Selección</strong><p>Elige el módulo a fortalecer.</p></div>
-                                    <div class="ia-step"><strong>Dinámica</strong><p>Ejercicios únicos sin repetición.</p></div>
-                                    <div class="ia-step"><strong>Consulta</strong><p>Resuelve dudas con la IA.</p></div>
-                                </div>
-                                <button onclick="abrirGramaticaPro()" class="ia-ingresar-btn">
-                                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-          
-          <!-- ══ Sección Gramática Pro (Aplicación completa) ══ -->
-        <section id="gramatica-pro-app" class="section-content" style="display: none;">
-            <div class="gp-topbar">
-                
-<button onclick="switchTab('ia-juegos')" class="gp-back-btn">
-    <span class="gp-back-text-desktop"><i class="fa-solid fa-arrow-left"></i> Volver</span>
-    <span class="gp-back-text-mobile">&lt;</span>
-</button>
-                <div class="gp-topbar-brand" onclick="showView('menu')" style="cursor:pointer;">
-                    <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1774229935/BackgroundEraser_20260322_203543343_trsdzd.png"
-                         class="gp-brand-img" alt="Gramática Pro">
-                    <span style="font-weight:800; color:white; letter-spacing:-0.5px; font-size:1rem;">
-                        Gramática<span style="color:#818cf8;">Pro</span>
-                    </span>
-                </div>
-                
-<button id="btn-desafio-global" onclick="startLevel('global')" class="btn-primary text-white rounded-lg text-xs font-bold flex items-center gap-1.5" style="padding:6px 14px; border:none; cursor:pointer; display:none;">
-    <span id="hdr-spark" style="display:inline-flex;align-items:center;"></span>
-    <span>Desafío Global</span>
-</button>
-            </div>
-            <main id="app-content" class="max-w-7xl mx-auto px-3 sm:px-5 py-4 md:py-7"></main>
-        </section>
-      
-      <!-- ══ Sección Cua Cua Quest App ══ -->
-<section id="cuacua-app" class="section-content" style="display: none;">
-    <div class="gp-topbar">
-        <button onclick="switchTab('ia-juegos')" class="gp-back-btn">
-            <span class="gp-back-text-desktop"><i class="fa-solid fa-arrow-left"></i> Volver</span>
-            <span class="gp-back-text-mobile">&lt;</span>
-        </button>
-        <div class="gp-topbar-brand" onclick="ccq_resetApp()" style="cursor:pointer;">
-            <img src="https://res.cloudinary.com/dvrr4swky/image/upload/v1774229904/BackgroundEraser_20260322_200752242_hzt8ht.png"
-                 class="gp-brand-img" alt="Cua Cua Quest">
-            <span style="font-weight:800; color:white; letter-spacing:-0.5px; font-size:1rem;">
-                Cua Cua <span style="color:#2563eb;">Quest AI</span>
-            </span>
-        </div>
-        <div style="width:80px;"></div>
-    </div>
-
-    <div id="ccq-app-content" class="max-w-2xl mx-auto py-6 px-4">
-
-        <!-- Subida de archivo -->
-        <section id="ccq-upload" class="ccq-glass-panel p-10 text-center"
-                 style="border: 2px dashed rgba(37,99,235,0.3); margin-bottom:1rem;">
-            <label for="ccq-file-input" style="cursor:pointer; display:block;">
-                <i class="fas fa-file-word" style="font-size:2.5rem; color:#2563eb; margin-bottom:0.75rem; display:block;"></i>
-                <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:0.5rem;">PDF, DOCX o TXT</p>
-                <span class="ccq-btn-primary" style="padding:0.625rem 2rem; border-radius:0.5rem; font-weight:700; font-size:0.75rem; text-transform:uppercase; display:inline-block; margin-top:1rem;">
-                    Subir documento
+                <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full uppercase tracking-widest">
+                    Cuenta Google Verificada ✓
                 </span>
-                <input type="file" id="ccq-file-input" accept=".pdf,.docx,.txt" style="display:none;">
-            </label>
-            <div id="ccq-file-ready" class="hidden" style="margin-top:1rem; color:#2563eb; font-size:0.875rem; font-weight:500;">
-                <i class="fas fa-check-circle" style="margin-right:0.5rem;"></i>
-                <span id="ccq-name-tag"></span>
             </div>
-        </section>
 
-        <!-- Tipo de cuestionario -->
-        <section id="ccq-options-box" class="hidden ccq-glass-panel p-5"
-                 style="display:none; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
-            <button onclick="ccq_process('multiple_choice')"
-                    style="background:var(--card-hover); border:1px solid var(--border-color); padding:1rem; border-radius:0.5rem; font-size:0.6875rem; font-weight:700; text-transform:uppercase; color:var(--text-light); cursor:pointer; transition:0.2s;">
-                <i class="fas fa-list-ol" style="margin-bottom:0.5rem; display:block; font-size:1.25rem; color:#2563eb;"></i>
-                Opción Múltiple
+            <div class="h-px bg-gray-100"></div>
+
+            <!-- Cerrar sesión -->
+            <button onclick="signOutUser()"
+                class="w-full flex items-center justify-center gap-2 py-3.5 bg-red-50 text-red-600 rounded-2xl font-bold text-sm hover:bg-red-100 transition-all active:scale-95">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                Cerrar sesión
             </button>
-            <button onclick="ccq_process('true_false')"
-                    style="background:var(--card-hover); border:1px solid var(--border-color); padding:1rem; border-radius:0.5rem; font-size:0.6875rem; font-weight:700; text-transform:uppercase; color:var(--text-light); cursor:pointer; transition:0.2s;">
-                <i class="fas fa-check-square" style="margin-bottom:0.5rem; display:block; font-size:1.25rem; color:#2563eb;"></i>
-                Verdadero/Falso
-            </button>
-        </section>
-
-        <!-- Procesando -->
-        
-<div id="ccq-processing" class="hidden" style="text-align:center; padding:2rem;">
-    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem; color:var(--primary-color);"></i>
-    <p style="margin-top:1rem; color:var(--text-muted);">La IA está analizando tu documento...</p>
-</div>
-
-        <!-- Preguntas generadas -->
-        <section id="ccq-quiz-output" class="hidden" style="padding-bottom:3rem;">
-            <div class="ccq-glass-panel"
-                 style="padding:1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.3);">
-                <h3 style="font-weight:700; font-size:0.875rem; color:#2563eb;">
-                    <i class="fas fa-star" style="margin-right:0.5rem;"></i> ¡Cuestionario Generado!
-                </h3>
-            </div>
-            <div id="ccq-container"></div>
-        </section>
-
-        <!-- Panel de resultados -->
-        <section id="ccq-results-panel" class="hidden ccq-glass-panel p-8">
-            <h2 style="font-size:1.5rem; font-weight:700; color:#2563eb; margin-bottom:1.5rem; text-align:center;">
-                ¡Cuestionario Completado!
-            </h2>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem;">
-                <div style="background:var(--bg-darker); border-radius:1rem; padding:1.25rem; text-align:center;">
-                    <p style="color:var(--text-muted); font-size:0.875rem;">Correctas</p>
-                    <p id="ccq-correct-count" style="font-size:3rem; font-weight:700; color:#10b981;">0</p>
-                </div>
-                <div style="background:var(--bg-darker); border-radius:1rem; padding:1.25rem; text-align:center;">
-                    <p style="color:var(--text-muted); font-size:0.875rem;">Incorrectas</p>
-                    <p id="ccq-incorrect-count" style="font-size:3rem; font-weight:700; color:#ef4444;">0</p>
-                </div>
-                <div style="background:var(--bg-darker); border-radius:1rem; padding:1.25rem; text-align:center;">
-                    <p style="color:var(--text-muted); font-size:0.875rem;">Puntaje</p>
-                    <p id="ccq-score-percentage" style="font-size:3rem; font-weight:700; color:#2563eb;">0%</p>
-                </div>
-            </div>
-            <div style="display:flex; gap:1rem;">
-                <button onclick="ccq_retrySameQuiz()"
-                        style="flex:1; padding:1rem; background:var(--card-hover); border-radius:1rem; font-weight:600; font-size:0.875rem; text-transform:uppercase; border:1px solid var(--border-color); color:var(--text-light); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-                    <i class="fas fa-redo"></i> Reintentar
-                </button>
-                <button onclick="ccq_generateNextQuiz()"
-                        style="flex:1; padding:1rem; background:#2563eb; border-radius:1rem; font-weight:600; font-size:0.875rem; text-transform:uppercase; color:white; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-                    Siguiente <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </section>
-
+        </div>
     </div>
-</section>
 
+
+    <!-- ============================================================
+         BOTÓN HISTORIAL DESKTOP
+    ============================================================ -->
+    <button id="desktop-history-btn" onclick="openHistory()" title="Historial de trabajos terminados"
+        class="hidden fixed top-4 right-6 z-30 p-2.5 bg-white border border-gray-200 rounded-xl shadow-md hover:bg-blue-50 hover:border-blue-300 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <line x1="8" y1="6" x2="16" y2="6"/>
+            <line x1="8" y1="10" x2="16" y2="10"/>
+            <line x1="9" y1="15" x2="15" y2="21"/>
+            <line x1="15" y1="15" x2="9" y2="21"/>
+        </svg>
+    </button>
+
+
+    <!-- ============================================================
+         LAYOUT PRINCIPAL
+    ============================================================ -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR DESKTOP -->
+        <aside id="sidebar" class="hidden md:flex flex-col sidebar-transition w-64 glass-effect h-full z-30">
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                    </div>
+                    <span id="logo-text" class="font-bold text-xl tracking-tight sidebar-transition">NexusRepo</span>
+                </div>
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <i data-lucide="chevron-left" id="toggle-icon" class="w-5 h-5 sidebar-transition"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <button onclick="showSection('docs')" id="btn-docs-desktop"
+                    class="nav-item flex items-center gap-4 w-full px-4 py-3 active-nav transition-colors group">
+                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                    <span class="sidebar-transition font-medium">Documentos</span>
+                </button>
+                <button onclick="showSection('works')" id="btn-works-desktop"
+    class="nav-item flex items-center gap-4 w-full px-4 py-3 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors rounded-xl group">
+    <i data-lucide="briefcase" class="w-5 h-5"></i>
+    <span class="sidebar-transition font-medium">Trabajos</span>
+</button>
+<button onclick="showSection('teachers')" id="btn-teachers-desktop"
+    class="nav-item flex items-center gap-4 w-full px-4 py-3 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors rounded-xl group">
+    <i data-lucide="users" class="w-5 h-5"></i>
+    <span class="sidebar-transition font-medium">Docentes</span>
+</button>
+<!-- Botón + SOLO para admin -->
+<!-- DESPUÉS -->
+<!-- Botón + SOLO para admin -->
+<button id="btn-add-desktop" onclick="openAddPanel()"
+    class="hidden nav-item flex items-center gap-4 w-full px-4 py-3 bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-xl group">
+    <i data-lucide="plus" class="w-5 h-5"></i>
+    <span class="sidebar-transition font-medium">Agregar</span>
+</button>
+
+            <!-- PERFIL REAL en sidebar desktop -->
+            <div class="p-4 border-t border-gray-100 relative">
+                <div onclick="toggleDesktopProfileMenu()"
+                    class="flex items-center gap-3 p-2 bg-gray-50 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors group">
+                    <!-- Foto real del usuario -->
+                    <div class="shrink-0 relative">
+                        <img id="sidebar-photo" src="" alt="foto"
+                            class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 group-hover:border-blue-300 transition-colors"/>
+                        <div id="sidebar-fallback"
+                            class="hidden w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 items-center justify-center text-white font-bold text-sm border-2 border-gray-200">
+                            ?
+                        </div>
+                    </div>
+                    <div id="user-info" class="sidebar-transition flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-sm font-semibold truncate text-gray-800">Cargando...</p>
+                        <p id="sidebar-email" class="text-xs text-gray-500 truncate"></p>
+                    </div>
+                    <i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400 shrink-0"></i>
+                </div>
+
+                <!-- Dropdown cerrar sesión desktop -->
+                <div id="desktop-profile-menu"
+                    class="hidden absolute bottom-20 left-4 right-4 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50">
+                    <div class="px-4 py-3 border-b border-gray-50">
+                        <p class="text-xs text-gray-400 font-medium">Sesión activa</p>
+                        <p id="sidebar-email-menu" class="text-xs font-semibold text-gray-700 truncate mt-0.5"></p>
+                    </div>
+                    <button onclick="signOutUser()"
+                        class="w-full flex items-center gap-2 px-4 py-3.5 text-sm text-red-600 font-semibold hover:bg-red-50 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        Cerrar sesión
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 flex flex-col min-w-0 bg-gray-50 relative overflow-y-auto pb-24 md:pb-0">
+
+            <!-- Header móvil -->
+            <header class="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b sticky top-0 z-20">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-bold text-lg">NexusRepo</span>
+                </div>
+                <div class="flex gap-2">
+                    <button id="mobile-search-btn" class="p-2 bg-gray-100 rounded-full">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <button id="mobile-history-btn" onclick="openHistory()"
+                        class="hidden p-2 bg-blue-100 rounded-full" title="Historial de trabajos terminados">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="2"/>
+                            <line x1="8" y1="6" x2="16" y2="6"/>
+                            <line x1="8" y1="10" x2="16" y2="10"/>
+                            <line x1="9" y1="15" x2="15" y2="21"/>
+                            <line x1="15" y1="15" x2="9" y2="21"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SECCIÓN DOCUMENTOS -->
+            <section id="section-docs" class="p-6 md:p-10 max-w-5xl mx-auto w-full">
+              <div id="areas-bar" class="flex gap-3 mb-10 overflow-x-auto no-scrollbar pb-2">
+    <button data-area="todos" onclick="selectArea(this)"
+        class="area-btn px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium shadow-md shadow-blue-100 shrink-0">Todos</button>
+    <!-- Los botones de curso se generan dinámicamente desde Firebase (docentes) -->
+    <button id="areas-more-btn" onclick="openAreasPanel()"
+        class="hidden px-5 py-2 bg-white text-blue-600 border border-blue-200 rounded-full text-sm font-semibold hover:bg-blue-50 transition-colors shrink-0">Más...</button>
+</div>
+                <!-- Panel áreas móvil -->
+              <div id="areas-panel" class="hidden fixed inset-0 z-50 flex items-center justify-center px-6">
+                    <div class="modal-overlay absolute inset-0" onclick="closeAreasPanel()"></div>
+                    <div class="relative z-10 bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="font-bold text-gray-900 text-base">Todas las Áreas</h3>
+                            <button onclick="closeAreasPanel()" class="p-1.5 bg-gray-100 rounded-full transition-colors hover:bg-gray-200">
+                                <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                            </button>
+                        </div>
+                        <div id="areas-panel-list" class="flex flex-wrap gap-3"></div>
+                    </div>
+                </div>
+
+               <div id="docs-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Los documentos se cargan dinámicamente desde Firebase -->
+                </div>
+            </section>
+
+            
+           <!-- SECCIÓN TRABAJOS -->
+            <section id="section-works" class="hidden p-6 md:p-10 max-w-5xl mx-auto w-full">
+                <div id="works-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Los trabajos se cargan dinámicamente desde Firebase -->
+                </div>
+            </section>
+
+            <!-- SECCIÓN DOCENTES -->
+            <section id="section-teachers" class="hidden p-6 md:p-10 max-w-5xl mx-auto w-full">
+                <div id="teachers-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Los docentes se cargan dinámicamente desde Firebase -->
+                </div>
+            </section>
+       <!-- DESPUÉS -->
         </main>
 
-        <!-- Footer -->
-        <footer>
-            <button id="footer-btn-comunidad" class="mobile-footer-btn" onclick="switchTab('estudiantes')">
-                <i class="fa-solid fa-user-group"></i>
-                <span>Comunidad</span>
-            </button>
-            <button id="footer-btn-trabajos" class="mobile-footer-btn" onclick="switchTab('trabajos')">
-                <div style="position: relative;">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span id="pending-badge-footer" class="notification-dot" style="display: none;"></span>
-                </div>
-                <span>Trabajos</span>
-            </button>
-            <button id="footer-btn-repositorio" class="mobile-footer-btn" onclick="switchTab('repositorio')">
-                <i class="fa-solid fa-home"></i>
-                <span>Inicio</span>
-            </button>
-            <button id="footer-btn-perfil" class="mobile-footer-btn" onclick="abrirPerfilEstudiante()">
-                <i class="fa-solid fa-user-circle"></i>
-                <span>Perfil</span>
-            </button>
-            <button class="mobile-footer-btn" onclick="toggleSidebar()">
-                <i class="fa-solid fa-bars"></i>
-                <span>Menú</span>
-            </button>
-        </footer>
+        <!-- FAB circular desktop — solo admin -->
+        <button id="btn-add-desktop-fab" onclick="openAddPanel()"
+            class="hidden fixed bottom-8 right-8 z-30 w-14 h-14 bg-blue-600 text-white rounded-full items-center justify-center shadow-xl shadow-blue-300 hover:bg-blue-700 hover:scale-105 active:scale-90 transition-all">
+            <i data-lucide="plus" class="w-7 h-7"></i>
+        </button>
+
+   
+
+    <!-- ============================================================
+         BARRA NAV MÓVIL — 4 botones: Docs | [+] | Trabajos | Perfil
+    ============================================================ -->
+   <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <div class="flex items-center justify-around px-2 py-2">
+        <!-- Docs -->
+        <button onclick="showSection('docs')" id="btn-docs-mobile"
+            class="flex flex-col items-center gap-1 text-blue-600 transition-colors px-3 py-1">
+            <i data-lucide="file-text" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Docs</span>
+        </button>
+
+        <!-- Trabajos -->
+        <button onclick="showSection('works')" id="btn-works-mobile"
+            class="flex flex-col items-center gap-1 text-gray-400 transition-colors px-3 py-1">
+            <i data-lucide="briefcase" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Trabajos</span>
+        </button>
+
+        <!-- Botón + CENTRAL — solo visible para admins -->
+        <!-- DESPUÉS -->
+<div id="btn-add-wrapper" class="hidden relative -top-5 flex items-center justify-center">
+    <button id="btn-add-mobile" onclick="openAddPanel()"
+        class="w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-200 active:scale-90 transition-transform">
+        <i data-lucide="plus" class="w-6 h-6"></i>
+    </button>
+</div>
+
+        <!-- Docentes -->
+        <button onclick="showSection('teachers')" id="btn-teachers-mobile"
+            class="flex flex-col items-center gap-1 text-gray-400 transition-colors px-3 py-1">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Docentes</span>
+        </button>
+
+        <!-- Mi Perfil -->
+        <button onclick="openProfileModal()" id="btn-profile-mobile"
+            class="flex flex-col items-center gap-1 text-gray-400 transition-colors px-3 py-1">
+            <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-300 flex items-center justify-center bg-gray-100">
+                <img id="mobile-nav-photo" src="" alt="foto" class="hidden w-full h-full object-cover"/>
+                <i data-lucide="user-circle" id="mobile-nav-icon" class="w-6 h-6 text-gray-400"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Perfil</span>
+        </button>
+    </div>
+</nav>
+
+    <!-- ============================================================
+         MODALES EXISTENTES
+    ============================================================ -->
+
+    <!-- Modal Confirmar "Cumplido" -->
+    <div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="cancelCompleted()"></div>
+        <div class="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-10 p-8 flex flex-col items-center gap-6">
+            <div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+            </div>
+            <div class="text-center">
+                <p class="text-gray-700 text-sm leading-relaxed">¿Deseas finalizar este trabajo pendiente?</p>
+                <p id="confirm-work-name" class="text-gray-900 font-bold text-base mt-1"></p>
+            </div>
+            <div class="flex gap-3 w-full">
+                <button onclick="cancelCompleted()"
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-2xl text-sm font-bold hover:bg-gray-200 transition-all active:scale-95">No</button>
+                <button onclick="confirmCompleted()"
+                    class="flex-1 py-3 bg-green-600 text-white rounded-2xl text-sm font-bold hover:bg-green-700 transition-all active:scale-95">Sí</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Modal Perfil Docente -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeProfileModal()">×</span>
-            <img id="modalProfileImage" src="" alt="Foto de perfil">
-            <div id="modalProfileInfo" class="modal-profile-info"></div>
+    <!-- Modal Historial -->
+    <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeHistory()"></div>
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden">
+            <div class="px-8 py-6 flex items-center justify-between border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2"/>
+                        <line x1="8" y1="6" x2="16" y2="6"/>
+                        <line x1="8" y1="10" x2="16" y2="10"/>
+                        <line x1="9" y1="15" x2="15" y2="21"/>
+                        <line x1="15" y1="15" x2="9" y2="21"/>
+                    </svg>
+                    <h2 class="text-lg font-bold text-gray-900">Trabajos Terminados</h2>
+                </div>
+                <button onclick="closeHistory()"
+                    class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900 border border-gray-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="history-list" class="px-8 py-6 space-y-3 max-h-96 overflow-y-auto no-scrollbar"></div>
         </div>
     </div>
 
     <!-- Modal Detalles -->
-    <div id="detailsModal" class="modal">
-        <div class="modal-content-details">
-            <div class="modal-header-details">
-                <h2 id="detailsTitle"><i class="fa-solid fa-file-lines"></i> Detalles del Trabajo</h2>
-                <span class="close-modal" onclick="closeDetailsModal()">×</span>
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden">
+            <div class="px-8 py-6 flex items-center justify-between bg-white">
+                <span id="modal-area" class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full uppercase tracking-widest">ÁREA</span>
+                <button onclick="closeModal()"
+                    class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900 border border-gray-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body-details">
-                <div class="detail-section">
-                    <h3 id="detailsTaskName"></h3>
-                    <div class="detail-info">
-                        <p><i class="fa-solid fa-user-tie"></i> <strong>Profesor:</strong> <span id="detailsTeacher"></span></p>
-                        <p><i class="fa-regular fa-calendar"></i> <strong>Fecha límite:</strong> <span id="detailsDeadline"></span></p>
-                        <p><i class="fa-solid fa-circle-info"></i> <strong>Estado:</strong> <span id="detailsStatus"></span></p>
+            <div class="px-8 pb-10 space-y-8">
+                <div>
+                    <h3 id="modal-title" class="text-3xl font-bold text-gray-900 mb-4 leading-tight">Título del Trabajo</h3>
+                    <div class="h-1.5 w-12 bg-blue-600 rounded-full"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-5 bg-gray-50 rounded-3xl">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase mb-1 tracking-wider">Docente</p>
+                        <p id="modal-docente" class="text-sm font-semibold text-gray-800">-</p>
+                    </div>
+                    <div class="p-5 bg-gray-50 rounded-3xl">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase mb-1 tracking-wider">Culminación</p>
+                        <p id="modal-date" class="text-sm font-semibold text-gray-800">-</p>
                     </div>
                 </div>
-                <div class="detail-section">
-                    <h4><i class="fa-solid fa-clipboard-check"></i> Descripción del Trabajo</h4>
-                    <div class="description-box" id="detailsDescription"></div>
+                <div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase mb-3 tracking-wider">Descripción del Proyecto</p>
+                    <p id="modal-description" class="text-gray-600 text-sm leading-relaxed">-</p>
                 </div>
-
-                <!-- NUEVO: Lista de grupos (solo visible en trabajos grupales) -->
-                <div id="detailsGruposSection" class="detail-section" style="display:none;">
-                    <h4 style="color:#34d399;">
-                        <i class="fa-solid fa-users"></i> Grupos y sus trabajos
-                    </h4>
-                    <div id="detailsGrupos"></div>
-                </div>
-                <!-- FIN NUEVO -->
-
-                <div class="detail-section">
-                    <h4><i class="fa-solid fa-list-check"></i> Requisitos</h4>
-                    <ul class="requirements-list" id="detailsRequirements"></ul>
-                </div>
-                <div class="detail-section">
-                    <h4><i class="fa-solid fa-paperclip"></i> Recursos Adjuntos</h4>
-                    <div class="attachments-list" id="detailsAttachments"></div>
-                </div>
-            </div>
-            <div class="modal-footer-details">
-                <button class="btn-modal btn-close" onclick="closeDetailsModal()">
-                    <i class="fa-solid fa-xmark"></i> Cerrar
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Visor -->
-    <div id="fileViewerModal" class="modal">
-        <div class="modal-content-viewer">
-            <div class="modal-header-viewer">
-                <h2 id="viewerTitle"><i class="fa-solid fa-eye"></i> Vista Previa del Archivo</h2>
-                <span class="close-modal" onclick="closeFileViewerModal()">×</span>
+    <!-- ── MODAL: opciones de la sección Documentos ── -->
+    <div id="doc-options-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeDocOptionsModal()"></div>
+        <div class="relative z-10 bg-white w-full max-w-xs rounded-[2rem] shadow-2xl p-8 flex flex-col gap-4">
+            <h3 class="text-lg font-bold text-gray-900 text-center">¿Qué deseas agregar?</h3>
+            <button onclick="openAddCourseModal()"
+                class="w-full flex items-center gap-4 p-4 bg-blue-50 border-2 border-blue-100 rounded-2xl text-left hover:bg-blue-100 transition-all active:scale-95">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                    <i data-lucide="book-open" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-900">Nuevo Curso / Documento</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Subir material de estudio</p>
+                </div>
+            </button>
+            <button onclick="closeDocOptionsModal()"
+                class="w-full py-3 text-gray-400 text-sm font-semibold hover:text-gray-600 transition-colors">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+<!-- ── MODAL: agregar curso/documento ── -->
+    <div id="add-course-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeAddCourseModal()"></div>
+        <div class="relative z-10 bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8 flex flex-col gap-5 overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900">Agregar Documento</h3>
+                <button onclick="closeAddCourseModal()" class="p-1.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                </button>
             </div>
-            <div class="modal-body-viewer">
-                <div id="fileViewerContent" class="file-viewer-content"></div>
-                <div class="viewer-controls">
-                    <button class="viewer-control-btn" onclick="openFullscreen()" title="Pantalla completa">
-                        <i class="fa-solid fa-expand"></i>
+            <form id="course-form" class="flex flex-col gap-4" onsubmit="return false;">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Título <span class="text-red-500">*</span></label>
+                    <input id="course-titulo" type="text" placeholder="Ej: Análisis de Redes Neuronales"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                </div>
+
+                <!-- Muestra curso/docente como etiquetas cuando vienen del contexto de un área -->
+                <div id="course-context-info" class="hidden flex gap-3">
+                    <div class="flex-1 p-3 bg-blue-50 rounded-2xl">
+                        <p class="text-[10px] text-blue-400 font-bold uppercase mb-0.5">Curso</p>
+                        <p id="course-context-curso" class="text-sm font-semibold text-blue-700"></p>
+                    </div>
+                    <div class="flex-1 p-3 bg-indigo-50 rounded-2xl">
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase mb-0.5">Docente</p>
+                        <p id="course-context-docente" class="text-sm font-semibold text-indigo-700"></p>
+                    </div>
+                </div>
+
+                <!-- Campos manuales (cuando se abre sin contexto de área) -->
+                <div id="course-manual-fields" class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-semibold text-gray-700">Curso <span class="text-red-500">*</span></label>
+                        <input id="course-curso" type="text" placeholder="Ej: Ingeniería de Software"
+                            class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-semibold text-gray-700">Docente <span class="text-red-500">*</span></label>
+                        <input id="course-docente" type="text" placeholder="Ej: Dr. Ricardo Alarcón"
+                            class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Archivo <span class="text-gray-400 font-normal">(opcional por ahora)</span></label>
+                    <input id="course-archivo" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx"
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-dashed border-gray-200 text-sm text-gray-600 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold hover:border-blue-300 transition-colors cursor-pointer"/>
+                </div>
+                <p id="course-error" class="hidden text-xs text-red-500 font-semibold"></p>
+            </form>
+            <button onclick="saveNewCourse()"
+                class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
+                Guardar Documento
+            </button>
+        </div>
+    </div>
+
+<!-- ── MODAL: agregar trabajo ── -->
+    <div id="add-work-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeAddWorkModal()"></div>
+        <div class="relative z-10 bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8 flex flex-col gap-5 overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900">Agregar Trabajo</h3>
+                <button onclick="closeAddWorkModal()" class="p-1.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                </button>
+            </div>
+            <form id="work-form" class="flex flex-col gap-4" onsubmit="return false;">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Título <span class="text-red-500">*</span></label>
+                    <input id="work-titulo" type="text" placeholder="Ej: Proyecto: Domótica Inteligente"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Docente <span class="text-red-500">*</span></label>
+                    <select id="work-docente" onchange="loadCoursesForTeacher(this.value)"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors bg-white">
+                        <option value="">-- Selecciona un docente --</option>
+                    </select>
+                </div>
+                <div id="work-curso-container" class="hidden flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Curso <span class="text-red-500">*</span></label>
+                    <select id="work-curso"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors bg-white">
+                        <option value="">-- Selecciona un curso --</option>
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Fecha de culminación <span class="text-red-500">*</span></label>
+                    <input id="work-culminacion" type="date"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors"/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Descripción <span class="text-gray-400 font-normal">(ver detalles)</span></label>
+                    <textarea id="work-descripcion" rows="3" placeholder="Descripción del proyecto para ver en detalle..."
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400 resize-none"></textarea>
+                </div>
+                <p id="work-error" class="hidden text-xs text-red-500 font-semibold"></p>
+            </form>
+            <button onclick="saveNewWork()"
+                class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
+                Guardar Trabajo
+            </button>
+        </div>
+    </div>
+
+    <!-- ── MODAL: agregar docente ── -->
+    <div id="add-teacher-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeAddTeacherModal()"></div>
+        <div class="relative z-10 bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8 flex flex-col gap-5 overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900">Agregar Docente</h3>
+                <button onclick="closeAddTeacherModal()" class="p-1.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                </button>
+            </div>
+            <form id="teacher-form" class="flex flex-col gap-4" onsubmit="return false;">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Nombre del Docente <span class="text-red-500">*</span></label>
+                    <input id="teacher-nombre" type="text" placeholder="Ej: Dr. Ricardo Alarcón"
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-semibold text-gray-700">Cursos que enseña <span class="text-red-500">*</span></label>
+                    <div id="teacher-courses-list" class="flex flex-col gap-2">
+                        <input type="text" placeholder="Ej: Ingeniería de Software"
+                            class="teacher-course-input w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+                    </div>
+                    <button type="button" onclick="addCourseField()"
+                        class="mt-1 flex items-center gap-2 text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        Añadir otro curso
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Completado -->
-    <div id="completedModal" class="modal">
-        <div class="modal-content-completed">
-            <div class="modal-header-completed">
-                <h2><i class="fa-solid fa-check-circle"></i> Confirmar Finalización</h2>
-                <span class="close-modal" onclick="closeCompletedModal()">×</span>
-            </div>
-            <div class="modal-body-completed">
-                <div class="completed-message">
-                    <i class="fa-solid fa-info-circle completed-icon"></i>
-                    <p id="completedMessage"></p>
-                </div>
-            </div>
-            <div class="modal-footer-completed">
-                <button class="btn-modal btn-cancel" onclick="closeCompletedModal()">
-                    <i class="fa-solid fa-times"></i> Cancelar
-                </button>
-                <button class="btn-modal btn-confirm" onclick="confirmCompleted()">
-                    <i class="fa-solid fa-check"></i> Entendido
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="script.js"></script>
-
-  
-<!-- Modal Foto Estudiante -->
-<div id="fotoEstudianteModal" class="foto-est-overlay" style="display:none;" onclick="cerrarFotoEstudiante()">
-    <div class="foto-est-circulo">
-        <img id="fotoEstudianteImg" src="" alt="">
-    </div>
-</div>
-  
-<!-- MODAL: Vincular Escritorio -->
-<div id="modal-vincular-escritorio" class="vincular-modal-overlay" style="display:none;" onclick="cerrarVincularEscritorio()">
-    <div class="vincular-modal-box" onclick="event.stopPropagation()">
-        <button class="vincular-modal-close" onclick="cerrarVincularEscritorio()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="vincular-modal-icon"><i class="fa-solid fa-laptop"></i></div>
-        <h3 class="vincular-modal-title">Vincular Escritorio</h3>
-        <p class="vincular-modal-instruccion">Pega el código en el dispositivo de tu laptop para sincronizar a tu cuenta.</p>
-        <div class="vincular-api-field">
-            <input type="password" id="vincular-api-input" class="vincular-api-input" readonly value="">
-            <button class="vincular-api-eye" onclick="toggleVerAPI()" title="Mostrar/ocultar">
-                <i class="fa-solid fa-eye" id="icon-ver-api"></i>
+                <p id="teacher-error" class="hidden text-xs text-red-500 font-semibold"></p>
+            </form>
+            <button onclick="saveNewTeacher()"
+                class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
+                Guardar Docente
             </button>
         </div>
-        <button class="vincular-copiar-btn" id="btn-copiar-api" onclick="copiarClaveAPI()">
-            <i class="fa-solid fa-copy"></i> Copiar Clave
+    </div>
+
+<!-- ── MODAL: editar docente ── -->
+    <div id="edit-teacher-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeEditTeacherModal()"></div>
+        <div class="relative z-10 bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8 flex flex-col gap-5 overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900">Editar Docente</h3>
+                <button onclick="closeEditTeacherModal()" class="p-1.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4 text-gray-500"></i>
+                </button>
+            </div>
+            <input type="hidden" id="edit-teacher-id"/>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-semibold text-gray-700">Nombre del Docente <span class="text-red-500">*</span></label>
+                <input id="edit-teacher-nombre" type="text" placeholder="Ej: Dr. Ricardo Alarcón"
+                    class="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none text-sm font-medium text-gray-800 transition-colors placeholder-gray-400"/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-semibold text-gray-700">Cursos que enseña <span class="text-red-500">*</span></label>
+                <div id="edit-teacher-courses-list" class="flex flex-col gap-2"></div>
+                <button type="button" onclick="addEditCourseField()"
+                    class="mt-1 flex items-center gap-2 text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    Añadir otro curso
+                </button>
+            </div>
+            <p id="edit-teacher-error" class="hidden text-xs text-red-500 font-semibold"></p>
+            <button onclick="saveEditTeacher()"
+                class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200">
+                Guardar Cambios
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+          
+          <!-- Modal visor de documentos -->
+<div id="doc-viewer-modal" class="hidden fixed inset-0 z-[60] flex flex-col">
+    <div class="bg-gray-900 bg-opacity-95 flex items-center justify-between px-5 py-3 shrink-0">
+        <p id="doc-viewer-title" class="text-white font-semibold text-sm truncate max-w-xs"></p>
+        <button onclick="closeDocViewer()"
+            class="ml-4 p-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full transition-all shrink-0">
+            <i data-lucide="x" class="w-5 h-5 text-white"></i>
         </button>
     </div>
+    <iframe id="doc-viewer-iframe" src="" class="flex-1 w-full border-0 bg-white"></iframe>
 </div>
-  
-<!-- MODAL: Ajustes -->
-<div id="modal-ajustes" class="ajustes-modal-overlay" style="display:none;" onclick="cerrarModalAjustes()">
-    <div class="ajustes-modal-box" onclick="event.stopPropagation()">
-        <button class="ajustes-modal-close" onclick="cerrarModalAjustes()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="ajustes-modal-header">
-            <i class="fa-solid fa-gear"></i>
-            <h3>Ajustes</h3>
-        </div>
-        <div class="ajustes-modal-body">
-            <button class="ajustes-seguridad-btn" onclick="toggleSeguridad()">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>Seguridad</span>
-                <i class="fa-solid fa-chevron-down ajustes-chevron" id="ajustes-chevron"></i>
-            </button>
-            <div id="ajustes-opciones" class="ajustes-opciones" style="display:none;">
-                <button class="ajustes-opcion" id="btn-vincular-escritorio" onclick="abrirVincularEscritorio()">
-                    <i class="fa-solid fa-laptop"></i> Vincular Escritorio
-                </button>
-                <button class="ajustes-opcion ajustes-opcion-danger" onclick="cerrarSesion()">
-                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-  
-<!-- Overlay Solicitudes -->
-<div id="solicitudes-overlay" class="solicitudes-overlay" style="display:none;" onclick="cerrarSolicitudes()">
-    <div class="solicitudes-panel" onclick="event.stopPropagation()">
-        <div class="solicitudes-header">
-            <h3><i class="fa-solid fa-user-plus"></i> Solicitudes recibidas</h3>
-            <button class="sol-close-btn" onclick="cerrarSolicitudes()"><i class="fa-solid fa-times"></i></button>
-        </div>
-        <div id="solicitudes-lista" class="solicitudes-lista">
-            <p style="text-align:center;color:var(--text-muted);padding:2rem;">Sin solicitudes pendientes.</p>
-        </div>
-    </div>
-</div>
-
-<!-- Overlay Amigos -->
-<div id="amigos-overlay" class="solicitudes-overlay" style="display:none;" onclick="cerrarAmigos()">
-    <div class="solicitudes-panel" onclick="event.stopPropagation()">
-        <div class="solicitudes-header">
-            <h3><i class="fa-solid fa-user-friends"></i> Mis Amigos</h3>
-            <button class="sol-close-btn" onclick="cerrarAmigos()"><i class="fa-solid fa-times"></i></button>
-        </div>
-        <div id="amigos-lista" class="solicitudes-lista">
-            <p style="text-align:center;color:var(--text-muted);padding:2rem;">Sin amigos aún.</p>
-        </div>
-    </div>
-</div>
-
-<!-- ══ MODAL BIENVENIDA ══ -->
-<div id="modal-bienvenida" class="bienvenida-overlay-wrap" style="display:none;">
-    <div class="bienvenida-panel" id="bienvenida-panel">
-        <div id="bienvenida-s1">
-            <div class="bienvenida-logo-wrap">
-                <svg id="bienvenida-logo-svg"><use href="#filred-logo"/></svg>
-            </div>
-            <h2 class="bienvenida-hola">¡Hola, <span id="bienvenida-nombre-span"></span>!</h2>
-            <p class="bienvenida-main-text">Bienvenido a <strong>QilCloud</strong></p>
-            <p class="bienvenida-pronunciacion">(Se pronuncia <em>Kel-Klaud</em>)</p>
-            <div class="bienvenida-acciones-row">
-                <span class="bienvenida-link-mas" onclick="bienvenida_verMas()">ver más sobre QilCloud</span>
-                <button class="bienvenida-btn-continuar" onclick="bienvenida_continuar()">
-                    Continuar <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
-        <div id="bienvenida-s2" style="display:none;">
-            <button class="bienvenida-x-btn" onclick="bienvenida_volverS1()" title="Volver">
-                <i class="fa-solid fa-times"></i>
-            </button>
-            <div class="bienvenida-etimologia">
-                <p><strong>"Quil"</strong> <span class="bienvenida-pron">(Kel)</span> es la esencia de la raíz quechua <em>Qillqa</em>, que representa el registro y la memoria.</p>
-                <p><strong>"Cloud"</strong> <span class="bienvenida-pron">(Klaud)</span> es tu infraestructura en la nube que sostiene esta red.</p>
-            </div>
-        </div>
-        <div id="bienvenida-s3" style="display:none;">
-            <button class="bienvenida-x-btn" onclick="bienvenida_cerrarTodo()" title="Saltar">
-                <i class="fa-solid fa-times"></i>
-            </button>
-            <p class="bienvenida-pregunta-video">¿Te gustaría ver un video sobre cada parte y sus funciones?</p>
-            <button class="bienvenida-btn-ver-video" onclick="bienvenida_abrirVideo()">
-                <i class="fa-solid fa-play"></i> Ver funcionamiento.
-            </button>
-        </div>
-    </div>
-    <div class="bienvenida-video-wrap" id="bienvenida-video-wrap" style="display:none;">
-        <button class="bienvenida-video-x" onclick="bienvenida_cerrarTodo()" title="Saltar">
-            <i class="fa-solid fa-times"></i>
-        </button>
-        <iframe id="bienvenida-video-iframe" src="" frameborder="0" allowfullscreen allow="autoplay; fullscreen"></iframe>
-    </div>
-</div>
-  <script src="gramatica-script.js"></script>
-
-<!-- OVERLAY LOADER PUBLICACIÓN -->
-<div id="overlay-publicando" style="display:none; position:fixed; inset:0;
-     background:rgba(0,0,0,.65); z-index:9999; flex-direction:column;
-     align-items:center; justify-content:center; gap:1rem;">
-    <div style="width:52px; height:52px; border:4px solid rgba(255,255,255,.15);
-         border-top-color:var(--primary-color); border-radius:50%;
-         animation:spin .7s linear infinite;"></div>
-    <p id="overlay-publicando-texto"
-       style="color:white; font-weight:600; font-size:1rem; letter-spacing:.3px;">
-        Publicando...
-    </p>
-</div>
-
 </body>
 </html>
