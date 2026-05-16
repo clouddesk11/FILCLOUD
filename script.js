@@ -407,8 +407,10 @@ if (section === 'docs') {
     mobileHistory.classList.add('hidden');
     desktopHistory.classList.add('hidden');
     // En Docs: FAB oculto hasta que se seleccione un área específica
-    if (fabWrapper) fabWrapper.classList.add('hidden');
+   if (fabWrapper) fabWrapper.classList.add('hidden');
     if (fabDesktop) { fabDesktop.classList.add('hidden'); fabDesktop.style.display = ''; }
+    // En móvil: abrir panel de áreas automáticamente
+    if (window.innerWidth < 768) openAreasPanel();
 
 } else if (section === 'works') {
     secWorks.classList.remove('hidden');
@@ -443,24 +445,25 @@ if (section === 'docs') {
 // ══════════════════════════════════════════════════════
 function initAreasBar() {
     const isMobile = window.innerWidth < 768;
-    const limit = isMobile ? 1 : 2; // 1 en móvil, 2 en desktop
-    const extras = document.querySelectorAll('.area-extra');
-    extras.forEach((btn, i) => {
-        if (i >= limit) {
-            btn.classList.add('hidden');
-        } else {
-            btn.classList.remove('hidden');
-        }
-    });
-    // Mostrar "Más..." solo si hay más cursos que el límite
-    const moreBtn = document.getElementById('areas-more-btn');
-    if (extras.length > limit) {
-        moreBtn.classList.remove('hidden');
+    const extras   = Array.from(document.querySelectorAll('.area-extra'));
+    const moreBtn  = document.getElementById('areas-more-btn');
+    const todosBtn = document.querySelector('[data-area="todos"]');
+
+    // El botón ícono NUNCA se oculta, ni en móvil ni en laptop
+    moreBtn.classList.remove('hidden');
+
+    if (isMobile) {
+        if (todosBtn) todosBtn.classList.add('hidden');
+        extras.forEach(btn => btn.classList.remove('hidden'));
     } else {
-        moreBtn.classList.add('hidden');
+        if (todosBtn) todosBtn.classList.remove('hidden');
+        const limit = 2;
+        extras.forEach((btn, i) => {
+            if (i < limit) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        });
     }
 }
-
 // CAMBIO 16 — selectArea() con apertura de modal pre-relleno para admin
 function selectArea(btn) {
     document.querySelectorAll('.area-btn').forEach(b => {
@@ -470,12 +473,25 @@ function selectArea(btn) {
     btn.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-100');
     btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
 
-    // Después de seleccionar, re-inicializar la barra correctamente
-    if (btn.dataset.area !== 'todos') {
+    // Si venía del panel "Más" (estaba oculto), moverlo al PRIMER slot de la barra
+    if (btn.classList.contains('area-extra') && btn.classList.contains('hidden')) {
+        const bar      = document.getElementById('areas-bar');
+        const todosBtn = bar.querySelector('[data-area="todos"]');
         btn.classList.remove('hidden');
+        bar.insertBefore(btn, todosBtn.nextSibling); // ← ocupa el primer slot
     }
+
+    
+  // En móvil: mostrar "Más" permanentemente una vez que el usuario selecciona un área
     closeAreasPanel();
     initAreasBar();
+
+    if (window.innerWidth < 768) {
+        const moreBtnMobile = document.getElementById('areas-more-btn');
+        if (moreBtnMobile) moreBtnMobile.classList.remove('hidden');
+    }
+
+    // Actualizar contexto del área seleccionada para que el FAB lo use
 
     // Actualizar contexto del área seleccionada para que el FAB lo use
     if (btn.dataset.area === 'todos' || !btn.dataset.cursoReal) {
@@ -506,14 +522,13 @@ function selectArea(btn) {
             if (fabDesktop) { fabDesktop.classList.remove('hidden'); fabDesktop.style.display = 'flex'; }
         }
     }
-  
-
 }                         
 function openAreasPanel() {
     const list = document.getElementById('areas-panel-list');
     list.innerHTML = '';
     document.querySelectorAll('.area-btn').forEach(btn => {
-        const clone = document.createElement('button');
+    if (window.innerWidth < 768 && btn.dataset.area === 'todos') return;
+    const clone = document.createElement('button');
         const isActive = btn.classList.contains('bg-blue-600');
         clone.className = isActive
             ? 'px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium shadow-md shadow-blue-100'
@@ -1126,7 +1141,7 @@ function loadAreasBar(teachersData) {
         btn.onclick = () => selectArea(btn);
         btn.className = 'area-btn area-extra px-5 py-2 bg-white text-gray-600 border border-gray-200 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors shrink-0';
         btn.textContent = curso;
-        bar.insertBefore(btn, moreBtn);
+        bar.appendChild(btn);
     });
 
     initAreasBar();
