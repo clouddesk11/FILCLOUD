@@ -1,11 +1,4 @@
-/* =====================================================
-   app.js — NexusRepo
-   Firebase Auth + Google Sign-In + lógica de la app
-   ===================================================== */
 
-// ══════════════════════════════════════════════════════
-// 1. CONFIGURACIÓN FIREBASE
-// ══════════════════════════════════════════════════════
 const firebaseConfig = {
     apiKey: "AIzaSyBKiq_t-gZj_l1Bzj9Y1Jpft03b60pyyuQ",
     authDomain: "eduspace-auth-d7577.firebaseapp.com",
