@@ -136,6 +136,8 @@
         /* Lilies overlay */
         #lilies-overlay { display: none; }
         #lilies-overlay.open { display: block; }
+        @keyframes paraTiIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        #lilies-overlay.open #para-ti { animation: paraTiIn 1.6s ease-out 1s forwards; }
 
         /* Fox game */
         @keyframes floaty {
@@ -400,6 +402,7 @@
     <!-- Lilies overlay -->
     <div id="lilies-overlay" class="fixed inset-0 z-50 bg-black">
         <iframe id="lilies-frame" title="Lirios" class="w-full h-full border-0" src="about:blank"></iframe>
+        <div id="para-ti" class="absolute left-0 right-0 top-16 sm:top-8 z-10 text-center pointer-events-none font-handwriting text-4xl sm:text-5xl text-[#f7f1e3]" style="text-shadow:0 0 14px rgba(255,230,200,.6); opacity:0;">Para ti "Luizana" :)</div>
         <button onclick="backToStart()" class="absolute top-3 left-3 z-10 px-4 py-2 rounded-full font-handwriting text-xl text-[#f7f1e3] bg-black/50 border border-[#8c6d53] hover:bg-black/70">⟲ Volver al inicio</button>
     </div>
 
